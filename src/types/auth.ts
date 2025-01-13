@@ -1,30 +1,28 @@
 import { Timestamp } from "./database.types";
 
-export type UserRole = 'worker' | 'business';
-
 export interface User {
   id: string;
   email: string;
-  role: UserRole;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
-
-export interface SignUpData {
-  email: string;
-  password: string;
-  role: UserRole;
-}
-
-export interface StoredUser extends User {
-  hashedPassword: string;
-  failedAttempts: number;
-  lastFailedAttempt?: number;
-}
-
-export class AuthError extends Error {
-  constructor(message: string, public code: string) {
-    super(message);
-    this.name = 'AuthError';
-  }
+  phoneNumber: string;
+  role: 'worker' | 'business';
+  
+  // Worker specific fields
+  firstName?: string;
+  lastName?: string;
+  gender?: 'male' | 'female';
+  job?: string;
+  languages?: string[];
+  workAreas?: string[];
+  availability_status?: boolean;
+  aboutMe?: string;
+  birthday_date?: Timestamp;
+  profile_picture_url?: string;
+  
+  // Business specific fields
+  company_name?: string;
+  business_type?: 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
+  location?: string;
+  aboutBusiness?: string;
+  logo_picture_url?: string;
+  website?: string;
 }

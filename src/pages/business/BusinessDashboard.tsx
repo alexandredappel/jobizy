@@ -14,7 +14,7 @@ const BusinessDashboard = () => {
   
   return (
     <DashboardContainer>
-      <DashboardSection>
+      <DashboardSection title="Welcome">
         <WelcomeSection businessName={user?.company_name || 'Business'} />
       </DashboardSection>
       

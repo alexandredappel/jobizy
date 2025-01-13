@@ -12,7 +12,7 @@ const WorkerDashboard = () => {
   
   return (
     <DashboardContainer>
-      <DashboardSection>
+      <DashboardSection title="Welcome">
         <WelcomeSection userName={user?.firstName || 'Worker'} />
       </DashboardSection>
       
