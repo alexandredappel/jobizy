@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/Navigation";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
+import AuthLayout from "@/layouts/AuthLayout";
 
 // Auth Pages
 import SignIn from "@/pages/auth/SignIn";
@@ -65,8 +66,20 @@ const App = () => (
               <Route path="/" element={<RedirectBasedOnRole />} />
               
               {/* Auth Routes */}
-              <Route path="/signin" element={<AuthRoute><SignIn /></AuthRoute>} />
-              <Route path="/signup" element={<AuthRoute><SignUp /></AuthRoute>} />
+              <Route path="/signin" element={
+                <AuthRoute>
+                  <AuthLayout>
+                    <SignIn />
+                  </AuthLayout>
+                </AuthRoute>
+              } />
+              <Route path="/signup" element={
+                <AuthRoute>
+                  <AuthLayout>
+                    <SignUp />
+                  </AuthLayout>
+                </AuthRoute>
+              } />
               
               {/* Worker Routes */}
               <Route path="/worker/onboarding" element={
