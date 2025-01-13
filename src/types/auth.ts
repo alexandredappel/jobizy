@@ -3,11 +3,33 @@ import { Timestamp } from "./database.types";
 // Base types
 export type UserRole = 'worker' | 'business';
 
+// Base types for signup
+interface BaseSignUpData {
+  email: string;
+  password: string;
+}
+
+// Worker specific signup data
+interface WorkerSignUpData extends BaseSignUpData {
+  role: 'worker';
+  phoneNumber: string;
+  firstName?: string;
+}
+
+// Business specific signup data
+interface BusinessSignUpData extends BaseSignUpData {
+  role: 'business';
+  company_name?: string;
+}
+
+// Union type for SignUpData
+export type SignUpData = WorkerSignUpData | BusinessSignUpData;
+
 // Main User interface
 export interface User {
   id: string;
   email: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   role: UserRole;
   
   // Worker specific fields
@@ -38,14 +60,6 @@ export interface StoredUser extends User {
   lastFailedAttempt?: number;
   createdAt: Timestamp;
   updatedAt: Timestamp;
-}
-
-export interface SignUpData {
-  email: string;
-  password: string;
-  role: UserRole;
-  firstName?: string;
-  company_name?: string;
 }
 
 // Error handling

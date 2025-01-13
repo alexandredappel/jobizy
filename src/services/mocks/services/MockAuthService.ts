@@ -42,7 +42,7 @@ export class MockAuthService implements IAuthService {
       nanoseconds: (Date.now() % 1000) * 1000000
     };
 
-    const newUser: StoredUser = {
+    const baseUser = {
       id: `user_${Date.now()}`,
       email: data.email,
       role: data.role,
@@ -51,6 +51,18 @@ export class MockAuthService implements IAuthService {
       createdAt: timestamp,
       updatedAt: timestamp
     };
+
+    // Add role-specific fields
+    const newUser: StoredUser = data.role === 'worker' 
+      ? {
+          ...baseUser,
+          phoneNumber: data.phoneNumber,
+          firstName: data.firstName
+        }
+      : {
+          ...baseUser,
+          company_name: data.company_name
+        };
 
     users.push(newUser);
     setStoredUsers(users);
