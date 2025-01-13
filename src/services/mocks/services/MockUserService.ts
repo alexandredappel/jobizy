@@ -60,7 +60,7 @@ export class MockUserService implements IUserService {
     };
   }
 
-  async updateWorkAreas(userId: string, areas: string[]): Promise<void> {
+  async updateWorkAreas(userId: string, areas: Array<'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua'>): Promise<void> {
     console.log('MockUserService: Updating work areas', { userId, areas });
     await simulateDelay();
     simulateNetworkError();
@@ -80,7 +80,7 @@ export class MockUserService implements IUserService {
     };
   }
 
-  async updateLanguages(userId: string, languages: string[]): Promise<void> {
+  async updateLanguages(userId: string, languages: Array<'English' | 'Bahasa'>): Promise<void> {
     console.log('MockUserService: Updating languages', { userId, languages });
     await simulateDelay();
     simulateNetworkError();
