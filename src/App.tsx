@@ -8,8 +8,29 @@ import { Navigation } from "@/components/Navigation";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthLayout from "@/layouts/AuthLayout";
+
+// Auth
 import SignIn from "@/pages/auth/SignIn";
 import SignUp from "@/pages/auth/SignUp";
+
+// Worker
+import WorkerOnboarding from "@/pages/worker/WorkerOnboarding";
+import WorkerDashboard from "@/pages/worker/WorkerDashboard";
+import WorkerProfileEdit from "@/pages/worker/WorkerProfileEdit";
+
+// Business
+import BusinessOnboarding from "@/pages/business/BusinessOnboarding";
+import BusinessDashboard from "@/pages/business/BusinessDashboard";
+import BusinessProfileEdit from "@/pages/business/BusinessProfileEdit";
+import Search from "@/pages/business/Search";
+
+// Messages
+import ConversationList from "@/pages/messages/ConversationList";
+import Conversation from "@/pages/messages/Conversation";
+
+// Profiles
+import WorkerProfile from "@/pages/profiles/WorkerProfile";
+import BusinessProfile from "@/pages/profiles/BusinessProfile";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +84,7 @@ const App = () => (
               } />
               
               {/* Worker Routes */}
-              <Route path="@/pages/worker/onboarding" element={
+              <Route path="/worker/onboarding" element={
                 <ProtectedRoute role="worker">
                   <WorkerOnboarding />
                 </ProtectedRoute>
