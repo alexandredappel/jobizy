@@ -1,11 +1,10 @@
 import { IAuthService } from "@/services/interfaces/authService.interface";
 import { User, SignUpData, AuthError, StoredUser } from "@/types/auth";
 import { simulateDelay, simulateNetworkError } from "../utils/mockUtils";
-
-const STORAGE_KEY = 'jobizy_mock_auth_user';
-const MOCK_USERS_KEY = 'jobizy_mock_users';
-const MAX_FAILED_ATTEMPTS = 3;
-const LOCKOUT_DURATION = 1000; // 1 second
+import { hashPassword, verifyPassword } from "../auth/passwordUtils";
+import { getStoredUsers, setStoredUsers, getCurrentStoredUser, setCurrentUser, clearStoredUser } from "../auth/storageUtils";
+import { validateSignUpData } from "../auth/validationUtils";
+import { checkLockout, incrementFailedAttempts, resetFailedAttempts } from "../auth/lockoutManager";
 
 export class MockAuthService implements IAuthService {
   private currentUser: User | null = null;
@@ -15,50 +14,13 @@ export class MockAuthService implements IAuthService {
   constructor() {
     console.log('MockAuthService: Initializing');
     if (this.persistSession) {
-      const storedUser = localStorage.getItem(STORAGE_KEY);
-      if (storedUser) {
-        this.currentUser = JSON.parse(storedUser);
-        this.notifyListeners();
-      }
+      this.currentUser = getCurrentStoredUser();
+      this.notifyListeners();
     }
-  }
-
-  private getStoredUsers(): StoredUser[] {
-    const users = localStorage.getItem(MOCK_USERS_KEY);
-    return users ? JSON.parse(users) : [];
-  }
-
-  private setStoredUsers(users: StoredUser[]): void {
-    localStorage.setItem(MOCK_USERS_KEY, JSON.stringify(users));
   }
 
   private notifyListeners(): void {
     this.listeners.forEach(listener => listener(this.currentUser));
-  }
-
-  private hashPassword(password: string): string {
-    // Simple hash simulation - DO NOT use in production
-    return btoa(password);
-  }
-
-  private validatePassword(password: string): boolean {
-    const hasMinLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    
-    return hasMinLength && hasUpperCase && hasLowerCase && hasNumber;
-  }
-
-  private async checkLockout(user: StoredUser): Promise<void> {
-    if (user.failedAttempts >= MAX_FAILED_ATTEMPTS) {
-      const now = Date.now();
-      if (user.lastFailedAttempt && (now - user.lastFailedAttempt) < LOCKOUT_DURATION) {
-        throw new AuthError('Too many failed attempts. Please try again later.', 'auth/too-many-requests');
-      }
-      // Reset attempts after lockout period
-      user.failedAttempts = 0;
-    }
   }
 
   async signUp(data: SignUpData): Promise<User> {
@@ -66,11 +28,9 @@ export class MockAuthService implements IAuthService {
     await simulateDelay();
     simulateNetworkError();
 
-    if (!this.validatePassword(data.password)) {
-      throw new AuthError('Password does not meet requirements', 'auth/weak-password');
-    }
+    validateSignUpData(data);
 
-    const users = this.getStoredUsers();
+    const users = getStoredUsers();
     
     if (users.some(u => u.email === data.email)) {
       console.error('MockAuthService: Email already in use');
@@ -86,20 +46,20 @@ export class MockAuthService implements IAuthService {
       id: `user_${Date.now()}`,
       email: data.email,
       role: data.role,
-      hashedPassword: this.hashPassword(data.password),
+      hashedPassword: hashPassword(data.password),
       failedAttempts: 0,
       createdAt: timestamp,
       updatedAt: timestamp
     };
 
     users.push(newUser);
-    this.setStoredUsers(users);
+    setStoredUsers(users);
     
     const { hashedPassword, failedAttempts, lastFailedAttempt, ...publicUser } = newUser;
     this.currentUser = publicUser;
     
     if (this.persistSession) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(publicUser));
+      setCurrentUser(publicUser, true);
     }
     this.notifyListeners();
 
@@ -112,7 +72,7 @@ export class MockAuthService implements IAuthService {
     await simulateDelay();
     simulateNetworkError();
 
-    const users = this.getStoredUsers();
+    const users = getStoredUsers();
     const user = users.find(u => u.email === email);
 
     if (!user) {
@@ -120,27 +80,21 @@ export class MockAuthService implements IAuthService {
       throw new AuthError('Invalid email or password', 'auth/user-not-found');
     }
 
-    await this.checkLockout(user);
+    await checkLockout(user);
 
-    if (this.hashPassword(password) !== user.hashedPassword) {
-      user.failedAttempts = (user.failedAttempts || 0) + 1;
-      user.lastFailedAttempt = Date.now();
-      this.setStoredUsers(users);
-      
+    if (!verifyPassword(password, user.hashedPassword)) {
+      incrementFailedAttempts(user);
       console.error('MockAuthService: Invalid password');
       throw new AuthError('Invalid email or password', 'auth/wrong-password');
     }
 
-    // Reset failed attempts on successful login
-    user.failedAttempts = 0;
-    user.lastFailedAttempt = undefined;
-    this.setStoredUsers(users);
+    resetFailedAttempts(user);
 
     const { hashedPassword, failedAttempts, lastFailedAttempt, ...publicUser } = user;
     this.currentUser = publicUser;
     
     if (this.persistSession) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(publicUser));
+      setCurrentUser(publicUser, true);
     }
     this.notifyListeners();
 
@@ -154,7 +108,7 @@ export class MockAuthService implements IAuthService {
     simulateNetworkError();
 
     this.currentUser = null;
-    localStorage.removeItem(STORAGE_KEY);
+    clearStoredUser();
     this.notifyListeners();
 
     console.log('MockAuthService: User signed out successfully');
@@ -167,7 +121,7 @@ export class MockAuthService implements IAuthService {
   setPersistence(persist: boolean): void {
     this.persistSession = persist;
     if (!persist) {
-      localStorage.removeItem(STORAGE_KEY);
+      clearStoredUser();
     }
   }
 
