@@ -1,36 +1,84 @@
-// Types de base pour la base de données
 export type Timestamp = {
   seconds: number;
   nanoseconds: number;
 };
 
-// Types temporaires - à compléter avec les détails que vous fournirez
 export type UserProfile = {
   id: string;
+  email: string;
+  phoneNumber: string;
+  role: 'worker' | 'business';
   createdAt: Timestamp;
-  // ... autres champs à venir
+  updatedAt: Timestamp;
+  
+  // Worker specific fields
+  firstName?: string;
+  lastName?: string;
+  gender?: 'male' | 'female';
+  job?: 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
+  languages?: Array<'English' | 'Bahasa'>;
+  workAreas?: Array<'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua'>;
+  availability_status?: boolean;
+  aboutMe?: string;
+  birthday_date?: Timestamp;
+  profile_picture_url?: string;
+  
+  // Business specific fields
+  company_name?: string;
+  business_type?: 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
+  location?: 'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua';
+  aboutBusiness?: string;
+  logo_picture_url?: string;
+  website?: string;
 };
 
-export type Message = {
-  id: string;
-  createdAt: Timestamp;
-  // ... autres champs à venir
+export type LastMessage = {
+  content: string;
+  timestamp: Timestamp;
+  senderId: string;
 };
 
 export type Conversation = {
   id: string;
+  participants: string[];
+  lastMessage: LastMessage;
   createdAt: Timestamp;
-  // ... autres champs à venir
+  updatedAt: Timestamp;
+  isFavorite?: {
+    [userId: string]: boolean;
+  };
+};
+
+export type Message = {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  timestamp: Timestamp;
+  isRead: boolean;
+  readAt?: Timestamp;
 };
 
 export type WorkExperience = {
   id: string;
+  userId: string;
+  companyName: string;
+  position: string;
+  startDate: Timestamp;
+  endDate?: Timestamp;
+  isCurrentJob?: boolean;
   createdAt: Timestamp;
-  // ... autres champs à venir
+  updatedAt: Timestamp;
 };
 
 export type Education = {
   id: string;
+  userId: string;
+  institutionName: string;
+  degree: string;
+  startDate: Timestamp;
+  endDate?: Timestamp;
+  isCurrentEducation?: boolean;
   createdAt: Timestamp;
-  // ... autres champs à venir
+  updatedAt: Timestamp;
 };

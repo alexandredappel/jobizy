@@ -1,9 +1,8 @@
 import { WorkExperience } from "@/types/database.types";
 
 export interface IWorkExperienceService {
-  getWorkExperiences(userId: string): Promise<WorkExperience[]>;
-  addWorkExperience(experience: Omit<WorkExperience, "id">): Promise<WorkExperience>;
-  updateWorkExperience(id: string, experience: Partial<WorkExperience>): Promise<void>;
-  deleteWorkExperience(id: string): Promise<void>;
-  // ... autres méthodes à venir selon vos besoins
+  getExperiences(userId: string): Promise<WorkExperience[]>;
+  addExperience(userId: string, experience: Omit<WorkExperience, 'id'>): Promise<string>;
+  updateExperience(experienceId: string, data: Partial<WorkExperience>): Promise<void>;
+  deleteExperience(experienceId: string): Promise<void>;
 }

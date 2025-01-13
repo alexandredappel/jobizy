@@ -1,7 +1,8 @@
 import { Message } from "@/types/database.types";
 
 export interface IMessageService {
-  sendMessage(conversationId: string, content: string): Promise<Message>;
   getMessages(conversationId: string): Promise<Message[]>;
-  // ... autres méthodes à venir selon vos besoins
+  sendMessage(conversationId: string, message: Omit<Message, 'id' | 'timestamp'>): Promise<string>;
+  markAsRead(messageId: string): Promise<void>;
+  deleteMessage(messageId: string): Promise<void>;
 }

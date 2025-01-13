@@ -2,8 +2,7 @@ import { Education } from "@/types/database.types";
 
 export interface IEducationService {
   getEducation(userId: string): Promise<Education[]>;
-  addEducation(education: Omit<Education, "id">): Promise<Education>;
-  updateEducation(id: string, education: Partial<Education>): Promise<void>;
-  deleteEducation(id: string): Promise<void>;
-  // ... autres méthodes à venir selon vos besoins
+  addEducation(userId: string, education: Omit<Education, 'id'>): Promise<string>;
+  updateEducation(educationId: string, data: Partial<Education>): Promise<void>;
+  deleteEducation(educationId: string): Promise<void>;
 }
