@@ -52,7 +52,7 @@ export class MockWorkExperienceService implements IWorkExperienceService {
     return newExperience.id;
   }
 
-  async updateWorkExperience(
+  async updateExperience(
     experienceId: string, 
     data: Partial<WorkExperience>
   ): Promise<void> {
@@ -81,7 +81,7 @@ export class MockWorkExperienceService implements IWorkExperienceService {
     console.log('MockWorkExperienceService: Experience updated successfully', experienceId);
   }
 
-  async deleteWorkExperience(experienceId: string): Promise<void> {
+  async deleteExperience(experienceId: string): Promise<void> {
     console.log('MockWorkExperienceService: Deleting experience', experienceId);
     await simulateDelay();
     simulateNetworkError();
