@@ -63,7 +63,7 @@ const App = () => (
               } />
               
               {/* Worker Routes */}
-              <Route path="/pages/worker/onboarding" element={
+              <Route path="@/pages/worker/onboarding" element={
                 <ProtectedRoute role="worker">
                   <WorkerOnboarding />
                 </ProtectedRoute>
