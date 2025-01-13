@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: Error | null;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, remember?: boolean) => Promise<void>;
   signUp: (email: string, password: string, role: 'worker' | 'business') => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -31,10 +31,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, remember: boolean = false) => {
     try {
       setLoading(true);
       setError(null);
+      authService.setPersistence(remember);
       await authService.signIn(email, password);
     } catch (err) {
       setError(err as Error);
@@ -84,6 +85,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, error, signIn, signUp, signOut }}>

@@ -16,6 +16,12 @@ export interface SignUpData {
   role: UserRole;
 }
 
+export interface StoredUser extends User {
+  hashedPassword: string;
+  failedAttempts: number;
+  lastFailedAttempt?: number;
+}
+
 export class AuthError extends Error {
   constructor(message: string, public code: string) {
     super(message);
