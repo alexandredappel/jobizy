@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@/types/auth';
+import { User, SignUpData } from '@/types/auth';
 import { MockAuthService } from '@/services/mocks/services/MockAuthService';
 import { useToast } from '@/hooks/use-toast';
 
@@ -8,7 +8,7 @@ interface AuthContextType {
   loading: boolean;
   error: Error | null;
   signIn: (email: string, password: string, remember?: boolean) => Promise<void>;
-  signUp: (email: string, password: string, role: 'worker' | 'business') => Promise<void>;
+  signUp: (email: string, password: string, role: 'worker' | 'business', additionalData?: { phoneNumber?: string; firstName?: string; company_name?: string }) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -50,11 +50,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string, role: 'worker' | 'business') => {
+  const signUp = async (
+    email: string, 
+    password: string, 
+    role: 'worker' | 'business',
+    additionalData?: { phoneNumber?: string; firstName?: string; company_name?: string }
+  ) => {
     try {
       setLoading(true);
       setError(null);
-      await authService.signUp({ email, password, role });
+
+      let signUpData: SignUpData;
+      
+      if (role === 'worker') {
+        if (!additionalData?.phoneNumber) {
+          throw new Error('Phone number is required for workers');
+        }
+        signUpData = {
+          email,
+          password,
+          role: 'worker',
+          phoneNumber: additionalData.phoneNumber,
+          firstName: additionalData.firstName
+        };
+      } else {
+        signUpData = {
+          email,
+          password,
+          role: 'business',
+          company_name: additionalData?.company_name
+        };
+      }
+
+      await authService.signUp(signUpData);
     } catch (err) {
       setError(err as Error);
       toast({
