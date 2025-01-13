@@ -1,35 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, db } from '@/lib/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/auth';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState<'worker' | 'business'>('worker');
+  const [userType, setUserType] = useState<UserRole>('worker');
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { signUp } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, 'users', user.uid), {
-        email,
-        userType,
-        createdAt: new Date().toISOString(),
-      });
+      await signUp(email, password, userType);
       navigate(`/${userType}/onboarding`);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create account. Please try again.",
-        variant: "destructive"
-      });
+      // Error is handled by AuthContext
+      console.error('SignUp error:', error);
     }
   };
 

@@ -1,28 +1,28 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '@/lib/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { signIn, user } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate('/');
+      await signIn(email, password);
+      // Redirect based on user role
+      if (user?.role === 'worker') {
+        navigate('/worker/dashboard');
+      } else {
+        navigate('/business/dashboard');
+      }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign in. Please check your credentials.",
-        variant: "destructive"
-      });
+      // Error is handled by AuthContext
+      console.error('SignIn error:', error);
     }
   };
 
