@@ -9,11 +9,8 @@ export class MockMessageService implements IMessageService {
     await simulateDelay();
     simulateNetworkError();
 
-    const messages = mockMessages.find(msg => msg.conversationId === conversationId);
-    if (!messages) {
-      console.log('MockMessageService: No messages found for conversation', conversationId);
-      return [];
-    }
+    const messages = mockMessages.filter(msg => msg.conversationId === conversationId);
+    console.log('MockMessageService: Found messages:', messages.length);
 
     // Return a deep copy to prevent direct modifications
     return [...messages].sort((a, b) => 
@@ -37,12 +34,8 @@ export class MockMessageService implements IMessageService {
       ...message
     };
 
-    const conversationMessages = mockMessages.find(msg => msg.conversationId === conversationId);
-    if (!conversationMessages) {
-      mockMessages.push(newMessage);
-    } else {
-      conversationMessages.push(newMessage);
-    }
+    mockMessages.push(newMessage);
+    console.log('MockMessageService: Message sent successfully', newMessage.id);
 
     return newMessage.id;
   }
@@ -52,8 +45,9 @@ export class MockMessageService implements IMessageService {
     await simulateDelay();
     simulateNetworkError();
 
-    const message = mockMessages.flat().find(msg => msg.id === messageId);
+    const message = mockMessages.find(msg => msg.id === messageId);
     if (!message) {
+      console.error('MockMessageService: Message not found', messageId);
       throw new Error('Message not found');
     }
 
@@ -62,6 +56,7 @@ export class MockMessageService implements IMessageService {
       seconds: Math.floor(Date.now() / 1000),
       nanoseconds: (Date.now() % 1000) * 1000000
     };
+    console.log('MockMessageService: Message marked as read', messageId);
   }
 
   async deleteMessage(messageId: string): Promise<void> {
@@ -69,24 +64,13 @@ export class MockMessageService implements IMessageService {
     await simulateDelay();
     simulateNetworkError();
 
-    const messageIndex = mockMessages.flat().findIndex(msg => msg.id === messageId);
+    const messageIndex = mockMessages.findIndex(msg => msg.id === messageId);
     if (messageIndex === -1) {
+      console.error('MockMessageService: Message not found', messageId);
       throw new Error('Message not found');
     }
 
-    // Find the conversation that contains this message
-    const conversationMessages = mockMessages.find(msgs => 
-      msgs.some(msg => msg.id === messageId)
-    );
-
-    if (!conversationMessages) {
-      throw new Error('Conversation not found');
-    }
-
-    // Remove the message from the conversation
-    const msgIndex = conversationMessages.findIndex(msg => msg.id === messageId);
-    if (msgIndex !== -1) {
-      conversationMessages.splice(msgIndex, 1);
-    }
+    mockMessages.splice(messageIndex, 1);
+    console.log('MockMessageService: Message deleted successfully', messageId);
   }
 }
