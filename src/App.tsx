@@ -8,27 +8,8 @@ import { Navigation } from "@/components/Navigation";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthLayout from "@/layouts/AuthLayout";
-
-// Auth Pages
 import SignIn from "@/pages/auth/SignIn";
 import SignUp from "@/pages/auth/SignUp";
-
-// Worker Pages
-import WorkerOnboarding from "@/pages/worker/WorkerOnboarding";
-import WorkerDashboard from "@/pages/worker/WorkerDashboard";
-import WorkerProfileEdit from "@/pages/worker/WorkerProfileEdit";
-
-// Business Pages
-import BusinessOnboarding from "@/pages/business/BusinessOnboarding";
-import BusinessDashboard from "@/pages/business/BusinessDashboard";
-import BusinessProfileEdit from "@/pages/business/BusinessProfileEdit";
-import Search from "@/pages/business/Search";
-
-// General Pages
-import ConversationList from "@/pages/messages/ConversationList";
-import Conversation from "@/pages/messages/Conversation";
-import WorkerProfile from "@/pages/profiles/WorkerProfile";
-import BusinessProfile from "@/pages/profiles/BusinessProfile";
 
 const queryClient = new QueryClient();
 
@@ -68,14 +49,14 @@ const App = () => (
               {/* Auth Routes */}
               <Route path="/signin" element={
                 <AuthRoute>
-                  <AuthLayout>
+                  <AuthLayout title="Sign in to your account">
                     <SignIn />
                   </AuthLayout>
                 </AuthRoute>
               } />
               <Route path="/signup" element={
                 <AuthRoute>
-                  <AuthLayout>
+                  <AuthLayout title="Create your account">
                     <SignUp />
                   </AuthLayout>
                 </AuthRoute>
