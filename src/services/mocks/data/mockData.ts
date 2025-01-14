@@ -1,10 +1,15 @@
-import { UserProfile, Message, Conversation, WorkExperience, Education, Timestamp } from "@/types/database.types";
+import { UserProfile, Message as DBMessage, Conversation, WorkExperience, Education, Timestamp } from "@/types/database.types";
+import { Message as UIMessage } from "@/types/ui.types";
+import { dbMessageToUiMessage } from "@/types/ui.types";
 
 // Utility function to create a Timestamp
 const createTimestamp = (date: Date): Timestamp => ({
   seconds: Math.floor(date.getTime() / 1000),
   nanoseconds: (date.getTime() % 1000) * 1000000
 });
+
+// Current user ID constant for mocking
+const CURRENT_USER_ID = 'user1';
 
 // Mock data - to be completed with your needs
 export const mockUsers: UserProfile[] = [
@@ -15,11 +20,10 @@ export const mockUsers: UserProfile[] = [
     role: "worker",
     createdAt: createTimestamp(new Date()),
     updatedAt: createTimestamp(new Date()),
-    // ... autres champs à venir
   }
 ];
 
-export const mockMessages: Message[] = [
+export const mockMessages: DBMessage[] = [
   {
     id: "msg1",
     conversationId: "conv1",
@@ -27,8 +31,23 @@ export const mockMessages: Message[] = [
     content: "Hello",
     timestamp: createTimestamp(new Date()),
     isRead: false,
+  },
+  {
+    id: "msg2",
+    conversationId: "conv1",
+    senderId: "user2",
+    content: "Hi! How are you?",
+    timestamp: createTimestamp(new Date()),
+    isRead: true,
   }
 ];
+
+// Helper function to get UI messages
+export const getMockUIMessages = (conversationId: string): UIMessage[] => {
+  return mockMessages
+    .filter(msg => msg.conversationId === conversationId)
+    .map(msg => dbMessageToUiMessage(msg, CURRENT_USER_ID));
+};
 
 export const mockConversations: Conversation[] = [
   {

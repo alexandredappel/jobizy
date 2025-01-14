@@ -7,10 +7,12 @@ import {
   MessageInput,
 } from "@/layouts/MessageLayout";
 import { Message } from "@/types/ui.types";
+import { getMockUIMessages } from "@/services/mocks/data/mockData";
 
 const Conversation = () => {
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const conversationId = 'conv1'; // Will be replaced with real ID later
+  const [messages, setMessages] = useState<Message[]>(() => getMockUIMessages(conversationId));
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +21,7 @@ const Conversation = () => {
   const handleSend = async (content: string) => {
     setIsLoading(true);
     try {
-      const newMessage = {
+      const newMessage: Message = {
         id: Date.now().toString(),
         content,
         timestamp: new Date(),
