@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { SearchLayout } from "@/layouts/SearchLayout/SearchLayout";
 import { SearchHeader } from "@/layouts/SearchLayout/SearchHeader";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,13 +8,6 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { mockUsers } from "@/services/mocks/data/mockData";
 import { UserProfile } from "@/types/database.types";
-
-interface FilterState {
-  job?: "Waiter" | "Cook" | "Cashier" | "Manager" | "Housekeeper" | "Gardener" | "Pool guy" | "Bartender" | "Seller";
-  workArea?: "Seminyak" | "Kuta" | "Kerobokan" | "Canggu" | "Umalas" | "Ubud" | "Uluwatu" | "Denpasar" | "Sanur" | "Jimbaran" | "Pererenan" | "Nusa Dua";
-  languages: Array<"English" | "Bahasa">;
-  gender?: "male" | "female";
-}
 
 const WorkerCardContent = ({ worker }: { worker: UserProfile }) => (
   <CardContent className="flex items-center gap-4 p-6">
@@ -54,30 +47,12 @@ const WorkerCardContent = ({ worker }: { worker: UserProfile }) => (
 );
 
 const Search = () => {
-  const [filters, setFilters] = useState<FilterState>({
-    languages: []
-  });
-
-  const filteredWorkers = useMemo(() => {
-    return mockUsers.filter(user => {
-      if (user.role !== 'worker') return false;
-      
-      if (filters.job && user.job !== filters.job) return false;
-      if (filters.workArea && !user.workAreas?.includes(filters.workArea)) return false;
-      if (filters.languages.length > 0 && !filters.languages.every(lang => user.languages?.includes(lang))) return false;
-      if (filters.gender && user.gender !== filters.gender) return false;
-
-      return true;
-    });
-  }, [filters]);
-
+  const [filteredWorkers] = useState(mockUsers.filter(user => user.role === 'worker'));
   const totalWorkers = filteredWorkers.length;
-  const hasActiveSearch = Object.values(filters).some(value => 
-    Array.isArray(value) ? value.length > 0 : Boolean(value)
-  );
+  const hasActiveSearch = false;
   
   const handleSaveSearch = () => {
-    console.log('Save search clicked', filters);
+    console.log('Save search clicked');
   };
 
   return (
