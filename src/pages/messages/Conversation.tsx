@@ -6,6 +6,7 @@ import {
   MessagesArea,
   MessageInput,
 } from "@/layouts/MessageLayout";
+import { Message } from "@/types/ui.types";
 
 const Conversation = () => {
   const navigate = useNavigate();
