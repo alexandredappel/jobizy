@@ -1,6 +1,4 @@
-import DashboardContainer from "@/components/Layout/DashboardContainer";
-import DashboardGrid from "@/components/Layout/DashboardGrid";
-import DashboardSection from "@/components/Layout/DashboardSection";
+import { DashboardContainer, DashboardGrid, DashboardSection } from "@/layouts/DashboardLayout";
 import WelcomeSection from "./components/WelcomeSection";
 import FollowUpSection from "./components/FollowUpSection";
 import RecentSearchesSection from "./components/RecentSearchesSection";

@@ -1,6 +1,4 @@
-import DashboardContainer from "@/components/Layout/DashboardContainer";
-import DashboardGrid from "@/components/Layout/DashboardGrid";
-import DashboardSection from "@/components/Layout/DashboardSection";
+import { DashboardContainer, DashboardGrid, DashboardSection } from "@/layouts/DashboardLayout";
 import WelcomeSection from "./components/WelcomeSection";
 import AvailabilitySection from "./components/AvailabilitySection";
 import ProfileCompletionSection from "./components/ProfileCompletionSection";
