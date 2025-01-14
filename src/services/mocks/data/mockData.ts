@@ -16,14 +16,15 @@ const CURRENT_USER_ID = 'user1';
 export const mockStoredUsers: StoredUser[] = [
   {
     id: "user1",
-    email: "user1@example.com",
+    email: "john@example.com",
     phoneNumber: "+62123456789",
     role: "worker",
     firstName: "John",
     lastName: "Doe",
     job: "Waiter" as const,
-    languages: ["English"],
-    workAreas: ["Seminyak"],
+    languages: ["English", "Bahasa"],
+    workAreas: ["Seminyak", "Kuta"],
+    gender: "male" as const,
     availability_status: true,
     hashedPassword: "password123",
     failedAttempts: 0,
@@ -32,8 +33,42 @@ export const mockStoredUsers: StoredUser[] = [
   },
   {
     id: "user2",
-    email: "user2@example.com",
+    email: "sarah@example.com",
     phoneNumber: "+62987654321",
+    role: "worker",
+    firstName: "Sarah",
+    lastName: "Smith",
+    job: "Bartender" as const,
+    languages: ["English"],
+    workAreas: ["Canggu"],
+    gender: "female" as const,
+    availability_status: true,
+    hashedPassword: "password123",
+    failedAttempts: 0,
+    createdAt: createTimestamp(new Date()),
+    updatedAt: createTimestamp(new Date())
+  },
+  {
+    id: "user3",
+    email: "mike@example.com",
+    phoneNumber: "+62555555555",
+    role: "worker",
+    firstName: "Mike",
+    lastName: "Johnson",
+    job: "Cook" as const,
+    languages: ["English", "Bahasa"],
+    workAreas: ["Ubud", "Sanur"],
+    gender: "male" as const,
+    availability_status: false,
+    hashedPassword: "password123",
+    failedAttempts: 0,
+    createdAt: createTimestamp(new Date()),
+    updatedAt: createTimestamp(new Date())
+  },
+  {
+    id: "user4",
+    email: "business@example.com",
+    phoneNumber: "+62999999999",
     role: "business",
     company_name: "Beach Club",
     business_type: "club",
@@ -48,7 +83,7 @@ export const mockStoredUsers: StoredUser[] = [
 // Mock data - to be completed with your needs
 export const mockUsers: UserProfile[] = mockStoredUsers.map(({ hashedPassword, failedAttempts, ...user }) => ({
   ...user,
-  phoneNumber: user.phoneNumber || "+62000000000" // Ensure phoneNumber is always present
+  phoneNumber: user.phoneNumber || "+62000000000"
 }));
 
 export const mockMessages: DBMessage[] = [
