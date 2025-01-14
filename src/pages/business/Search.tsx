@@ -10,10 +10,10 @@ import { mockUsers } from "@/services/mocks/data/mockData";
 import { UserProfile } from "@/types/database.types";
 
 interface FilterState {
-  job?: string;
-  workArea?: string;
-  languages: string[];
-  gender?: string;
+  job?: "Waiter" | "Cook" | "Cashier" | "Manager" | "Housekeeper" | "Gardener" | "Pool guy" | "Bartender" | "Seller";
+  workArea?: "Seminyak" | "Kuta" | "Kerobokan" | "Canggu" | "Umalas" | "Ubud" | "Uluwatu" | "Denpasar" | "Sanur" | "Jimbaran" | "Pererenan" | "Nusa Dua";
+  languages: Array<"English" | "Bahasa">;
+  gender?: "male" | "female";
 }
 
 const WorkerCardContent = ({ worker }: { worker: UserProfile }) => (
