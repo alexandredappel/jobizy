@@ -1,6 +1,7 @@
 import { UserProfile, Message as DBMessage, Conversation, WorkExperience, Education, Timestamp } from "@/types/database.types";
 import { Message as UIMessage } from "@/types/ui.types";
 import { dbMessageToUiMessage } from "@/types/ui.types";
+import { StoredUser } from "@/types/auth";
 
 // Utility function to create a Timestamp
 const createTimestamp = (date: Date): Timestamp => ({
@@ -11,8 +12,8 @@ const createTimestamp = (date: Date): Timestamp => ({
 // Current user ID constant for mocking
 const CURRENT_USER_ID = 'user1';
 
-// Mock data - to be completed with your needs
-export const mockUsers: UserProfile[] = [
+// Mock auth data
+export const mockStoredUsers: StoredUser[] = [
   {
     id: "user1",
     email: "user1@example.com",
@@ -28,8 +29,24 @@ export const mockUsers: UserProfile[] = [
     failedAttempts: 0,
     createdAt: createTimestamp(new Date()),
     updatedAt: createTimestamp(new Date())
+  },
+  {
+    id: "user2",
+    email: "user2@example.com",
+    phoneNumber: "+62987654321",
+    role: "business",
+    company_name: "Beach Club",
+    business_type: "club",
+    location: "Seminyak",
+    hashedPassword: "password123", // Dans un vrai cas, ce serait hashé
+    failedAttempts: 0,
+    createdAt: createTimestamp(new Date()),
+    updatedAt: createTimestamp(new Date())
   }
 ];
+
+// Mock data - derived from stored users
+export const mockUsers: UserProfile[] = mockStoredUsers.map(({ hashedPassword, failedAttempts, ...user }) => user);
 
 export const mockMessages: DBMessage[] = [
   {
