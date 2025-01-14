@@ -21,7 +21,7 @@ export const mockStoredUsers: StoredUser[] = [
     role: "worker",
     firstName: "John",
     lastName: "Doe",
-    job: "Waiter" as const, // Explicitly type as literal
+    job: "Waiter" as const, // Using literal type
     languages: ["English"],
     workAreas: ["Seminyak"],
     availability_status: true,
