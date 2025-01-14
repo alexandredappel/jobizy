@@ -6,7 +6,7 @@ export type Timestamp = {
 export type UserProfile = {
   id: string;
   email: string;
-  phoneNumber: string;
+  phoneNumber?: string; // Made optional since it's not required for business users
   role: 'worker' | 'business';
   createdAt: Timestamp;
   updatedAt: Timestamp;
