@@ -1,9 +1,8 @@
-import { UserProfile, Message as DBMessage, Conversation, WorkExperience, Education, Timestamp } from "@/types/database.types";
+import { UserProfile, Message as DBMessage, Conversation, WorkExperience, Education, Timestamp, UserRole } from "@/types/database.types";
 import { Message as UIMessage } from "@/types/ui.types";
 import { dbMessageToUiMessage } from "@/types/ui.types";
 import { StoredUser } from "@/types/auth";
 
-// Utility function to create a Timestamp
 const createTimestamp = (date: Date): Timestamp => ({
   seconds: Math.floor(date.getTime() / 1000),
   nanoseconds: (date.getTime() % 1000) * 1000000
@@ -12,16 +11,15 @@ const createTimestamp = (date: Date): Timestamp => ({
 // Current user ID constant for mocking
 const CURRENT_USER_ID = 'user1';
 
-// Mock auth data
 export const mockStoredUsers: StoredUser[] = [
   {
     id: "user1",
     email: "john@example.com",
     phoneNumber: "+62123456789",
-    role: "worker",
+    role: "worker" as UserRole,
     firstName: "John",
     lastName: "Doe",
-    job: "Waiter" as const,
+    job: "Waiter",
     languages: ["English", "Bahasa"] as const,
     workAreas: ["Seminyak", "Kuta"] as const,
     gender: "male" as const,
@@ -35,10 +33,10 @@ export const mockStoredUsers: StoredUser[] = [
     id: "user2",
     email: "sarah@example.com",
     phoneNumber: "+62987654321",
-    role: "worker",
+    role: "worker" as UserRole,
     firstName: "Sarah",
     lastName: "Smith",
-    job: "Bartender" as const,
+    job: "Bartender",
     languages: ["English"] as const,
     workAreas: ["Canggu"] as const,
     gender: "female" as const,
@@ -52,10 +50,10 @@ export const mockStoredUsers: StoredUser[] = [
     id: "user3",
     email: "mike@example.com",
     phoneNumber: "+62555555555",
-    role: "worker",
+    role: "worker" as UserRole,
     firstName: "Mike",
     lastName: "Johnson",
-    job: "Cook" as const,
+    job: "Cook",
     languages: ["English", "Bahasa"] as const,
     workAreas: ["Ubud", "Sanur"] as const,
     gender: "male" as const,
@@ -69,7 +67,7 @@ export const mockStoredUsers: StoredUser[] = [
     id: "user4",
     email: "business@example.com",
     phoneNumber: "+62999999999",
-    role: "business",
+    role: "business" as UserRole,
     company_name: "Beach Club",
     business_type: "club",
     location: "Seminyak" as const,
@@ -78,9 +76,9 @@ export const mockStoredUsers: StoredUser[] = [
     createdAt: createTimestamp(new Date()),
     updatedAt: createTimestamp(new Date())
   }
-];
+] as const;
 
-// Mock data - to be completed with your needs
+// Convert mockStoredUsers to UserProfile array
 export const mockUsers: UserProfile[] = mockStoredUsers.map(({ hashedPassword, failedAttempts, ...user }) => ({
   ...user,
   phoneNumber: user.phoneNumber || "+62000000000"

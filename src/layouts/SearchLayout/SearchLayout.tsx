@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,6 +18,7 @@ const GENDERS = ["male", "female"] as const;
 
 export function SearchLayout({ children }: SearchLayoutProps) {
   const isMobile = useIsMobile();
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
   const FiltersContent = () => (
     <div className="space-y-4 py-4">
@@ -60,8 +61,27 @@ export function SearchLayout({ children }: SearchLayoutProps) {
               <CommandEmpty>No language found.</CommandEmpty>
               <CommandGroup>
                 {LANGUAGES.map((language) => (
-                  <CommandItem key={language} value={language}>
-                    {language}
+                  <CommandItem
+                    key={language}
+                    value={language}
+                    onSelect={(value) => {
+                      setSelectedLanguages((prev) => {
+                        if (prev.includes(value)) {
+                          return prev.filter((l) => l !== value);
+                        }
+                        return [...prev, value];
+                      });
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedLanguages.includes(language)}
+                        readOnly
+                        className="h-4 w-4"
+                      />
+                      {language}
+                    </div>
                   </CommandItem>
                 ))}
               </CommandGroup>
