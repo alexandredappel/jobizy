@@ -18,8 +18,16 @@ export const mockUsers: UserProfile[] = [
     email: "user1@example.com",
     phoneNumber: "+62123456789",
     role: "worker",
+    firstName: "John",
+    lastName: "Doe",
+    job: "Waiter",
+    languages: ["English"],
+    workAreas: ["Seminyak"],
+    availability_status: true,
+    hashedPassword: "password123", // Dans un vrai cas, ce serait hashé
+    failedAttempts: 0,
     createdAt: createTimestamp(new Date()),
-    updatedAt: createTimestamp(new Date()),
+    updatedAt: createTimestamp(new Date())
   }
 ];
 
