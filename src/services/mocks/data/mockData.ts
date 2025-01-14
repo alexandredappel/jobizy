@@ -21,7 +21,7 @@ export const mockStoredUsers: StoredUser[] = [
     role: "worker",
     firstName: "John",
     lastName: "Doe",
-    job: "Waiter" as const, // Using literal type
+    job: "Waiter" as const,
     languages: ["English"],
     workAreas: ["Seminyak"],
     availability_status: true,
@@ -46,7 +46,10 @@ export const mockStoredUsers: StoredUser[] = [
 ];
 
 // Mock data - to be completed with your needs
-export const mockUsers: UserProfile[] = mockStoredUsers.map(({ hashedPassword, failedAttempts, ...user }) => user);
+export const mockUsers: UserProfile[] = mockStoredUsers.map(({ hashedPassword, failedAttempts, ...user }) => ({
+  ...user,
+  phoneNumber: user.phoneNumber || "+62000000000" // Ensure phoneNumber is always present
+}));
 
 export const mockMessages: DBMessage[] = [
   {
