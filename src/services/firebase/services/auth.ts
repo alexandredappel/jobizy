@@ -10,11 +10,11 @@ import { auth, db } from '../config';
 import { User, SignUpData, AuthError } from '@/types/auth';
 import { handleFirebaseError } from '../utils/auth/validation';
 import { checkLockout, incrementFailedAttempts, resetFailedAttempts } from '../utils/auth/lockout';
-import { IAuthService } from '@/services/interfaces/authService.interface';
 
-export class FirebaseAuthService implements IAuthService {
+export class AuthService {
   async signUp(data: SignUpData): Promise<User> {
     try {
+      console.log('AuthService: Attempting to sign up user', { email: data.email });
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const { user: firebaseUser } = userCredential;
 
@@ -30,31 +30,38 @@ export class FirebaseAuthService implements IAuthService {
       };
 
       await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+      console.log('AuthService: User successfully signed up', { userId: userData.id });
       
       return userData;
     } catch (error: any) {
+      console.error('AuthService: Sign up error', error);
       throw handleFirebaseError(error);
     }
   }
 
   async signIn(email: string, password: string): Promise<User> {
     try {
+      console.log('AuthService: Attempting to sign in user', { email });
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const { user: firebaseUser } = userCredential;
 
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
       if (!userDoc.exists()) {
+        console.error('AuthService: User data not found');
         throw new AuthError('User data not found', 'auth/user-not-found');
       }
 
       const isLocked = await checkLockout(firebaseUser.uid);
       if (isLocked) {
+        console.error('AuthService: Account is temporarily locked');
         throw new AuthError('Account is temporarily locked', 'auth/too-many-requests');
       }
 
       await resetFailedAttempts(firebaseUser.uid);
+      console.log('AuthService: User successfully signed in', { userId: firebaseUser.uid });
       return userDoc.data() as User;
     } catch (error: any) {
+      console.error('AuthService: Sign in error', error);
       if (auth.currentUser) {
         await incrementFailedAttempts(auth.currentUser.uid);
       }
@@ -64,8 +71,11 @@ export class FirebaseAuthService implements IAuthService {
 
   async signOut(): Promise<void> {
     try {
+      console.log('AuthService: Attempting to sign out user');
       await firebaseSignOut(auth);
+      console.log('AuthService: User successfully signed out');
     } catch (error: any) {
+      console.error('AuthService: Sign out error', error);
       throw handleFirebaseError(error);
     }
   }
