@@ -2,18 +2,20 @@ import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc } 
 import { db } from '../firebase/config';
 import { WorkExperience } from "@/types/database.types";
 
-export interface IWorkExperienceService {
+export interface WorkExperienceService {
   getExperiences(userId: string): Promise<WorkExperience[]>;
   addExperience(userId: string, experience: Omit<WorkExperience, 'id'>): Promise<string>;
   updateExperience(experienceId: string, data: Partial<WorkExperience>): Promise<void>;
   deleteExperience(experienceId: string): Promise<void>;
 }
 
-export class FirebaseWorkExperienceService implements IWorkExperienceService {
+export class FirebaseWorkExperienceService implements WorkExperienceService {
+  private collection = collection(db, 'workExperiences');
+
   async getExperiences(userId: string): Promise<WorkExperience[]> {
     console.log('FirebaseWorkExperienceService: Getting experiences for user', userId);
     const q = query(
-      collection(db, 'workExperiences'),
+      this.collection,
       where('userId', '==', userId)
     );
     
@@ -26,7 +28,7 @@ export class FirebaseWorkExperienceService implements IWorkExperienceService {
 
   async addExperience(userId: string, experience: Omit<WorkExperience, 'id'>): Promise<string> {
     console.log('FirebaseWorkExperienceService: Adding experience', { userId, experience });
-    const experienceRef = await addDoc(collection(db, 'workExperiences'), {
+    const experienceRef = await addDoc(this.collection, {
       ...experience,
       userId,
       createdAt: new Date(),
@@ -38,7 +40,7 @@ export class FirebaseWorkExperienceService implements IWorkExperienceService {
 
   async updateExperience(experienceId: string, data: Partial<WorkExperience>): Promise<void> {
     console.log('FirebaseWorkExperienceService: Updating experience', { experienceId, data });
-    const experienceRef = doc(db, 'workExperiences', experienceId);
+    const experienceRef = doc(this.collection, experienceId);
     await updateDoc(experienceRef, {
       ...data,
       updatedAt: new Date()
@@ -47,7 +49,7 @@ export class FirebaseWorkExperienceService implements IWorkExperienceService {
 
   async deleteExperience(experienceId: string): Promise<void> {
     console.log('FirebaseWorkExperienceService: Deleting experience', experienceId);
-    const experienceRef = doc(db, 'workExperiences', experienceId);
+    const experienceRef = doc(this.collection, experienceId);
     await deleteDoc(experienceRef);
   }
 }

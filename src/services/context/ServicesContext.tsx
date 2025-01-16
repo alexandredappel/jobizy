@@ -1,16 +1,16 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { IUserService } from '../interfaces/userService.interface';
-import { IMessageService } from '../interfaces/messageService.interface';
-import { IConversationService } from '../interfaces/conversationService.interface';
-import { IWorkExperienceService } from '../interfaces/workExperienceService.interface';
-import { IEducationService } from '../interfaces/educationService.interface';
+import { FirebaseWorkExperienceService } from '../interfaces/workExperienceService.interface';
+import { FirebaseEducationService } from '../interfaces/educationService.interface';
+import { FirebaseMessageService } from '../interfaces/messageService.interface';
+import { FirebaseConversationService } from '../interfaces/conversationService.interface';
+import { FirebaseUserService } from '../interfaces/userService.interface';
 
 interface Services {
-  userService: IUserService;
-  messageService: IMessageService;
-  conversationService: IConversationService;
-  workExperienceService: IWorkExperienceService;
-  educationService: IEducationService;
+  userService: FirebaseUserService;
+  messageService: FirebaseMessageService;
+  conversationService: FirebaseConversationService;
+  workExperienceService: FirebaseWorkExperienceService;
+  educationService: FirebaseEducationService;
 }
 
 const ServicesContext = createContext<Services | null>(null);
