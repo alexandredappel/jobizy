@@ -37,6 +37,12 @@ export const handleFirebaseError = (error: any): AuthError => {
     case 'auth/too-many-requests':
       message = 'Too many failed attempts. Please try again later';
       break;
+    case 'auth/operation-not-allowed':
+      message = 'Operation not allowed';
+      break;
+    case 'auth/weak-password':
+      message = 'Password is too weak';
+      break;
   }
 
   return new AuthError(message, errorCode);

@@ -1,32 +1,27 @@
-import { Timestamp } from "./database.types";
+import { User as FirebaseUser } from 'firebase/auth';
+import { Timestamp } from 'firebase/firestore';
 
-// Base types
 export type UserRole = 'worker' | 'business';
 
-// Base types for signup
 interface BaseSignUpData {
   email: string;
   password: string;
 }
 
-// Worker specific signup data
 interface WorkerSignUpData extends BaseSignUpData {
   role: 'worker';
   phoneNumber: string;
   firstName?: string;
 }
 
-// Business specific signup data
 interface BusinessSignUpData extends BaseSignUpData {
   role: 'business';
   company_name?: string;
 }
 
-// Union type for SignUpData
 export type SignUpData = WorkerSignUpData | BusinessSignUpData;
 
-// Main User interface
-export interface User {
+export interface User extends Omit<FirebaseUser, 'metadata'> {
   id: string;
   email: string;
   phoneNumber?: string;
@@ -53,7 +48,6 @@ export interface User {
   website?: string;
 }
 
-// Authentication related interfaces
 export interface StoredUser extends User {
   hashedPassword: string;
   failedAttempts: number;
@@ -62,7 +56,6 @@ export interface StoredUser extends User {
   updatedAt: Timestamp;
 }
 
-// Error handling
 export class AuthError extends Error {
   constructor(message: string, public code: string) {
     super(message);
@@ -70,13 +63,14 @@ export class AuthError extends Error {
   }
 }
 
-// Error constants
 export const AUTH_ERRORS = {
   INVALID_CREDENTIALS: 'Invalid email or password',
   USER_EXISTS: 'User already exists',
   INVALID_EMAIL: 'Invalid email format',
   INVALID_PASSWORD: 'Password must be at least 8 characters',
-  USER_LOCKED: 'Account temporarily locked'
+  USER_LOCKED: 'Account temporarily locked',
+  OPERATION_NOT_ALLOWED: 'Operation not allowed',
+  WEAK_PASSWORD: 'Password is too weak'
 } as const;
 
 export type AuthErrorType = typeof AUTH_ERRORS[keyof typeof AUTH_ERRORS];

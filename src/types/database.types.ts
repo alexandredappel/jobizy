@@ -1,7 +1,4 @@
-export type Timestamp = {
-  seconds: number;
-  nanoseconds: number;
-};
+import { Timestamp } from 'firebase/firestore';
 
 export type UserProfile = {
   id: string;

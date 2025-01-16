@@ -5,15 +5,17 @@ export const validatePassword = (password: string): boolean => {
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
   
-  return hasMinLength && hasUpperCase && hasLowerCase && hasNumber;
+  return hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
 };
 
 export const calculatePasswordStrength = (password: string): number => {
   let strength = 0;
-  if (password.length >= PASSWORD_MIN_LENGTH) strength += 25;
-  if (/[A-Z]/.test(password)) strength += 25;
-  if (/[a-z]/.test(password)) strength += 25;
-  if (/\d/.test(password)) strength += 25;
+  if (password.length >= PASSWORD_MIN_LENGTH) strength += 20;
+  if (/[A-Z]/.test(password)) strength += 20;
+  if (/[a-z]/.test(password)) strength += 20;
+  if (/\d/.test(password)) strength += 20;
+  if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength += 20;
   return strength;
 };
