@@ -10,7 +10,14 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
-import { User, WorkerProfile, BusinessProfile } from '@/types/database.types';
+import { 
+  User, 
+  WorkerProfile, 
+  BusinessProfile, 
+  JobType, 
+  Language, 
+  WorkArea 
+} from '@/types/database.types';
 
 export class UserService {
   private collection = collection(db, 'users');

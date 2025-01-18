@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AuthService } from '@/services/authService';
 import { Home, MessageCircle, User, Search, LogOut } from 'lucide-react';
+import { User } from '@/types/database.types';
 
 export const Navigation = () => {
   const { user } = useAuth();
