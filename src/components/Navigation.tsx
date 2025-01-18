@@ -14,8 +14,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AuthService } from '@/services/authService';
-import { Home, MessageCircle, User, Search, LogOut } from 'lucide-react';
-import { User } from '@/types/database.types';
+import { Home, MessageCircle, UserIcon, Search, LogOut } from 'lucide-react';
+import type { User } from '@/types/database.types';
 
 export const Navigation = () => {
   const { user } = useAuth();
@@ -93,7 +93,7 @@ export const Navigation = () => {
                   to={getProfileLink()} 
                   className="text-secondary hover:text-primary flex items-center gap-2"
                 >
-                  <User className="w-4 h-4" />
+                  <UserIcon className="w-4 h-4" />
                   <span>Profile</span>
                 </Link>
                 
