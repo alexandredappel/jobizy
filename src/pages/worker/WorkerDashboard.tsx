@@ -1,36 +1,9 @@
-import { DashboardContainer, DashboardGrid, DashboardSection } from "@/layouts/DashboardLayout";
-import WelcomeSection from "./components/WelcomeSection";
-import AvailabilitySection from "./components/AvailabilitySection";
-import ProfileCompletionSection from "./components/ProfileCompletionSection";
-import RecentMessagesSection from "./components/RecentMessagesSection";
-import { useAuth } from "@/contexts/AuthContext";
-
 const WorkerDashboard = () => {
-  const { user } = useAuth();
-  
   return (
-    <DashboardContainer>
-      <DashboardSection title="Welcome">
-        <WelcomeSection userName={user?.firstName || 'Worker'} />
-      </DashboardSection>
-      
-      <DashboardGrid columns={{ sm: 1, md: 2, lg: 2 }}>
-        <DashboardSection title="Availability Status">
-          <AvailabilitySection />
-        </DashboardSection>
-        
-        <DashboardSection title="Complete Your Profile">
-          <ProfileCompletionSection />
-        </DashboardSection>
-        
-        <DashboardSection 
-          title="Recent Messages"
-          className="md:col-span-2"
-        >
-          <RecentMessagesSection />
-        </DashboardSection>
-      </DashboardGrid>
-    </DashboardContainer>
+    <div className="container mx-auto p-8">
+      <h1 className="text-3xl font-bold text-secondary">Worker Dashboard</h1>
+      {/* Dashboard content will be implemented later */}
+    </div>
   );
 };
 
