@@ -50,7 +50,9 @@ export class UserService {
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
       
-      await this.updateProfile(userId, { photoURL: downloadURL });
+      await this.updateProfile(userId, { 
+        profile_picture_url: downloadURL 
+      });
       
       return downloadURL;
     } catch (error: any) {
@@ -60,10 +62,10 @@ export class UserService {
   }
 
   async searchWorkers(filters: {
-    skills?: string[];
-    languages?: string[];
-    location?: string;
-    availability?: boolean;
+    job?: JobType;
+    languages?: Language[];
+    workAreas?: WorkArea[];
+    availability_status?: boolean;
   }): Promise<WorkerProfile[]> {
     try {
       let q = query(
@@ -71,23 +73,26 @@ export class UserService {
         where('role', '==', 'worker')
       );
 
-      if (filters.availability) {
-        q = query(q, where('availability', '==', true));
+      if (filters.availability_status !== undefined) {
+        q = query(q, where('availability_status', '==', filters.availability_status));
       }
 
-      if (filters.location) {
-        q = query(q, where('location', '==', filters.location));
+      if (filters.workAreas?.length === 1) {
+        q = query(q, where('workAreas', 'array-contains', filters.workAreas[0]));
       }
 
       const querySnapshot = await getDocs(q);
       const workers = querySnapshot.docs
         .map(doc => doc.data() as WorkerProfile)
         .filter(worker => {
-          if (filters.skills?.length) {
-            return filters.skills.some(skill => worker.skills.includes(skill));
+          if (filters.job) {
+            return worker.job === filters.job;
           }
           if (filters.languages?.length) {
             return filters.languages.some(lang => worker.languages.includes(lang));
+          }
+          if (filters.workAreas && filters.workAreas.length > 1) {
+            return filters.workAreas.some(area => worker.workAreas.includes(area));
           }
           return true;
         });

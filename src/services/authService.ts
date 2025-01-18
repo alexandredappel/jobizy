@@ -9,10 +9,15 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { User, UserRole } from '@/types/database.types';
+import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
 
 export class AuthService {
-  async signUp(email: string, password: string, role: UserRole): Promise<User> {
+  async signUp(
+    email: string, 
+    password: string, 
+    role: UserRole, 
+    profileData: Partial<WorkerProfile | BusinessProfile>
+  ): Promise<User> {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       await sendEmailVerification(user);
@@ -22,6 +27,7 @@ export class AuthService {
         email: user.email!,
         role,
         displayName: '',
+        ...profileData,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
         isVerified: false
@@ -72,10 +78,10 @@ export class AuthService {
 
   async updateUserProfile(user: FirebaseUser, data: Partial<User>): Promise<void> {
     try {
-      if (data.displayName || data.photoURL) {
+      if (data.displayName || data.profile_picture_url) {
         await updateProfile(user, {
           displayName: data.displayName,
-          photoURL: data.photoURL
+          photoURL: data.profile_picture_url
         });
       }
 

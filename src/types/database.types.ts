@@ -1,3 +1,11 @@
+export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
+
+export type BusinessType = 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
+
+export type WorkArea = 'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua';
+
+export type Language = 'English' | 'Bahasa';
+
 export type UserRole = 'worker' | 'business';
 
 export interface BaseUser {
@@ -5,7 +13,6 @@ export interface BaseUser {
   email: string;
   role: UserRole;
   displayName: string;
-  photoURL?: string;
   createdAt: Date;
   updatedAt: Date;
   isVerified: boolean;
@@ -13,23 +20,27 @@ export interface BaseUser {
 
 export interface WorkerProfile extends BaseUser {
   role: 'worker';
-  availability: boolean;
-  skills: string[];
-  languages: string[];
-  location: string;
-  experience: number;
-  hourlyRate: number;
-  bio: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  gender: 'male' | 'female';
+  birthday_date?: Date;
+  job: JobType;
+  languages: Language[];
+  workAreas: WorkArea[];
+  availability_status: boolean;
+  aboutMe?: string;
+  profile_picture_url?: string;
 }
 
 export interface BusinessProfile extends BaseUser {
   role: 'business';
-  companyName: string;
-  industry: string;
-  location: string;
+  company_name: string;
+  business_type: BusinessType;
+  location: WorkArea;
+  aboutBusiness?: string;
+  logo_picture_url?: string;
   website?: string;
-  employeeCount: number;
-  description: string;
 }
 
 export type User = WorkerProfile | BusinessProfile;

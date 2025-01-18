@@ -10,7 +10,7 @@ import {
   Timestamp 
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { WorkExperience, Education } from '@/types/database.types';
+import { WorkExperience, Education, User, WorkerProfile, BusinessProfile } from '@/types/database.types';
 
 export class ProfileService {
   private workExperienceCollection = collection(db, 'work_experiences');
@@ -139,20 +139,22 @@ export class ProfileService {
   }
 
   calculateProfileCompleteness(user: User): number {
-    const requiredFields = ['displayName', 'email', 'photoURL'];
-    const workerFields = ['skills', 'languages', 'location', 'hourlyRate', 'bio'];
-    const businessFields = ['companyName', 'industry', 'location', 'description'];
+    const requiredFields = ['displayName', 'email'];
+    const workerFields = ['firstName', 'lastName', 'phoneNumber', 'gender', 'job', 'languages', 'workAreas'];
+    const businessFields = ['company_name', 'business_type', 'location'];
     
     const fieldsToCheck = [
       ...requiredFields,
       ...(user.role === 'worker' ? workerFields : businessFields)
     ];
     
-    const completedFields = fieldsToCheck.filter(field => 
-      user[field as keyof User] !== undefined && 
-      user[field as keyof User] !== null && 
-      user[field as keyof User] !== ''
-    );
+    const completedFields = fieldsToCheck.filter(field => {
+      const value = (user as any)[field];
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return value !== undefined && value !== null && value !== '';
+    });
     
     return Math.round((completedFields.length / fieldsToCheck.length) * 100);
   }
