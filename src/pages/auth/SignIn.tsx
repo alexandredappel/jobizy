@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
@@ -49,9 +49,17 @@ const SignIn = () => {
               required
             />
           </div>
-          <Button type="submit" className="w-full">
-            Sign In
-          </Button>
+          <div className="flex flex-col gap-4">
+            <Button type="submit" className="w-full">
+              Sign In
+            </Button>
+            <Link 
+              to="/forgot-password"
+              className="text-sm text-primary hover:text-primary/80 text-center"
+            >
+              Forgot Password?
+            </Link>
+          </div>
         </form>
       </div>
     </div>

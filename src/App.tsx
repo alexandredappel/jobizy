@@ -9,6 +9,8 @@ import { Navigation } from "@/components/Navigation";
 // Auth Pages
 import SignIn from "@/pages/auth/SignIn";
 import SignUp from "@/pages/auth/SignUp";
+import ForgotPassword from "@/pages/auth/ForgotPassword";
+import ResetPassword from "@/pages/auth/ResetPassword";
 
 // Worker Pages
 import WorkerOnboarding from "@/pages/worker/WorkerOnboarding";
@@ -42,6 +44,8 @@ const App = () => (
               {/* Auth Routes */}
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               
               {/* Worker Routes */}
               <Route path="/worker/onboarding" element={<WorkerOnboarding />} />
