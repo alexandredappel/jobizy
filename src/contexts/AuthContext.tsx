@@ -7,10 +7,15 @@ import { doc, getDoc, Timestamp } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
+  firebaseUser: FirebaseUser | null;
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+const AuthContext = createContext<AuthContextType>({ 
+  user: null, 
+  firebaseUser: null,
+  loading: true 
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [firebaseUser, firebaseLoading] = useAuthState(auth);
@@ -24,7 +29,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            // Convert Timestamp to Date for createdAt and updatedAt
             setUser({
               ...userData,
               id: firebaseUser.uid,
@@ -51,7 +55,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [firebaseUser, firebaseLoading]);
 
   return (
-    <AuthContext.Provider value={{ user, loading: loading || firebaseLoading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      firebaseUser,
+      loading: loading || firebaseLoading 
+    }}>
       {children}
     </AuthContext.Provider>
   );

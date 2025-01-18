@@ -23,7 +23,7 @@ interface BusinessOnboardingForm {
 
 const BusinessOnboarding = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, firebaseUser } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const authService = new AuthService();
@@ -36,11 +36,11 @@ const BusinessOnboarding = () => {
   });
 
   const onSubmit = async (data: BusinessOnboardingForm) => {
-    if (!user) return;
+    if (!firebaseUser || !user) return;
     
     setIsLoading(true);
     try {
-      await authService.updateUserProfile(user, {
+      await authService.updateUserProfile(firebaseUser, {
         ...data,
         role: 'business'
       } as Partial<BusinessProfile>);
