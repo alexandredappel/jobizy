@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +29,18 @@ import BusinessProfile from "@/pages/profiles/BusinessProfile";
 
 const queryClient = new QueryClient();
 
+// Helper component to manage main content padding
+const MainContent = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const isAuthPage = ['/signin', '/signup', '/forgot-password', '/reset-password'].includes(location.pathname);
+  
+  return (
+    <main className={`min-h-screen bg-sand ${!isAuthPage ? 'lg:pl-64 pb-16 lg:pb-0' : ''}`}>
+      {children}
+    </main>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -37,7 +49,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Navigation />
-          <main className="min-h-screen bg-sand">
+          <MainContent>
             <Routes>
               {/* Auth Routes */}
               <Route path="/signin" element={<SignIn />} />
@@ -60,7 +72,7 @@ const App = () => (
               <Route path="/worker/:id" element={<WorkerProfile />} />
               <Route path="/business/:id" element={<BusinessProfile />} />
             </Routes>
-          </main>
+          </MainContent>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
