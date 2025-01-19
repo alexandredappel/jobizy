@@ -70,26 +70,3 @@ export interface Education {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  recipientId: string;
-  content: string;
-  isRead: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Conversation {
-  id: string;
-  participants: string[];
-  lastMessage?: {
-    content: string;
-    timestamp: Date;
-  };
-  createdAt: Date;
-  updatedAt: Date;
-  favoriteFor: string[];
-}

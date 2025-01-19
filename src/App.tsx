@@ -24,8 +24,6 @@ import BusinessProfileEdit from "@/pages/business/BusinessProfileEdit";
 import Search from "@/pages/business/Search";
 
 // General Pages
-import ConversationList from "@/pages/messages/ConversationList";
-import Conversation from "@/pages/messages/Conversation";
 import WorkerProfile from "@/pages/profiles/WorkerProfile";
 import BusinessProfile from "@/pages/profiles/BusinessProfile";
 
@@ -59,8 +57,6 @@ const App = () => (
               <Route path="/business/search" element={<Search />} />
               
               {/* General Routes */}
-              <Route path="/messages" element={<ConversationList />} />
-              <Route path="/messages/:id" element={<Conversation />} />
               <Route path="/worker/:id" element={<WorkerProfile />} />
               <Route path="/business/:id" element={<BusinessProfile />} />
             </Routes>

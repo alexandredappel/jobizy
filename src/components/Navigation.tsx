@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AuthService } from '@/services/authService';
-import { Home, MessageCircle, UserIcon, Search, LogOut } from 'lucide-react';
+import { Home, UserIcon, Search, LogOut } from 'lucide-react';
 import type { User } from '@/types/database.types';
 
 export const Navigation = () => {
@@ -69,14 +69,6 @@ export const Navigation = () => {
                 >
                   <Home className="w-4 h-4" />
                   <span>Dashboard</span>
-                </Link>
-                
-                <Link 
-                  to="/messages" 
-                  className="text-secondary hover:text-primary flex items-center gap-2"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Messages</span>
                 </Link>
                 
                 {user.role === 'business' && (
