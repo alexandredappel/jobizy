@@ -1,9 +1,22 @@
+import { 
+  createDashboardLayout, 
+  DashboardGrid, 
+  DashboardSection 
+} from "@/layouts/dashboard";
+
 const WorkerDashboard = () => {
-  return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold text-secondary">Worker Dashboard</h1>
-      {/* Dashboard content will be implemented later */}
-    </div>
+  return createDashboardLayout(
+    <DashboardGrid columns={{ sm: 1, md: 2, lg: 3 }}>
+      <DashboardSection title="Profile Overview">
+        {/* Profile content will be implemented later */}
+      </DashboardSection>
+      <DashboardSection title="Recent Activity">
+        {/* Activity content will be implemented later */}
+      </DashboardSection>
+      <DashboardSection title="Job Preferences">
+        {/* Preferences content will be implemented later */}
+      </DashboardSection>
+    </DashboardGrid>
   );
 };
 
