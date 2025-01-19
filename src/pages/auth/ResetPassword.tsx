@@ -5,7 +5,7 @@ import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import AuthLayout from '@/layouts/auth';
 import { z } from 'zod';
 
 const passwordSchema = z.string()
@@ -77,41 +77,29 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-sand p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Set New Password</CardTitle>
-          <CardDescription>
-            Please enter your new password
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <Input
-              type="password"
-              placeholder="New password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              required
-            />
-            <Input
-              type="password"
-              placeholder="Confirm new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isLoading}
-              required
-            />
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Resetting..." : "Reset Password"}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+    <AuthLayout title="Set New Password">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          type="password"
+          placeholder="New password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
+          required
+        />
+        <Input
+          type="password"
+          placeholder="Confirm new password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          disabled={isLoading}
+          required
+        />
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Resetting..." : "Reset Password"}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 };
 

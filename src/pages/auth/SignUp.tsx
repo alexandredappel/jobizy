@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { auth, db } from '@/lib/firebase';
+import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import AuthLayout from '@/layouts/auth';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ const SignUp = () => {
         createdAt: new Date().toISOString(),
       });
       navigate(`/${userType}/onboarding`);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
         description: "Failed to create account. Please try again.",
@@ -34,52 +35,51 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-sand">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-lg">
-        <div>
-          <h2 className="text-center text-3xl font-bold text-secondary">Create your Jobizy Account</h2>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSignUp}>
-          <div className="space-y-4">
-            <Input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <div className="flex gap-4">
-              <Button
-                type="button"
-                variant={userType === 'worker' ? 'default' : 'outline'}
-                className="flex-1"
-                onClick={() => setUserType('worker')}
-              >
-                I'm a Worker
-              </Button>
-              <Button
-                type="button"
-                variant={userType === 'business' ? 'default' : 'outline'}
-                className="flex-1"
-                onClick={() => setUserType('business')}
-              >
-                I'm a Business
-              </Button>
-            </div>
-          </div>
-          <Button type="submit" className="w-full">
-            Sign Up
+    <AuthLayout title="Create your Jobizy Account">
+      <form className="space-y-4" onSubmit={handleSignUp}>
+        <Input
+          type="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant={userType === 'worker' ? 'default' : 'outline'}
+            className="flex-1"
+            onClick={() => setUserType('worker')}
+          >
+            I'm a Worker
           </Button>
-        </form>
-      </div>
-    </div>
+          <Button
+            type="button"
+            variant={userType === 'business' ? 'default' : 'outline'}
+            className="flex-1"
+            onClick={() => setUserType('business')}
+          >
+            I'm a Business
+          </Button>
+        </div>
+        <Button type="submit" className="w-full">
+          Sign Up
+        </Button>
+        <div className="text-center text-sm text-secondary">
+          Already have an account?{' '}
+          <Link to="/signin" className="text-primary hover:text-primary/80">
+            Sign In
+          </Link>
+        </div>
+      </form>
+    </AuthLayout>
   );
 };
 
