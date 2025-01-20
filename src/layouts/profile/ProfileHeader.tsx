@@ -1,66 +1,70 @@
 import React from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Toggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { User, UserCheck } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { UserRole } from '@/types/database.types';
+import { User, Building2 } from "lucide-react";
 
 interface ProfileHeaderProps {
-  type: UserRole;
+  image: string;
   name: string;
-  imageUrl?: string;
+  role?: string;
+  businessType?: string;
   isAvailable?: boolean;
-  onAvailabilityToggle?: () => void;
-  badges?: string[];
-  className?: string;
+  badges: { label: string; value: string; }[];
+  onAvailabilityChange?: (value: boolean) => void;
 }
 
 const ProfileHeader = ({
-  type,
+  image,
   name,
-  imageUrl,
+  role,
+  businessType,
   isAvailable,
-  onAvailabilityToggle,
-  badges = [],
-  className
+  badges,
+  onAvailabilityChange
 }: ProfileHeaderProps) => {
   return (
-    <div className={cn(
-      "flex flex-col md:flex-row items-center gap-6 p-6 bg-white rounded-lg shadow-sm",
-      "animate-in fade-in duration-500",
-      className
-    )}>
-      <Avatar className="w-24 h-24">
-        <AvatarImage src={imageUrl} alt={name} />
-        <AvatarFallback>
-          <User className="w-12 h-12 text-muted-foreground" />
-        </AvatarFallback>
-      </Avatar>
+    <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
+      <div className="flex flex-col md:flex-row items-center gap-6">
+        <Avatar className="w-24 h-24">
+          <AvatarImage src={image} alt={name} />
+          <AvatarFallback>
+            {businessType ? (
+              <Building2 className="w-12 h-12 text-muted-foreground" />
+            ) : (
+              <User className="w-12 h-12 text-muted-foreground" />
+            )}
+          </AvatarFallback>
+        </Avatar>
 
-      <div className="flex-1 text-center md:text-left space-y-2">
-        <h1 className="text-2xl font-semibold text-secondary">{name}</h1>
-        
-        <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-          {badges.map((badge, index) => (
-            <Badge key={index} variant="secondary">{badge}</Badge>
-          ))}
+        <div className="flex-1 text-center md:text-left space-y-2">
+          <h1 className="text-2xl font-semibold text-secondary">{name}</h1>
+          {(role || businessType) && (
+            <p className="text-muted-foreground">{role || businessType}</p>
+          )}
+          
+          <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+            {badges.map((badge, index) => (
+              <Badge key={index} variant="secondary">
+                {badge.label}: {badge.value}
+              </Badge>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {type === 'worker' && onAvailabilityToggle && (
-        <Toggle
-          pressed={isAvailable}
-          onPressedChange={onAvailabilityToggle}
-          className="gap-2"
-        >
-          <UserCheck className={cn(
-            "w-4 h-4",
-            isAvailable ? "text-green-500" : "text-muted-foreground"
-          )} />
-          {isAvailable ? "Available" : "Unavailable"}
-        </Toggle>
-      )}
+        {onAvailabilityChange && (
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={isAvailable}
+              onCheckedChange={onAvailabilityChange}
+              aria-label="Availability toggle"
+            />
+            <span className="text-sm text-muted-foreground">
+              {isAvailable ? "Available" : "Unavailable"}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
