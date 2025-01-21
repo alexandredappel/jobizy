@@ -43,9 +43,9 @@ const MainProfileEdit: React.FC<MainProfileEditProps> = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      job: role,
-      workAreas: ["Seminyak"],
-      languages: ["English"],
+      job: role || "",
+      workAreas: [],  // Initialize as empty array
+      languages: [],  // Initialize as empty array
       aboutMe: "",
     }
   });

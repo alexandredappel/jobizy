@@ -1,95 +1,125 @@
 import * as React from "react"
-import { X } from "lucide-react"
+import { Check, ChevronsUpDown, X } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command"
-import { Command as CommandPrimitive } from "cmdk"
+import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface MultiSelectProps {
-  selected: string[]
   options: string[]
-  onChange: (values: string[]) => void
+  selected: string[]
+  onChange: (selected: string[]) => void
   placeholder?: string
+  className?: string
 }
 
 export function MultiSelect({
-  selected,
-  options,
+  options = [],
+  selected = [],
   onChange,
-  placeholder = "Select items...",
+  placeholder = "Select items",
+  className,
 }: MultiSelectProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null)
   const [open, setOpen] = React.useState(false)
-  const [inputValue, setInputValue] = React.useState("")
+
+  // Ensure we're working with arrays
+  const safeOptions = Array.isArray(options) ? options : []
+  const safeSelected = Array.isArray(selected) ? selected : []
 
   const handleUnselect = (item: string) => {
-    onChange(selected.filter((i) => i !== item))
+    onChange(safeSelected.filter((i) => i !== item))
   }
 
-  const handleSelect = (item: string) => {
-    setInputValue("")
-    if (selected.includes(item)) {
-      onChange(selected.filter((i) => i !== item))
+  const handleSelect = (option: string) => {
+    if (!safeSelected.includes(option)) {
+      onChange([...safeSelected, option])
     } else {
-      onChange([...selected, item])
+      onChange(safeSelected.filter((item) => item !== option))
     }
   }
 
   return (
-    <Command className="overflow-visible bg-transparent">
-      <div className="group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-        <div className="flex flex-wrap gap-1">
-          {selected.map((item) => (
-            <Badge
-              key={item}
-              variant="secondary"
-              className="hover:bg-secondary/80"
-            >
-              {item}
-              <button
-                className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleUnselect(item)
-                  }
-                }}
-                onMouseDown={(e) => {
-                  e.preventDefault()
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn("w-full justify-between", className)}
+        >
+          <div className="flex gap-1 flex-wrap">
+            {safeSelected.length === 0 && <span className="text-muted-foreground">{placeholder}</span>}
+            {safeSelected.map((item) => (
+              <Badge
+                key={item}
+                variant="secondary"
+                className="mr-1"
+                onClick={(e) => {
                   e.stopPropagation()
+                  handleUnselect(item)
                 }}
-                onClick={() => handleUnselect(item)}
               >
-                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-              </button>
-            </Badge>
-          ))}
-          <CommandPrimitive.Input
-            ref={inputRef}
-            value={inputValue}
-            onValueChange={setInputValue}
-            onBlur={() => setOpen(false)}
-            onFocus={() => setOpen(true)}
-            placeholder={placeholder}
-            className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-          />
-        </div>
-      </div>
-      <div className="relative mt-2">
-        {open && (
-          <div className="absolute top-0 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-            <CommandGroup className="h-full overflow-auto">
-              {options.map((option) => (
-                <CommandItem
-                  key={option}
-                  onSelect={() => handleSelect(option)}
-                  className="cursor-pointer"
+                {item}
+                <button
+                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleUnselect(item)
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    handleUnselect(item)
+                  }}
                 >
-                  {option}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+                  <X className="h-3 w-3" />
+                  <span className="sr-only">Remove {item}</span>
+                </button>
+              </Badge>
+            ))}
           </div>
-        )}
-      </div>
-    </Command>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <Command>
+          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} />
+          <CommandEmpty>No item found.</CommandEmpty>
+          <CommandGroup className="max-h-64 overflow-auto">
+            {safeOptions.map((option) => (
+              <CommandItem
+                key={option}
+                onSelect={() => handleSelect(option)}
+                className="cursor-pointer"
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    safeSelected.includes(option) ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                {option}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }
