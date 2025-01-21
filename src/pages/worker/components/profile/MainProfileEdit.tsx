@@ -12,6 +12,7 @@ import * as z from "zod";
 import { JobType, Language, WorkArea } from "@/types/database.types";
 import { useToast } from "@/hooks/use-toast";
 import { User, Upload } from 'lucide-react';
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const formSchema = z.object({
   job: z.string(),
@@ -188,23 +189,14 @@ const MainProfileEdit: React.FC<MainProfileEditProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Work Areas</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange([...field.value, value])}
-                        value={field.value[0]}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select work areas" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {workAreas.map((area) => (
-                            <SelectItem key={area} value={area}>
-                              {area}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <MultiSelect
+                          selected={field.value}
+                          options={workAreas}
+                          onChange={(values) => field.onChange(values)}
+                          placeholder="Select work areas"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -216,23 +208,14 @@ const MainProfileEdit: React.FC<MainProfileEditProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Languages</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange([...field.value, value])}
-                        value={field.value[0]}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select languages" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {languages.map((language) => (
-                            <SelectItem key={language} value={language}>
-                              {language}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <MultiSelect
+                          selected={field.value}
+                          options={languages}
+                          onChange={(values) => field.onChange(values)}
+                          placeholder="Select languages"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
