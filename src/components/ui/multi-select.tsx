@@ -25,29 +25,36 @@ interface MultiSelectProps {
 }
 
 export function MultiSelect({
-  options = [],
-  selected = [],
+  options,
+  selected,
   onChange,
   placeholder = "Select items",
   className,
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
 
-  // Ensure we're working with arrays
+  // Ensure we're working with arrays and handle undefined/null cases
   const safeOptions = Array.isArray(options) ? options : []
   const safeSelected = Array.isArray(selected) ? selected : []
 
-  const handleUnselect = (item: string) => {
+  const handleUnselect = React.useCallback((item: string) => {
     onChange(safeSelected.filter((i) => i !== item))
-  }
+  }, [safeSelected, onChange])
 
-  const handleSelect = (option: string) => {
+  const handleSelect = React.useCallback((option: string) => {
     if (!safeSelected.includes(option)) {
       onChange([...safeSelected, option])
     } else {
       onChange(safeSelected.filter((item) => item !== option))
     }
-  }
+  }, [safeSelected, onChange])
+
+  // Prevent event bubbling for badge clicks
+  const handleBadgeClick = React.useCallback((e: React.MouseEvent, item: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handleUnselect(item)
+  }, [handleUnselect])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -59,16 +66,15 @@ export function MultiSelect({
           className={cn("w-full justify-between", className)}
         >
           <div className="flex gap-1 flex-wrap">
-            {safeSelected.length === 0 && <span className="text-muted-foreground">{placeholder}</span>}
+            {safeSelected.length === 0 && (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
             {safeSelected.map((item) => (
               <Badge
                 key={item}
                 variant="secondary"
                 className="mr-1"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleUnselect(item)
-                }}
+                onClick={(e) => handleBadgeClick(e, item)}
               >
                 {item}
                 <button
