@@ -25,9 +25,10 @@ const WorkerProfileEdit = () => {
     ]
   };
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (values: any) => {
     try {
       // Implement save logic here
+      console.log('Saving values:', values);
       toast({
         title: "Profile updated",
         description: "Your changes have been saved successfully."
@@ -57,7 +58,7 @@ const WorkerProfileEdit = () => {
         </div>
 
         <MainProfileEdit
-          data={workerData}
+          {...workerData}
           onSave={handleSaveChanges}
         />
 
