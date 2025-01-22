@@ -38,11 +38,15 @@ export function MultiSelect({
   })
 
   const handleSelect = React.useCallback((option: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    // Prevent default behavior and stop event propagation immediately
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     
     console.log('handleSelect called with option:', option)
     
+    // Update selection state
     if (safeSelected.includes(option)) {
       console.log('Removing option:', option)
       onChange(safeSelected.filter((item) => item !== option))
