@@ -38,13 +38,16 @@ export function MultiSelect({
   })
 
   const handleSelect = React.useCallback((option: string, e: React.MouseEvent) => {
-    // Prevent the Popover from closing
     e.preventDefault()
     e.stopPropagation()
-
+    
+    console.log('handleSelect called with option:', option)
+    
     if (safeSelected.includes(option)) {
+      console.log('Removing option:', option)
       onChange(safeSelected.filter((item) => item !== option))
     } else {
+      console.log('Adding option:', option)
       onChange([...safeSelected, option])
     }
   }, [safeSelected, onChange])
