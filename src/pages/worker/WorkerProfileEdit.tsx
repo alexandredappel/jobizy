@@ -7,8 +7,8 @@ import {
   EducationSection,
   SettingsModal,
   WorkExperienceModal,
+  EducationModal,
 } from './components/profile';
-import EducationListModal from './components/profile/modals/EducationListModal';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
@@ -95,7 +95,7 @@ const WorkerProfileEdit = () => {
           userId={user?.id || ''}
         />
 
-        <EducationListModal
+        <EducationModal
           open={showEducationModal}
           onClose={() => setShowEducationModal(false)}
           education={education}

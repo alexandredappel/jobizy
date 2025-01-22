@@ -11,6 +11,7 @@ export interface WorkerUser {
   location: string[];
   role: string;
   work_history: WorkExperience[];
+  education: Education[];
   profile_picture_url?: string;
   experience: string;
   phone_number?: string;
