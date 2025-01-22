@@ -40,8 +40,8 @@ const WORK_AREAS: WorkArea[] = ['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umal
 
 const formSchema = z.object({
   job: z.enum(['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'] as const),
-  languages: z.array(z.enum(['English', 'Bahasa'] as const)),
-  location: z.array(z.enum(['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'] as const)),
+  languages: z.array(z.enum(['English', 'Bahasa'] as const)).default([]),
+  location: z.array(z.enum(['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'] as const)).default([]),
   about_me: z.string().max(300, "About me must be less than 300 characters").optional(),
   profile_picture_url: z.string().optional(),
 });
@@ -67,6 +67,8 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
       profile_picture_url: profile?.profile_picture_url || "",
     },
   });
+
+  console.log("Current form values:", form.watch());
 
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
@@ -96,14 +98,21 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
     try {
       console.log('Form values before save:', values);
       
-      // Ensure the values match the WorkerUser type structure
+      // Ensure we're not sending undefined values
       const updateData: Partial<WorkerUser> = {
         job: values.job,
-        languages: values.languages,
-        location: values.location,
-        about_me: values.about_me,
+        languages: values.languages || [],
+        location: values.location || [],
+        about_me: values.about_me || "",
         profile_picture_url: values.profile_picture_url,
       };
+
+      // Remove undefined values
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key as keyof typeof updateData] === undefined) {
+          delete updateData[key as keyof typeof updateData];
+        }
+      });
 
       console.log('Formatted update data:', updateData);
       
