@@ -5,12 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { User, Building2 } from "lucide-react";
 
 interface ProfileHeaderProps {
-  image: string;
+  image?: string;
   name: string;
   role?: string;
   businessType?: string;
   isAvailable?: boolean;
-  badges: { label: string; value: string; }[];
+  badges?: { label: string; value: string; }[];
   onAvailabilityChange?: (value: boolean) => void;
 }
 
@@ -20,7 +20,7 @@ const ProfileHeader = ({
   role,
   businessType,
   isAvailable,
-  badges,
+  badges = [], // Add default empty array
   onAvailabilityChange
 }: ProfileHeaderProps) => {
   return (

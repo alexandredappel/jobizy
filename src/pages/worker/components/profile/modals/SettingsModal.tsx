@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { WorkerUser } from '@/types/firebase.types';
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -33,13 +34,17 @@ const formSchema = z.object({
 interface SettingsModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: z.infer<typeof formSchema>) => void;
+  profile: WorkerUser;
 }
 
-const SettingsModal = ({ open, onClose, onSave }: SettingsModalProps) => {
+const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      email: profile.email,
+      phone: profile.phoneNumber,
+      birthDate: profile.birthday_date || new Date(),
+      gender: profile.gender,
       emailNotifications: true,
       pushNotifications: true,
       language: "English"
@@ -47,7 +52,7 @@ const SettingsModal = ({ open, onClose, onSave }: SettingsModalProps) => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values);
+    // Handle save logic here
     onClose();
   };
 
