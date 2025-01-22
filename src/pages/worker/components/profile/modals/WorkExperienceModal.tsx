@@ -177,11 +177,8 @@ const WorkExperienceListModal = ({
     <>
       <Sheet open={open} onOpenChange={handleClose}>
         <SheetContent className="w-full sm:max-w-lg">
-          <SheetHeader className="flex flex-row items-center justify-between">
+          <SheetHeader>
             <SheetTitle>Work Experience</SheetTitle>
-            <Button variant="ghost" size="icon" onClick={handleClose}>
-              <X className="h-4 w-4" />
-            </Button>
           </SheetHeader>
 
           <div className="mt-6 space-y-6 pb-20">

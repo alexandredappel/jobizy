@@ -138,11 +138,8 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
   return (
     <Sheet open={open} onOpenChange={handleCancel}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-        <SheetHeader className="flex flex-row items-center justify-between">
+        <SheetHeader>
           <SheetTitle>Edit Profile</SheetTitle>
-          <Button variant="ghost" size="icon" onClick={handleCancel}>
-            <X className="h-4 w-4" />
-          </Button>
         </SheetHeader>
         
         <Form {...form}>

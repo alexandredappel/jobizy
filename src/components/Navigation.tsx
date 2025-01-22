@@ -73,16 +73,14 @@ export const Navigation = () => {
 
   return (
     <>
-      {/* Logo - always visible */}
-      <div className="fixed top-4 left-4 lg:right-8 lg:left-auto z-50">
-        <Link to="/" className="flex items-center">
+      {/* Desktop menu - vertical left */}
+      <nav className="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-64 lg:bg-white lg:shadow-md lg:py-6">
+        {/* Logo - desktop */}
+        <Link to="/" className="px-6 mb-8">
           <span className="text-2xl font-bold text-primary">Jobizy</span>
         </Link>
-      </div>
 
-      {/* Desktop menu - vertical left */}
-      <nav className="hidden lg:flex lg:flex-col lg:fixed lg:left-0 lg:top-0 lg:h-screen lg:w-64 lg:bg-white lg:shadow-md lg:py-20 lg:px-6">
-        <div className="flex flex-col space-y-6">
+        <div className="px-6 flex flex-col space-y-6">
           {user ? (
             <>
               <NavigationLink 
@@ -206,6 +204,13 @@ export const Navigation = () => {
           )}
         </div>
       </nav>
+
+      {/* Logo - mobile */}
+      <div className="lg:hidden fixed top-4 left-4">
+        <Link to="/" className="flex items-center">
+          <span className="text-2xl font-bold text-primary">Jobizy</span>
+        </Link>
+      </div>
     </>
   );
 };
