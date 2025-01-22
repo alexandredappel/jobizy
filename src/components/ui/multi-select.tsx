@@ -37,24 +37,20 @@ export function MultiSelect({
   const safeOptions = Array.isArray(options) ? options : []
   const safeSelected = Array.isArray(selected) ? selected : []
 
+  console.log('MultiSelect render:', { options: safeOptions, selected: safeSelected });
+
   const handleUnselect = React.useCallback((item: string) => {
     onChange(safeSelected.filter((i) => i !== item))
   }, [safeSelected, onChange])
 
   const handleSelect = React.useCallback((option: string) => {
+    setOpen(false)
     if (!safeSelected.includes(option)) {
       onChange([...safeSelected, option])
     } else {
       onChange(safeSelected.filter((item) => item !== option))
     }
   }, [safeSelected, onChange])
-
-  // Prevent event bubbling for badge clicks
-  const handleBadgeClick = React.useCallback((e: React.MouseEvent, item: string) => {
-    e.preventDefault()
-    e.stopPropagation()
-    handleUnselect(item)
-  }, [handleUnselect])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -74,7 +70,11 @@ export function MultiSelect({
                 key={item}
                 variant="secondary"
                 className="mr-1"
-                onClick={(e) => handleBadgeClick(e, item)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleUnselect(item)
+                }}
               >
                 {item}
                 <button
