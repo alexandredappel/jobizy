@@ -31,11 +31,17 @@ export function MultiSelect({
   const safeOptions = Array.isArray(options) ? options : []
   const safeSelected = Array.isArray(selected) ? selected : []
 
+  // Debug logs for component state
   console.log('MultiSelect render:', { 
     options: safeOptions, 
     selected: safeSelected,
     open 
   })
+
+  // Debug for selection changes
+  React.useEffect(() => {
+    console.log('Selected items:', safeSelected)
+  }, [safeSelected])
 
   const handleSelect = React.useCallback((option: string, e: React.MouseEvent) => {
     // Prevent default behavior and stop event propagation immediately
@@ -111,11 +117,16 @@ export function MultiSelect({
                 key={option}
                 variant="ghost"
                 role="option"
+                type="button"
                 className={cn(
                   "w-full justify-start gap-2",
                   safeSelected.includes(option) && "bg-accent"
                 )}
-                onClick={(e) => handleSelect(option, e)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleSelect(option, e)
+                }}
               >
                 <Check
                   className={cn(
