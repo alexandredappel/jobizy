@@ -20,7 +20,7 @@ import type { WorkerUser } from '@/types/firebase.types';
 
 const WorkerProfileEdit = () => {
   const { user } = useAuth();
-  const { profile, isLoading: profileLoading } = useWorkerProfile(user?.id || '');
+  const { profile, isLoading: profileLoading, updateProfile } = useWorkerProfile(user?.id || '');
   const { experience, isLoading: expLoading } = useWorkerExperience(user?.id || '');
   const { education, isLoading: eduLoading } = useWorkerEducation(user?.id || '');
   
@@ -31,12 +31,8 @@ const WorkerProfileEdit = () => {
 
   const handleSaveChanges = async (values: Partial<WorkerUser>) => {
     try {
-      // Implementation will be added later
-      console.log('Saving values:', values);
-      toast({
-        title: "Profile updated",
-        description: "Your changes have been saved successfully."
-      });
+      console.log('Saving profile changes:', values);
+      await updateProfile(values);
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
