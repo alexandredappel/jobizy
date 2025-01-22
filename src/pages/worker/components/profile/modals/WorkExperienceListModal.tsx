@@ -60,6 +60,7 @@ const WorkExperienceListModal = ({
   );
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleClose = () => {
@@ -71,6 +72,7 @@ const WorkExperienceListModal = ({
   };
 
   const handleAddExperience = () => {
+    console.log('Adding new experience');
     setLocalExperiences(prev => [...prev, {
       companyName: '',
       position: '',
@@ -81,6 +83,7 @@ const WorkExperienceListModal = ({
   };
 
   const handleDeleteExperience = async (index: number) => {
+    console.log('Deleting experience at index:', index);
     const experience = localExperiences[index];
     if (experience.id) {
       try {
@@ -105,6 +108,7 @@ const WorkExperienceListModal = ({
   };
 
   const handleUpdateField = (index: number, field: keyof ExperienceForm, value: any) => {
+    console.log('Updating field:', field, 'with value:', value, 'at index:', index);
     setLocalExperiences(prev => prev.map((exp, i) => 
       i === index ? { ...exp, [field]: value } : exp
     ));
@@ -112,6 +116,8 @@ const WorkExperienceListModal = ({
   };
 
   const handleSaveChanges = async () => {
+    console.log('Saving changes to Firebase');
+    setIsLoading(true);
     try {
       // Validate all experiences
       for (const exp of localExperiences) {
@@ -121,6 +127,7 @@ const WorkExperienceListModal = ({
             description: "Please fill in all required fields",
             variant: "destructive"
           });
+          setIsLoading(false);
           return;
         }
       }
@@ -161,6 +168,8 @@ const WorkExperienceListModal = ({
         description: "Failed to save work experiences",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -175,7 +184,7 @@ const WorkExperienceListModal = ({
             </Button>
           </SheetHeader>
 
-          <div className="mt-6 space-y-6">
+          <div className="mt-6 space-y-6 pb-20">
             {localExperiences.map((exp, index) => (
               <div
                 key={index}
@@ -250,24 +259,26 @@ const WorkExperienceListModal = ({
                 )}
               </div>
             ))}
+          </div>
 
-            <div className="fixed bottom-20 right-6">
-              <Button
-                className="rounded-full"
-                onClick={handleAddExperience}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
+          <div className="fixed bottom-20 right-6">
+            <Button
+              className="rounded-full shadow-lg"
+              onClick={handleAddExperience}
+              variant="default"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
 
-            <div className="fixed bottom-6 right-6 left-6">
-              <Button
-                className="w-full"
-                onClick={handleSaveChanges}
-              >
-                Save Changes
-              </Button>
-            </div>
+          <div className="fixed bottom-6 right-6 left-6">
+            <Button
+              className="w-full"
+              onClick={handleSaveChanges}
+              disabled={isLoading}
+            >
+              {isLoading ? "Saving..." : "Save Changes"}
+            </Button>
           </div>
         </SheetContent>
       </Sheet>
