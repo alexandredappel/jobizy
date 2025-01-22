@@ -15,6 +15,7 @@ import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { useWorkerEducation } from "@/hooks/useWorkerEducation";
 import { useWorkerExperience } from "@/hooks/useWorkerExperience";
 import { Skeleton } from "@/components/ui/skeleton";
+import { WorkerUser } from "@/types/firebase.types";
 
 const WorkerProfileEdit = () => {
   const { user } = useAuth();
@@ -27,9 +28,9 @@ const WorkerProfileEdit = () => {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const { toast } = useToast();
 
-  const handleSaveChanges = async (values: any) => {
+  const handleSaveChanges = async (values: Partial<WorkerUser>) => {
     try {
-      // Implement save logic here
+      // Implementation will be added later
       console.log('Saving values:', values);
       toast({
         title: "Profile updated",
@@ -90,13 +91,13 @@ const WorkerProfileEdit = () => {
         <WorkExperienceModal
           open={showWorkExperienceModal}
           onClose={() => setShowWorkExperienceModal(false)}
-          userId={user?.uid}
+          userId={user?.uid || ''}
         />
 
         <EducationModal
           open={showEducationModal}
           onClose={() => setShowEducationModal(false)}
-          userId={user?.uid}
+          userId={user?.uid || ''}
         />
 
         <SettingsModal
