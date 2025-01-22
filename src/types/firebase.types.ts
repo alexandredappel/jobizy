@@ -5,7 +5,7 @@ export interface WorkerUser {
   availability_status: boolean;
   email: string;
   full_name: string;
-  gender: string;
+  gender: "male" | "female";
   job: string;
   languages: string[];
   location: string[];
@@ -13,6 +13,8 @@ export interface WorkerUser {
   work_history: WorkExperience[];
   profile_picture_url?: string;
   experience: string;
+  phone_number?: string;
+  birthday_date?: Timestamp;
   created_at: Timestamp;
   updated_at: Timestamp;
 }

@@ -42,8 +42,8 @@ const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: profile.email,
-      phone: profile.phoneNumber,
-      birthDate: profile.birthday_date || new Date(),
+      phone: profile.phone_number || '',
+      birthDate: profile.birthday_date?.toDate() || new Date(),
       gender: profile.gender,
       emailNotifications: true,
       pushNotifications: true,
