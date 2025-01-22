@@ -4,6 +4,7 @@ import { WorkerUser } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
 import { Edit } from 'lucide-react';
 import MainProfileEditModal from '../modals/MainProfileEditModal';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
@@ -23,31 +24,35 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
 
   return (
     <ProfileContainer type="worker" mode="edit">
-      <div className="relative">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4"
-          onClick={() => setShowEditModal(true)}
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
+      <div className="space-y-6">
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-4 top-4"
+            onClick={() => setShowEditModal(true)}
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
 
-        <ProfileHeader
-          image={profile.profile_picture_url}
-          name={profile.full_name}
-          role={profile.job}
-          isAvailable={profile.availability_status}
-          badges={badges}
-          onAvailabilityChange={(value) => onSave({ availability_status: value })}
-        />
+          <ProfileHeader
+            image={profile.profile_picture_url}
+            name={profile.full_name}
+            role={profile.job}
+            isAvailable={profile.availability_status}
+            badges={badges}
+            onAvailabilityChange={(value) => onSave({ availability_status: value })}
+          />
+        </div>
 
-        {profile.about_me && (
-          <div className="mt-6 px-4">
+        <Card>
+          <CardContent className="pt-6">
             <h3 className="text-lg font-semibold mb-2">About Me</h3>
-            <p className="text-muted-foreground">{profile.about_me}</p>
-          </div>
-        )}
+            <p className="text-muted-foreground">
+              {profile.about_me || "No description provided yet."}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <MainProfileEditModal

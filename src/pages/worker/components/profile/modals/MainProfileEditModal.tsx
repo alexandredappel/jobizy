@@ -98,7 +98,6 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
     try {
       console.log('Form values before save:', values);
       
-      // Ensure we're not sending undefined values
       const updateData: Partial<WorkerUser> = {
         job: values.job,
         languages: values.languages || [],
@@ -107,7 +106,6 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
         profile_picture_url: values.profile_picture_url,
       };
 
-      // Remove undefined values
       Object.keys(updateData).forEach(key => {
         if (updateData[key as keyof typeof updateData] === undefined) {
           delete updateData[key as keyof typeof updateData];
