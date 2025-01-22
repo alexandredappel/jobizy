@@ -37,7 +37,11 @@ export function MultiSelect({
     open 
   })
 
-  const handleSelect = React.useCallback((option: string) => {
+  const handleSelect = React.useCallback((option: string, e: React.MouseEvent) => {
+    // Prevent the Popover from closing
+    e.preventDefault()
+    e.stopPropagation()
+
     if (safeSelected.includes(option)) {
       onChange(safeSelected.filter((item) => item !== option))
     } else {
@@ -88,8 +92,12 @@ export function MultiSelect({
           <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
-        <ScrollArea className="h-60">
+      <PopoverContent 
+        className="w-full p-0" 
+        align="start"
+        sideOffset={5}
+      >
+        <ScrollArea className="h-[200px] w-full rounded-md">
           <div className="p-1">
             {safeOptions.map((option) => (
               <Button
@@ -100,7 +108,7 @@ export function MultiSelect({
                   "w-full justify-start gap-2",
                   safeSelected.includes(option) && "bg-accent"
                 )}
-                onClick={() => handleSelect(option)}
+                onClick={(e) => handleSelect(option, e)}
               >
                 <Check
                   className={cn(
