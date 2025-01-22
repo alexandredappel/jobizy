@@ -94,6 +94,11 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
     }
   }, [profile.id, uploadFile, getUrl, form, toast]);
 
+  const handleCancel = () => {
+    form.reset(); // Reset form to initial values
+    onClose();
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log('Form values before save:', values);
@@ -131,11 +136,11 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
   };
 
   return (
-    <Sheet open={open} onOpenChange={onClose}>
+    <Sheet open={open} onOpenChange={handleCancel}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader className="flex flex-row items-center justify-between">
           <SheetTitle>Edit Profile</SheetTitle>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={handleCancel}>
             <X className="h-4 w-4" />
           </Button>
         </SheetHeader>
@@ -251,7 +256,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
             />
 
             <SheetFooter className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={onClose}>
+              <Button type="button" variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button type="submit">Save Changes</Button>
