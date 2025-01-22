@@ -77,11 +77,11 @@ const WorkerProfileEdit = () => {
           onSave={handleSaveChanges}
         />
 
-        {profile?.about_me && (
-          <ProfileSection title="About Me">
-            <p className="text-muted-foreground">{profile.about_me}</p>
-          </ProfileSection>
-        )}
+        <ProfileSection title="About Me">
+          <p className="text-muted-foreground">
+            {profile?.about_me || "No description provided yet."}
+          </p>
+        </ProfileSection>
 
         <WorkExperienceSection
           experiences={experience}
