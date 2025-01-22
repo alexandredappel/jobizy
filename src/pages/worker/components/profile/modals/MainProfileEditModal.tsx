@@ -39,9 +39,9 @@ const LANGUAGES: Language[] = ['English', 'Bahasa'];
 const WORK_AREAS: WorkArea[] = ['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'];
 
 const formSchema = z.object({
-  job: z.string(),
-  languages: z.array(z.string()),
-  location: z.array(z.string()),
+  job: z.enum(['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'] as const),
+  languages: z.array(z.enum(['English', 'Bahasa'] as const)),
+  location: z.array(z.enum(['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'] as const)),
   about_me: z.string().max(300, "About me must be less than 300 characters").optional(),
   profile_picture_url: z.string().optional(),
 });
@@ -60,7 +60,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      job: profile?.job || "",
+      job: profile?.job || "Waiter",
       languages: profile?.languages || [],
       location: profile?.location || [],
       about_me: profile?.about_me || "",
@@ -94,7 +94,8 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await onSave(values);
+      console.log('Saving values:', values);
+      await onSave(values as Partial<WorkerUser>);
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
@@ -182,7 +183,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                   <FormLabel>Languages</FormLabel>
                   <FormControl>
                     <MultiSelect
-                      selected={field.value}
+                      selected={field.value || []}
                       options={LANGUAGES}
                       onChange={field.onChange}
                       placeholder="Select languages"
@@ -201,7 +202,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                   <FormLabel>Work Areas</FormLabel>
                   <FormControl>
                     <MultiSelect
-                      selected={field.value}
+                      selected={field.value || []}
                       options={WORK_AREAS}
                       onChange={field.onChange}
                       placeholder="Select work areas"
