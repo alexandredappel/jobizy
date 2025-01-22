@@ -29,10 +29,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { WorkerUser, JobType, Language, WorkArea } from "@/types/firebase.types";
 import { useToast } from "@/hooks/use-toast";
-import { X, Upload } from "lucide-react";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { Upload } from "lucide-react";
 import { useStorage } from "@/hooks/useStorage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const JOB_TYPES: JobType[] = ['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'];
 const LANGUAGES: Language[] = ['English', 'Bahasa'];
@@ -95,7 +96,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
   }, [profile.id, uploadFile, getUrl, form, toast]);
 
   const handleCancel = () => {
-    form.reset(); // Reset form to initial values
+    form.reset();
     onClose();
   };
 
@@ -203,12 +204,23 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                 <FormItem>
                   <FormLabel>Languages</FormLabel>
                   <FormControl>
-                    <MultiSelect
-                      selected={field.value || []}
-                      options={LANGUAGES}
-                      onChange={field.onChange}
-                      placeholder="Select languages"
-                    />
+                    <ToggleGroup 
+                      type="multiple"
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="flex flex-wrap gap-2"
+                    >
+                      {LANGUAGES.map((language) => (
+                        <ToggleGroupItem
+                          key={language}
+                          value={language}
+                          aria-label={language}
+                          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                        >
+                          {language}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -222,12 +234,23 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                 <FormItem>
                   <FormLabel>Work Areas</FormLabel>
                   <FormControl>
-                    <MultiSelect
-                      selected={field.value || []}
-                      options={WORK_AREAS}
-                      onChange={field.onChange}
-                      placeholder="Select work areas"
-                    />
+                    <ToggleGroup 
+                      type="multiple"
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="flex flex-wrap gap-2"
+                    >
+                      {WORK_AREAS.map((area) => (
+                        <ToggleGroupItem
+                          key={area}
+                          value={area}
+                          aria-label={area}
+                          className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                        >
+                          {area}
+                        </ToggleGroupItem>
+                      ))}
+                    </ToggleGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
