@@ -94,8 +94,20 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log('Saving values:', values);
-      await onSave(values as Partial<WorkerUser>);
+      console.log('Form values before save:', values);
+      
+      // Ensure the values match the WorkerUser type structure
+      const updateData: Partial<WorkerUser> = {
+        job: values.job,
+        languages: values.languages,
+        location: values.location,
+        about_me: values.about_me,
+        profile_picture_url: values.profile_picture_url,
+      };
+
+      console.log('Formatted update data:', updateData);
+      
+      await onSave(updateData);
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
