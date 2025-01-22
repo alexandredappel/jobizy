@@ -15,6 +15,7 @@ export interface WorkerUser {
   experience: string;
   phone_number?: string;
   birthday_date?: Timestamp;
+  about_me?: string;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
