@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProfileSection } from "@/layouts/profile";
 import { 
   MainProfileSection,
   WorkExperienceSection,
@@ -75,6 +76,12 @@ const WorkerProfileEdit = () => {
           profile={profile}
           onSave={handleSaveChanges}
         />
+
+        {profile?.about_me && (
+          <ProfileSection title="About Me">
+            <p className="text-muted-foreground">{profile.about_me}</p>
+          </ProfileSection>
+        )}
 
         <WorkExperienceSection
           experiences={experience}
