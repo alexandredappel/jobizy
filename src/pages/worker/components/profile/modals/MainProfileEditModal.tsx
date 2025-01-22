@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { WorkerUser } from "@/types/firebase.types";
 import { useToast } from "@/hooks/use-toast";
+import { X } from "lucide-react";
 
 const formSchema = z.object({
   full_name: z.string().min(1, "Name is required"),
@@ -79,8 +80,11 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-        <SheetHeader>
+        <SheetHeader className="flex flex-row items-center justify-between">
           <SheetTitle>Edit Profile</SheetTitle>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
         </SheetHeader>
         
         <Form {...form}>
@@ -115,7 +119,8 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                       <SelectItem value="Waiter">Waiter</SelectItem>
                       <SelectItem value="Cook">Cook</SelectItem>
                       <SelectItem value="Bartender">Bartender</SelectItem>
-                      {/* Add other job positions */}
+                      <SelectItem value="Manager">Manager</SelectItem>
+                      <SelectItem value="Housekeeper">Housekeeper</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

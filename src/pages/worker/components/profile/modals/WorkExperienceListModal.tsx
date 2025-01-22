@@ -57,9 +57,9 @@ const WorkExperienceListModal = ({
           </SheetHeader>
 
           <div className="mt-6 space-y-6">
-            {experiences.map((experience) => (
+            {experiences.map((exp) => (
               <div
-                key={experience.id}
+                key={exp.id}
                 className="relative border rounded-lg p-4"
               >
                 <Button

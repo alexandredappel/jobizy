@@ -10,7 +10,7 @@ import {
 import WorkExperienceListModal from './components/profile/modals/WorkExperienceListModal';
 import EducationListModal from './components/profile/modals/EducationListModal';
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { useWorkerEducation } from "@/hooks/useWorkerEducation";
 import { useWorkerExperience } from "@/hooks/useWorkerExperience";
