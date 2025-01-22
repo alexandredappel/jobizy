@@ -6,8 +6,8 @@ import {
   WorkExperienceSection,
   EducationSection,
   SettingsModal,
+  WorkExperienceModal,
 } from './components/profile';
-import WorkExperienceListModal from './components/profile/modals/WorkExperienceListModal';
 import EducationListModal from './components/profile/modals/EducationListModal';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -88,7 +88,7 @@ const WorkerProfileEdit = () => {
           onEdit={() => setShowEducationModal(true)}
         />
 
-        <WorkExperienceListModal
+        <WorkExperienceModal
           open={showWorkExperienceModal}
           onClose={() => setShowWorkExperienceModal(false)}
           experiences={experience}
