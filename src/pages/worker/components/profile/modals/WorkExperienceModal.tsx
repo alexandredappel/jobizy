@@ -34,10 +34,11 @@ const formSchema = z.object({
 interface WorkExperienceModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: z.infer<typeof formSchema>) => void;
+  onSave?: (data: z.infer<typeof formSchema>) => void;
+  userId: string;
 }
 
-const WorkExperienceModal = ({ open, onClose, onSave }: WorkExperienceModalProps) => {
+const WorkExperienceModal = ({ open, onClose, onSave, userId }: WorkExperienceModalProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,7 +49,9 @@ const WorkExperienceModal = ({ open, onClose, onSave }: WorkExperienceModalProps
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values);
+    if (onSave) {
+      onSave(values);
+    }
     onClose();
   };
 

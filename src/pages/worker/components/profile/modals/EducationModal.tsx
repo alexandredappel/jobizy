@@ -51,10 +51,11 @@ const formSchema = z.object({
 interface EducationModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: z.infer<typeof formSchema>) => void;
+  onSave?: (data: z.infer<typeof formSchema>) => void;
+  userId: string;
 }
 
-const EducationModal = ({ open, onClose, onSave }: EducationModalProps) => {
+const EducationModal = ({ open, onClose, onSave, userId }: EducationModalProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,7 +67,9 @@ const EducationModal = ({ open, onClose, onSave }: EducationModalProps) => {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onSave(values);
+    if (onSave) {
+      onSave(values);
+    }
     onClose();
   };
 
