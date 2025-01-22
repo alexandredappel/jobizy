@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,16 +27,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { WorkerUser } from "@/types/firebase.types";
+import { WorkerUser, JobType, Language, WorkArea } from "@/types/firebase.types";
 import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
+import { X, Upload } from "lucide-react";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { useStorage } from "@/hooks/useStorage";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+const JOB_TYPES: JobType[] = ['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'];
+const LANGUAGES: Language[] = ['English', 'Bahasa'];
+const WORK_AREAS: WorkArea[] = ['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'];
 
 const formSchema = z.object({
-  full_name: z.string().min(1, "Name is required"),
-  job: z.string().min(1, "Job is required"),
-  languages: z.array(z.string()).min(1, "At least one language is required"),
-  location: z.array(z.string()).min(1, "At least one work area is required"),
-  about_me: z.string().max(300, "About me must be less than 300 characters"),
+  job: z.string(),
+  languages: z.array(z.string()),
+  location: z.array(z.string()),
+  about_me: z.string().max(300, "About me must be less than 300 characters").optional(),
+  profile_picture_url: z.string().optional(),
 });
 
 interface MainProfileEditModalProps {
@@ -48,16 +55,42 @@ interface MainProfileEditModalProps {
 
 const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEditModalProps) => {
   const { toast } = useToast();
+  const { uploadFile, getUrl } = useStorage();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      full_name: profile?.full_name || "",
       job: profile?.job || "",
       languages: profile?.languages || [],
       location: profile?.location || [],
       about_me: profile?.about_me || "",
+      profile_picture_url: profile?.profile_picture_url || "",
     },
   });
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    
+    try {
+      const file = e.target.files[0];
+      const path = `profile-pictures/${profile.id}/${file.name}`;
+      await uploadFile(path, file);
+      const url = await getUrl(path);
+      form.setValue('profile_picture_url', url);
+      
+      toast({
+        title: "Image uploaded",
+        description: "Your profile picture has been updated successfully.",
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [profile.id, uploadFile, getUrl, form, toast]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -89,19 +122,32 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-6">
-            <FormField
-              control={form.control}
-              name="full_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col items-center space-y-4">
+              <Avatar className="w-24 h-24">
+                <AvatarImage src={form.watch('profile_picture_url')} />
+                <AvatarFallback>
+                  {profile.full_name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex items-center space-x-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  id="picture-upload"
+                  onChange={handleImageUpload}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('picture-upload')?.click()}
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Picture
+                </Button>
+              </div>
+            </div>
 
             <FormField
               control={form.control}
@@ -116,13 +162,51 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Waiter">Waiter</SelectItem>
-                      <SelectItem value="Cook">Cook</SelectItem>
-                      <SelectItem value="Bartender">Bartender</SelectItem>
-                      <SelectItem value="Manager">Manager</SelectItem>
-                      <SelectItem value="Housekeeper">Housekeeper</SelectItem>
+                      {JOB_TYPES.map((job) => (
+                        <SelectItem key={job} value={job}>
+                          {job}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="languages"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Languages</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      selected={field.value}
+                      options={LANGUAGES}
+                      onChange={field.onChange}
+                      placeholder="Select languages"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Work Areas</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      selected={field.value}
+                      options={WORK_AREAS}
+                      onChange={field.onChange}
+                      placeholder="Select work areas"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

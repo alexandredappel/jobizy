@@ -1,15 +1,24 @@
 import { Timestamp } from 'firebase/firestore';
 
+export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
+
+export type BusinessType = 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
+
+export type WorkArea = 'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua';
+
+export type Language = 'English' | 'Bahasa';
+
+export type UserRole = 'worker' | 'business';
+
 export interface WorkerUser {
   id: string;
   availability_status: boolean;
   email: string;
   full_name: string;
   gender: "male" | "female";
-  job: string;
-  languages: string[];
-  location: string[];
-  role: string;
+  job: JobType;
+  languages: Language[];
+  location: WorkArea[];
   work_history: WorkExperience[];
   education: Education[];
   profile_picture_url?: string;
