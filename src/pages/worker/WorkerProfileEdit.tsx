@@ -15,13 +15,13 @@ import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { useWorkerEducation } from "@/hooks/useWorkerEducation";
 import { useWorkerExperience } from "@/hooks/useWorkerExperience";
 import { Skeleton } from "@/components/ui/skeleton";
-import { WorkerUser } from "@/types/firebase.types";
+import type { WorkerUser } from '@/types/firebase.types';
 
 const WorkerProfileEdit = () => {
   const { user } = useAuth();
-  const { profile, isLoading: profileLoading } = useWorkerProfile(user?.uid || '');
-  const { experience, isLoading: expLoading } = useWorkerExperience(user?.uid || '');
-  const { education, isLoading: eduLoading } = useWorkerEducation(user?.uid || '');
+  const { profile, isLoading: profileLoading } = useWorkerProfile(user?.id || '');
+  const { experience, isLoading: expLoading } = useWorkerExperience(user?.id || '');
+  const { education, isLoading: eduLoading } = useWorkerEducation(user?.id || '');
   
   const [showWorkExperienceModal, setShowWorkExperienceModal] = useState(false);
   const [showEducationModal, setShowEducationModal] = useState(false);
@@ -91,13 +91,13 @@ const WorkerProfileEdit = () => {
         <WorkExperienceModal
           open={showWorkExperienceModal}
           onClose={() => setShowWorkExperienceModal(false)}
-          userId={user?.uid || ''}
+          userId={user?.id || ''}
         />
 
         <EducationModal
           open={showEducationModal}
           onClose={() => setShowEducationModal(false)}
-          userId={user?.uid || ''}
+          userId={user?.id || ''}
         />
 
         <SettingsModal

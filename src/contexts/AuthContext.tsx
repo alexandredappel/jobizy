@@ -11,10 +11,10 @@ interface AuthContextType {
   loading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType>({ 
-  user: null, 
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
   firebaseUser: null,
-  loading: true 
+  loading: true
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -31,7 +31,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userData = userDoc.data();
             setUser({
               ...userData,
-              id: firebaseUser.uid,
+              id: userDoc.id,
+              uid: firebaseUser.uid,
               createdAt: userData.createdAt instanceof Timestamp 
                 ? userData.createdAt.toDate() 
                 : new Date(userData.createdAt),

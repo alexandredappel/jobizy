@@ -10,6 +10,7 @@ export type UserRole = 'worker' | 'business';
 
 export interface BaseUser {
   id: string;
+  uid: string; // Add Firebase UID
   email: string;
   role: UserRole;
   displayName: string;
