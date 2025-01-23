@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AuthService } from '@/services/authService';
 import { Home, UserIcon, Search, LogOut } from 'lucide-react';
-import type { User } from '@/types/database.types';
 
 interface NavigationLinkProps {
   to: string;

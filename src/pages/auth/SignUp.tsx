@@ -7,25 +7,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
+import { UserRole } from '@/types/firebase.types';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState<'worker' | 'business'>('worker');
+  const [role, setRole] = useState<UserRole>('worker');
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log('Creating new user with role:', role);
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      
       await setDoc(doc(db, 'users', user.uid), {
         email,
-        userType,
+        role,
         createdAt: new Date().toISOString(),
       });
-      navigate(`/${userType}/onboarding`);
+      
+      console.log('User created successfully, navigating to onboarding');
+      navigate(`/${role}/onboarding`);
     } catch (error: any) {
+      console.error('SignUp error:', error);
       toast({
         title: "Error",
         description: "Failed to create account. Please try again.",
@@ -54,17 +60,17 @@ const SignUp = () => {
         <div className="flex gap-4">
           <Button
             type="button"
-            variant={userType === 'worker' ? 'default' : 'outline'}
+            variant={role === 'worker' ? 'default' : 'outline'}
             className="flex-1"
-            onClick={() => setUserType('worker')}
+            onClick={() => setRole('worker')}
           >
             I'm a Worker
           </Button>
           <Button
             type="button"
-            variant={userType === 'business' ? 'default' : 'outline'}
+            variant={role === 'business' ? 'default' : 'outline'}
             className="flex-1"
-            onClick={() => setUserType('business')}
+            onClick={() => setRole('business')}
           >
             I'm a Business
           </Button>
