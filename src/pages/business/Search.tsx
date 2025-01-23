@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { WorkerUser } from '@/types/firebase.types';
+import { WorkerUser, Language, JobType, WorkArea } from '@/types/firebase.types';
 import { SearchLayout } from '@/layouts/search';
-import { SearchHeader } from '@/layouts/search';
-import { SearchFilters } from '@/layouts/search';
-import { WorkerCard } from '@/layouts/search';
+import { SearchHeader } from '@/layouts/search/SearchHeader';
+import { SearchFilters } from '@/layouts/search/components/SearchFilters';
+import { WorkerCard } from '@/layouts/search/components/WorkerCard';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,15 +17,16 @@ const Search = () => {
   const navigate = useNavigate();
 
   const [filters, setFilters] = useState({
-    job: '',
-    workArea: '',
-    languages: [] as string[],
-    gender: ''
+    job: '' as JobType | '',
+    workArea: '' as WorkArea | '',
+    languages: [] as Language[],
+    gender: '' as 'male' | 'female' | ''
   });
 
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
+        console.log('Fetching workers with filters:', filters);
         const q = query(
           collection(db, 'users'),
           where('availability_status', '==', true)
@@ -54,15 +55,29 @@ const Search = () => {
   }, [toast]);
 
   const handleFilterChange = (filterType: string, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: value
-    }));
+    console.log('Filter change:', filterType, value);
+    if (filterType === 'languages') {
+      // Ensure value is of type Language[]
+      const validLanguages = value.filter((lang: string) => 
+        ['English', 'Bahasa'].includes(lang)
+      ) as Language[];
+      
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: validLanguages
+      }));
+    } else {
+      setFilters(prev => ({
+        ...prev,
+        [filterType]: value
+      }));
+    }
   };
 
   const handleSearch = async () => {
     setIsLoading(true);
     try {
+      console.log('Searching with filters:', filters);
       let q = query(
         collection(db, 'users'),
         where('availability_status', '==', true)
