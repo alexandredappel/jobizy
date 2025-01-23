@@ -59,67 +59,50 @@ const Search = () => {
 
   const handleFilterChange = (filterType: string, value: any) => {
     console.log('Filter change:', filterType, value);
-    if (filterType === 'languages') {
-      const validLanguages = value.filter((lang: string) => 
-        ['English', 'Bahasa'].includes(lang)
-      ) as Language[];
-      
-      setFilters(prev => ({
-        ...prev,
-        [filterType]: validLanguages
-      }));
-    } else {
-      setFilters(prev => ({
-        ...prev,
-        [filterType]: value
-      }));
-    }
+    const newFilters = {
+      ...filters,
+      [filterType]: value
+    };
+    setFilters(newFilters);
+    handleSearch(newFilters);
   };
 
-  const handleSearch = () => {
+  const handleSearch = (currentFilters = filters) => {
     setIsLoading(true);
-    console.log('Searching with filters:', filters);
+    console.log('Searching with filters:', currentFilters);
     
     const filtered = workers.filter(worker => {
       // If no filters are active, return all workers
-      if (!filters.job && !filters.workArea && filters.languages.length === 0 && !filters.gender) {
+      if (!currentFilters.job && !currentFilters.workArea && currentFilters.languages.length === 0 && !currentFilters.gender) {
         return true;
       }
 
       // Check job type
-      if (filters.job && worker.job) {
-        const workerJob = worker.job as JobType;
-        if (workerJob.toLowerCase() !== filters.job.toLowerCase()) {
+      if (currentFilters.job && worker.job) {
+        if (worker.job.toLowerCase() !== currentFilters.job.toLowerCase()) {
           return false;
         }
       }
 
       // Check work area
-      if (filters.workArea && Array.isArray(worker.location)) {
+      if (currentFilters.workArea && Array.isArray(worker.location)) {
         const workerAreas = worker.location.map(area => area.toLowerCase());
-        if (!workerAreas.includes(filters.workArea.toLowerCase())) {
-          return false;
-        }
-      } else if (filters.workArea && typeof worker.location === 'string') {
-        if (worker.location.toLowerCase() !== filters.workArea.toLowerCase()) {
+        if (!workerAreas.includes(currentFilters.workArea.toLowerCase())) {
           return false;
         }
       }
 
       // Check languages
-      if (filters.languages.length > 0 && (!worker.languages || !Array.isArray(worker.languages))) {
-        return false;
-      }
-      if (filters.languages.length > 0 && worker.languages) {
+      if (currentFilters.languages.length > 0 && Array.isArray(worker.languages)) {
         const workerLanguages = worker.languages.map(lang => lang.toLowerCase());
-        const filterLanguages = filters.languages.map(lang => lang.toLowerCase());
+        const filterLanguages = currentFilters.languages.map(lang => lang.toLowerCase());
         if (!filterLanguages.every(lang => workerLanguages.includes(lang))) {
           return false;
         }
       }
 
       // Check gender
-      if (filters.gender && worker.gender !== filters.gender) {
+      if (currentFilters.gender && worker.gender !== currentFilters.gender) {
         return false;
       }
 
@@ -157,25 +140,22 @@ const Search = () => {
         ) : filteredWorkers.length === 0 ? (
           <div>No workers found matching your criteria</div>
         ) : (
-          filteredWorkers.map(worker => {
-            console.log('Rendering worker card:', worker);
-            return (
-              <WorkerCard
-                key={worker.id}
-                worker={{
-                  id: worker.id,
-                  name: worker.full_name,
-                  imageUrl: worker.profile_picture_url,
-                  job: worker.job,
-                  isAvailable: worker.availability_status === true,
-                  experience: worker.experience || 'Not specified',
-                  workArea: Array.isArray(worker.location) ? worker.location[0] : worker.location || 'Not specified',
-                  languages: worker.languages || []
-                }}
-                onViewProfile={handleViewProfile}
-              />
-            );
-          })
+          filteredWorkers.map(worker => (
+            <WorkerCard
+              key={worker.id}
+              worker={{
+                id: worker.id,
+                name: worker.full_name,
+                imageUrl: worker.profile_picture_url,
+                job: worker.job,
+                isAvailable: worker.availability_status === true,
+                experience: worker.experience || 'Not specified',
+                workArea: Array.isArray(worker.location) ? worker.location[0] : worker.location || 'Not specified',
+                languages: worker.languages || []
+              }}
+              onViewProfile={handleViewProfile}
+            />
+          ))
         )}
       </div>
     </SearchLayout>
