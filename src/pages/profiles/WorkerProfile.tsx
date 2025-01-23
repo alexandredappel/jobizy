@@ -9,6 +9,8 @@ import { ArrowLeft, Phone } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
+import { useWorkerEducation } from '@/hooks/useWorkerEducation';
+import { useWorkerExperience } from '@/hooks/useWorkerExperience';
 
 const WorkerProfile = () => {
   const { id } = useParams();
@@ -17,6 +19,8 @@ const WorkerProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showPhone, setShowPhone] = useState(false);
   const { toast } = useToast();
+  const { education } = useWorkerEducation(id || '');
+  const { experience } = useWorkerExperience(id || '');
 
   useEffect(() => {
     const fetchWorker = async () => {
@@ -63,13 +67,15 @@ const WorkerProfile = () => {
 
     // Check if device is mobile
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const phoneNumber = worker.phone_number.replace(/\D/g, '');
 
     if (isMobile) {
       // Open WhatsApp directly on mobile
-      window.location.href = `whatsapp://send?phone=${worker.phone_number.replace(/\D/g, '')}`;
+      window.location.href = `https://wa.me/${phoneNumber}`;
     } else {
-      // Show phone number on desktop
+      // Show phone number on desktop and provide WhatsApp web link
       setShowPhone(true);
+      window.open(`https://wa.me/${phoneNumber}`, '_blank');
     }
   };
 
@@ -124,7 +130,7 @@ const WorkerProfile = () => {
 
         <ProfileSection title="Work Experience">
           <div className="space-y-6">
-            {worker.work_history?.map((exp) => (
+            {experience.map((exp) => (
               <div key={exp.id} className="relative pl-4 border-l-2 border-muted">
                 <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-background border-2 border-muted" />
                 <div className="mb-1">
@@ -137,7 +143,7 @@ const WorkerProfile = () => {
                 <p className="text-muted-foreground">{exp.position}</p>
               </div>
             ))}
-            {(!worker.work_history || worker.work_history.length === 0) && (
+            {(!experience || experience.length === 0) && (
               <p className="text-muted-foreground">No work experience listed.</p>
             )}
           </div>
@@ -145,7 +151,7 @@ const WorkerProfile = () => {
 
         <ProfileSection title="Education">
           <div className="space-y-6">
-            {worker.education?.map((edu) => (
+            {education.map((edu) => (
               <div key={edu.id} className="relative pl-4 border-l-2 border-muted">
                 <div className="absolute -left-2 top-0 w-4 h-4 rounded-full bg-background border-2 border-muted" />
                 <div className="mb-1">
@@ -158,24 +164,22 @@ const WorkerProfile = () => {
                 <p className="text-muted-foreground">{edu.degree}</p>
               </div>
             ))}
-            {(!worker.education || worker.education.length === 0) && (
+            {(!education || education.length === 0) && (
               <p className="text-muted-foreground">No education listed.</p>
             )}
           </div>
         </ProfileSection>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t">
-        <div className="container max-w-4xl mx-auto">
-          <Button 
-            className="w-full"
-            size="lg"
-            onClick={handleContact}
-          >
-            <Phone className="mr-2 h-4 w-4" />
-            {showPhone ? worker.phone_number : "Contact Worker"}
-          </Button>
-        </div>
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t max-w-4xl mx-auto">
+        <Button 
+          className="w-full"
+          size="lg"
+          onClick={handleContact}
+        >
+          <Phone className="mr-2 h-4 w-4" />
+          {showPhone ? worker.phone_number : "Contact Worker"}
+        </Button>
       </div>
     </ProfileContainer>
   );
