@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Search = () => {
   const [workers, setWorkers] = useState<WorkerUser[]>([]);
+  const [filteredWorkers, setFilteredWorkers] = useState<WorkerUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalAvailable, setTotalAvailable] = useState(0);
   const { toast } = useToast();
@@ -41,6 +42,7 @@ const Search = () => {
         console.log('Fetched worker data:', workerData);
         setWorkers(workerData);
         setTotalAvailable(workerData.length);
+        setFilteredWorkers(workerData);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching workers:', error);
@@ -75,64 +77,69 @@ const Search = () => {
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     setIsLoading(true);
-    try {
-      console.log('Searching with filters:', filters);
-      let q = query(
-        collection(db, 'users'),
-        where('availability_status', '==', true)
-      );
-
-      if (filters.job) {
-        q = query(q, where('job', '==', filters.job));
-      }
-      if (filters.workArea) {
-        q = query(q, where('location', 'array-contains', filters.workArea));
-      }
-      if (filters.gender) {
-        q = query(q, where('gender', '==', filters.gender));
+    console.log('Searching with filters:', filters);
+    
+    const filtered = workers.filter(worker => {
+      // If no filters are active, return all workers
+      if (!filters.job && !filters.workArea && filters.languages.length === 0 && !filters.gender) {
+        return true;
       }
 
-      const querySnapshot = await getDocs(q);
-      let filteredWorkers = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as WorkerUser[];
+      // Check job type
+      if (filters.job && worker.job.toLowerCase() !== filters.job.toLowerCase()) {
+        return false;
+      }
 
-      // Filter by languages if selected (client-side filtering)
+      // Check work area
+      if (filters.workArea && Array.isArray(worker.location)) {
+        const workerAreas = worker.location.map(area => area.toLowerCase());
+        if (!workerAreas.includes(filters.workArea.toLowerCase())) {
+          return false;
+        }
+      } else if (filters.workArea && typeof worker.location === 'string') {
+        if (worker.location.toLowerCase() !== filters.workArea.toLowerCase()) {
+          return false;
+        }
+      }
+
+      // Check languages
+      if (filters.languages.length > 0 && (!worker.languages || !Array.isArray(worker.languages))) {
+        return false;
+      }
       if (filters.languages.length > 0) {
-        filteredWorkers = filteredWorkers.filter(worker =>
-          filters.languages.every(lang => worker.languages.includes(lang))
-        );
+        const workerLanguages = worker.languages.map(lang => lang.toLowerCase());
+        const filterLanguages = filters.languages.map(lang => lang.toLowerCase());
+        if (!filterLanguages.every(lang => workerLanguages.includes(lang))) {
+          return false;
+        }
       }
 
-      setWorkers(filteredWorkers);
-      
-      // Save search to recent searches
-      // This will be implemented in a separate PR
-      
-    } catch (error) {
-      console.error('Error searching workers:', error);
-      toast({
-        title: "Error",
-        description: "Failed to search workers",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+      // Check gender
+      if (filters.gender && worker.gender !== filters.gender) {
+        return false;
+      }
+
+      return true;
+    });
+
+    console.log('Filtered workers:', filtered);
+    setFilteredWorkers(filtered);
+    setIsLoading(false);
   };
 
   const handleViewProfile = (workerId: string) => {
     navigate(`/profiles/worker/${workerId}`);
   };
 
+  const hasActiveFilters = filters.job || filters.workArea || filters.languages.length > 0 || filters.gender;
+
   return (
     <SearchLayout>
       <SearchHeader 
         totalWorkers={totalAvailable}
-        hasActiveSearch={Object.values(filters).some(v => v !== '' && v.length !== 0)}
+        hasActiveSearch={hasActiveFilters}
         onSaveSearch={() => {/* To be implemented */}}
       />
       
@@ -141,10 +148,14 @@ const Search = () => {
       <div className="mt-6 space-y-4">
         {isLoading ? (
           <div>Loading...</div>
-        ) : workers.length === 0 ? (
+        ) : !hasActiveFilters ? (
+          <div className="text-center text-lg text-muted-foreground">
+            {totalAvailable} workers available in Bali
+          </div>
+        ) : filteredWorkers.length === 0 ? (
           <div>No workers found matching your criteria</div>
         ) : (
-          workers.map(worker => {
+          filteredWorkers.map(worker => {
             console.log('Rendering worker card:', worker);
             return (
               <WorkerCard
@@ -156,7 +167,7 @@ const Search = () => {
                   job: worker.job,
                   isAvailable: worker.availability_status,
                   experience: worker.experience,
-                  workArea: worker.location?.[0] || 'Not specified',
+                  workArea: Array.isArray(worker.location) ? worker.location[0] : worker.location || 'Not specified',
                   languages: worker.languages || []
                 }}
                 onViewProfile={handleViewProfile}
