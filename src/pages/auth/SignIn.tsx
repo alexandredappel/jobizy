@@ -26,7 +26,7 @@ const SignIn = () => {
     } catch (error: any) {
       console.error('Sign in error:', error);
       toast({
-        title: "Erreur de connexion",
+        title: "Sign In Error",
         description: error.message,
         variant: "destructive"
       });
@@ -36,11 +36,11 @@ const SignIn = () => {
   };
 
   return (
-    <AuthLayout title="Connectez-vous à votre compte">
+    <AuthLayout title="Sign In to Your Account">
       <form onSubmit={handleSignIn} className="space-y-4">
         <Input
           type="email"
-          placeholder="Adresse email"
+          placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading}
@@ -48,26 +48,26 @@ const SignIn = () => {
         />
         <Input
           type="password"
-          placeholder="Mot de passe"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={isLoading}
           required
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Connexion en cours..." : "Se connecter"}
+          {isLoading ? "Signing in..." : "Sign In"}
         </Button>
         <div className="flex flex-col gap-2 text-center text-sm">
           <Link 
             to="/forgot-password"
             className="text-primary hover:text-primary/80"
           >
-            Mot de passe oublié ?
+            Forgot Password?
           </Link>
           <span className="text-secondary">
-            Pas encore de compte ?{' '}
+            Don't have an account?{' '}
             <Link to="/signup" className="text-primary hover:text-primary/80">
-              Inscrivez-vous
+              Sign Up
             </Link>
           </span>
         </div>

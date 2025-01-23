@@ -33,8 +33,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userData = userDoc.data();
             console.log('User data retrieved:', userData);
             
+            // Ensure we're using the correct role field
+            const userRole = userData.role || userData.userType;
+            
             setUser({
               ...userData,
+              role: userRole, // Ensure we're using the standardized role
               id: userDoc.id,
               uid: firebaseUser.uid,
               createdAt: userData.createdAt instanceof Timestamp 
