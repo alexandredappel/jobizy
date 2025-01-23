@@ -60,7 +60,6 @@ const Search = () => {
   const handleFilterChange = (filterType: string, value: any) => {
     console.log('Filter change:', filterType, value);
     if (filterType === 'languages') {
-      // Ensure value is of type Language[]
       const validLanguages = value.filter((lang: string) => 
         ['English', 'Bahasa'].includes(lang)
       ) as Language[];
@@ -88,7 +87,8 @@ const Search = () => {
       }
 
       // Check job type
-      if (filters.job && worker.job.toLowerCase() !== filters.job.toLowerCase()) {
+      if (filters.job && worker.job && typeof worker.job === 'string' && 
+          worker.job.toLowerCase() !== filters.job.toLowerCase()) {
         return false;
       }
 
@@ -108,7 +108,7 @@ const Search = () => {
       if (filters.languages.length > 0 && (!worker.languages || !Array.isArray(worker.languages))) {
         return false;
       }
-      if (filters.languages.length > 0) {
+      if (filters.languages.length > 0 && worker.languages) {
         const workerLanguages = worker.languages.map(lang => lang.toLowerCase());
         const filterLanguages = filters.languages.map(lang => lang.toLowerCase());
         if (!filterLanguages.every(lang => workerLanguages.includes(lang))) {
@@ -133,7 +133,7 @@ const Search = () => {
     navigate(`/profiles/worker/${workerId}`);
   };
 
-  const hasActiveFilters = filters.job || filters.workArea || filters.languages.length > 0 || filters.gender;
+  const hasActiveFilters = Boolean(filters.job || filters.workArea || filters.languages.length > 0 || filters.gender);
 
   return (
     <SearchLayout>
@@ -165,8 +165,8 @@ const Search = () => {
                   name: worker.full_name,
                   imageUrl: worker.profile_picture_url,
                   job: worker.job,
-                  isAvailable: worker.availability_status,
-                  experience: worker.experience,
+                  isAvailable: worker.availability_status === true,
+                  experience: worker.experience || 'Not specified',
                   workArea: Array.isArray(worker.location) ? worker.location[0] : worker.location || 'Not specified',
                   languages: worker.languages || []
                 }}
