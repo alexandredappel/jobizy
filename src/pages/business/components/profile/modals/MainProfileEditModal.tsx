@@ -49,10 +49,9 @@ const MainProfileEditModal = ({ open, onClose, profile, updateProfile }: MainPro
   });
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!profile) return;
-    
     try {
       console.log('Updating profile with values:', values);
+      
       // Capitalize company name
       const updatedValues = {
         ...values,

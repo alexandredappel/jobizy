@@ -34,6 +34,7 @@ import { auth, db } from '@/lib/firebase';
 import { updateEmail, updatePassword } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { BusinessUser } from '@/types/firebase.types';
+import { Timestamp } from 'firebase/firestore';
 
 interface SettingsModalProps {
   open: boolean;
@@ -57,18 +58,24 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     if (!auth.currentUser || !profile?.id) return;
     setIsLoading(true);
     try {
+      // First update Firebase Auth
       await updateEmail(auth.currentUser, email);
+      
+      // Then update Firestore
       await updateDoc(doc(db, 'users', profile.id), {
-        email: email
+        email: email,
+        updated_at: Timestamp.now()
       });
+      
       toast({
         title: "Success",
         description: "Email updated successfully",
       });
     } catch (error: any) {
+      console.error('Error updating email:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to update email",
         variant: "destructive",
       });
     } finally {

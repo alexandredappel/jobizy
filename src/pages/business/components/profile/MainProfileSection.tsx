@@ -56,7 +56,7 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
         open={showEditModal}
         onClose={() => setShowEditModal(false)}
         profile={profile}
-        onSave={onSave}
+        updateProfile={onSave}
       />
     </ProfileContainer>
   );
