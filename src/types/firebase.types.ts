@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase/firestore';
 
 export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
 
-export type BusinessType = 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
+export type BusinessType = 'Restaurant' | 'Hotel' | 'Property Management' | 'Guest House' | 'Club';
 
 export type WorkArea = 'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua';
 

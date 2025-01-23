@@ -17,7 +17,7 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
   if (!profile) return null;
 
   const badges = [
-    { label: 'Industry', value: profile.business_type.replace('_', ' ') },
+    { label: 'Business Type', value: profile.business_type },
     { label: 'Location', value: profile.location }
   ];
 
