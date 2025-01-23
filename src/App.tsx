@@ -53,7 +53,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
 // Helper component to manage main content padding
 const MainContent = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const isAuthPage = ['/signin', '/signup', '/forgot-password', '/reset-password'].includes(location.pathname);
+  const isAuthPage = ['/signin', '/signup', '/forgot-password', '/reset-password', '/worker/onboarding'].includes(location.pathname);
   
   return (
     <main className={`min-h-screen bg-sand ${!isAuthPage ? 'lg:pl-64 pb-16 lg:pb-0' : ''}`}>
