@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BusinessUser } from '@/types/firebase.types';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -19,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { 
+  ArrowUpCircle,
   Bell, 
   CreditCard, 
   Globe2, 
@@ -27,10 +27,13 @@ import {
   LogOut, 
   Mail, 
   Phone, 
-  Trash2, 
-  ArrowUpCircle 
+  Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { auth, db } from '@/lib/firebase';
+import { updateEmail, updatePassword } from 'firebase/auth';
+import { doc, updateDoc } from 'firebase/firestore';
+import { BusinessUser } from '@/types/firebase.types';
 
 interface SettingsModalProps {
   open: boolean;
@@ -42,57 +45,88 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
   const { toast } = useToast();
   const [email, setEmail] = useState(profile?.email || '');
   const [phone, setPhone] = useState(profile?.phone_number || '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [language, setLanguage] = useState<'English' | 'Bahasa'>('English');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleEmailChange = async () => {
+  const handleEmailUpdate = async () => {
+    if (!auth.currentUser || !profile?.id) return;
+    setIsLoading(true);
     try {
-      // Implement email change logic
-      console.log('Changing email to:', email);
+      await updateEmail(auth.currentUser, email);
+      await updateDoc(doc(db, 'users', profile.id), {
+        email: email
+      });
       toast({
         title: "Success",
         description: "Email updated successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update email",
+        description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handlePhoneChange = async () => {
+  const handlePhoneUpdate = async () => {
+    if (!profile?.id) return;
+    setIsLoading(true);
     try {
-      // Implement phone change logic
-      console.log('Changing phone to:', phone);
+      await updateDoc(doc(db, 'users', profile.id), {
+        phone_number: phone
+      });
       toast({
         title: "Success",
         description: "Phone number updated successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update phone number",
+        description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handlePasswordChange = () => {
-    // Implement password change logic
-    console.log('Opening password change dialog');
-  };
-
-  const handleLogout = async () => {
-    // Implement logout logic
-    console.log('Logout clicked');
-  };
-
-  const handleDeleteAccount = async () => {
-    // Implement delete account logic
-    console.log('Delete account clicked');
+  const handlePasswordUpdate = async () => {
+    if (!auth.currentUser) return;
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await updatePassword(auth.currentUser, newPassword);
+      toast({
+        title: "Success",
+        description: "Password updated successfully",
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -103,58 +137,14 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
         </SheetHeader>
         
         <div className="py-6 space-y-6">
-          {/* Email Section */}
+          {/* Upgrade Account Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              <h3 className="font-medium">Email</h3>
+              <ArrowUpCircle className="h-4 w-4" />
+              <h3 className="font-medium">Upgrade Account</h3>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                />
-                <Button onClick={handleEmailChange}>Save</Button>
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Phone Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              <h3 className="font-medium">Phone</h3>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter your phone number"
-                />
-                <Button onClick={handlePhoneChange}>Save</Button>
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Password Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Lock className="h-4 w-4" />
-              <h3 className="font-medium">Password</h3>
-            </div>
-            <Button onClick={handlePasswordChange} variant="outline" className="w-full">
-              Change Password
+            <Button variant="outline" className="w-full">
+              Upgrade to Premium
             </Button>
           </div>
 
@@ -207,35 +197,146 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Other Settings */}
+          {/* Billing Section */}
           <div className="space-y-4">
-            <Button variant="outline" className="w-full" onClick={() => console.log("Billing settings")}>
-              <CreditCard className="mr-2 h-4 w-4" />
-              Billing
-            </Button>
-            
-            <Button variant="outline" className="w-full" onClick={() => console.log("Contact support")}>
-              <HelpCircle className="mr-2 h-4 w-4" />
-              Contact Support
-            </Button>
-            
-            <Button variant="outline" className="w-full" onClick={() => console.log("Upgrade account")}>
-              <ArrowUpCircle className="mr-2 h-4 w-4" />
-              Upgrade Account
-            </Button>
-            
-            <Button variant="outline" className="w-full" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
-            
-            <Button variant="destructive" className="w-full" onClick={handleDeleteAccount}>
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Account
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              <h3 className="font-medium">Billing</h3>
+            </div>
+            <Button variant="outline" className="w-full">
+              Manage Billing
             </Button>
           </div>
+
+          <Separator />
+
+          {/* Email Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <h3 className="font-medium">Email</h3>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  disabled={isLoading}
+                />
+                <Button onClick={handleEmailUpdate} disabled={isLoading}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Password Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              <h3 className="font-medium">Password</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="current-password">Current Password</Label>
+                <Input
+                  id="current-password"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <Button 
+                onClick={handlePasswordUpdate} 
+                className="w-full"
+                disabled={isLoading}
+              >
+                Update Password
+              </Button>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Phone Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              <h3 className="font-medium">Phone</h3>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter your phone number"
+                  disabled={isLoading}
+                />
+                <Button onClick={handlePhoneUpdate} disabled={isLoading}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Support Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="h-4 w-4" />
+              <h3 className="font-medium">Support</h3>
+            </div>
+            <Button variant="outline" className="w-full">
+              Contact Support
+            </Button>
+          </div>
+
+          <Separator />
+
+          {/* Sign Out Section */}
+          <Button variant="outline" className="w-full" onClick={() => auth.signOut()}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+
+          {/* Delete Account Section */}
+          <Button variant="destructive" className="w-full">
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete Account
+          </Button>
         </div>
       </SheetContent>
     </Sheet>
   );
 };
+
+export default SettingsModal;
