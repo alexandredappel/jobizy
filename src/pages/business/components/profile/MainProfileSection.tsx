@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Edit } from 'lucide-react';
 import { MainProfileEditModal } from './modals/MainProfileEditModal';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 interface MainProfileSectionProps {
   profile: BusinessUser | null;
@@ -18,8 +17,8 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
   if (!profile) return null;
 
   const badges = [
-    { label: 'Industry', value: profile.business_type || 'Not specified' },
-    { label: 'Location', value: profile.location || 'Not specified' }
+    { label: 'Industry', value: profile.business_type.replace('_', ' ') },
+    { label: 'Location', value: profile.location }
   ];
 
   return (

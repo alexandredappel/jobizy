@@ -10,6 +10,19 @@ export type Language = 'English' | 'Bahasa';
 
 export type UserRole = 'worker' | 'business';
 
+export interface BusinessUser {
+  id: string;
+  company_name: string;
+  business_type: BusinessType;
+  location: WorkArea;
+  description?: string;
+  profile_picture_url?: string;
+  email: string;
+  phone_number?: string;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+}
+
 export interface WorkerUser {
   id: string;
   availability_status: boolean;

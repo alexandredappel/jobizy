@@ -3,7 +3,7 @@ import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfileContainer, ProfileHeader, ProfileSection } from "@/layouts/profile";
 import { MainProfileSection } from './components/profile';
-import { SettingsModal } from '../worker/components/profile/modals/SettingsModal';
+import { SettingsModal } from './components/profile/modals/SettingsModal';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { BusinessUser } from '@/types/firebase.types';
@@ -20,6 +20,10 @@ const BusinessProfileEdit = () => {
     try {
       console.log('Saving business profile changes:', values);
       await updateProfile(values);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
