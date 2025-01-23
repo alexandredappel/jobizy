@@ -26,9 +26,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchUserData = async () => {
       if (firebaseUser) {
         try {
+          console.log('Fetching user data for:', firebaseUser.uid);
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          
           if (userDoc.exists()) {
             const userData = userDoc.data();
+            console.log('User data retrieved:', userData);
+            
             setUser({
               ...userData,
               id: userDoc.id,
@@ -40,11 +44,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 ? userData.updatedAt.toDate() 
                 : new Date(userData.updatedAt)
             } as User);
+          } else {
+            console.log('No user document found');
+            setUser(null);
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
+          setUser(null);
         }
       } else {
+        console.log('No Firebase user');
         setUser(null);
       }
       setLoading(false);
