@@ -1,29 +1,37 @@
 import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { JobType, Language, WorkArea } from "@/types/firebase.types";
 
 interface SearchFiltersProps {
-  onFilterChange: (filterType: string, value: any) => void;
+  onFilterChange?: (filterType: string, value: any) => void;
 }
 
 export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
+  const handleSearch = () => {
+    // This will be handled by the parent component
+  };
+
   return (
     <div className="space-y-6">
       {/* Job Type */}
       <div className="space-y-2">
         <Label>Job Type</Label>
-        <Select onValueChange={(value) => onFilterChange('jobType', value)}>
+        <Select onValueChange={(value) => onFilterChange?.('job', value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select job type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="waiter">Waiter</SelectItem>
-            <SelectItem value="cook">Cook</SelectItem>
-            <SelectItem value="manager">Manager</SelectItem>
-            <SelectItem value="housekeeper">Housekeeper</SelectItem>
-            <SelectItem value="gardener">Gardener</SelectItem>
-            <SelectItem value="bartender">Bartender</SelectItem>
+            <SelectItem value="Waiter">Waiter</SelectItem>
+            <SelectItem value="Cook">Cook</SelectItem>
+            <SelectItem value="Manager">Manager</SelectItem>
+            <SelectItem value="Housekeeper">Housekeeper</SelectItem>
+            <SelectItem value="Gardener">Gardener</SelectItem>
+            <SelectItem value="Pool guy">Pool Guy</SelectItem>
+            <SelectItem value="Bartender">Bartender</SelectItem>
+            <SelectItem value="Seller">Seller</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -31,42 +39,38 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
       {/* Work Area */}
       <div className="space-y-2">
         <Label>Work Area</Label>
-        <Select onValueChange={(value) => onFilterChange('workArea', value)}>
+        <Select onValueChange={(value) => onFilterChange?.('workArea', value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select area" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="seminyak">Seminyak</SelectItem>
-            <SelectItem value="canggu">Canggu</SelectItem>
-            <SelectItem value="ubud">Ubud</SelectItem>
-            <SelectItem value="kuta">Kuta</SelectItem>
+            <SelectItem value="Seminyak">Seminyak</SelectItem>
+            <SelectItem value="Kuta">Kuta</SelectItem>
+            <SelectItem value="Canggu">Canggu</SelectItem>
+            <SelectItem value="Ubud">Ubud</SelectItem>
+            <SelectItem value="Uluwatu">Uluwatu</SelectItem>
+            <SelectItem value="Denpasar">Denpasar</SelectItem>
+            <SelectItem value="Sanur">Sanur</SelectItem>
+            <SelectItem value="Jimbaran">Jimbaran</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       {/* Languages */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         <Label>Languages</Label>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="english" onCheckedChange={(checked) => 
-              onFilterChange('languages', { language: 'english', checked })
-            } />
-            <Label htmlFor="english">English</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox id="bahasa" onCheckedChange={(checked) => 
-              onFilterChange('languages', { language: 'bahasa', checked })
-            } />
-            <Label htmlFor="bahasa">Bahasa</Label>
-          </div>
-        </div>
+        <MultiSelect
+          options={["English", "Bahasa"]}
+          selected={[]}
+          onChange={(value) => onFilterChange?.('languages', value)}
+          placeholder="Select languages"
+        />
       </div>
 
       {/* Gender */}
       <div className="space-y-2">
         <Label>Gender</Label>
-        <Select onValueChange={(value) => onFilterChange('gender', value)}>
+        <Select onValueChange={(value) => onFilterChange?.('gender', value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select gender" />
           </SelectTrigger>
@@ -76,6 +80,13 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
           </SelectContent>
         </Select>
       </div>
+
+      <Button 
+        className="w-full mt-6" 
+        onClick={handleSearch}
+      >
+        Search
+      </Button>
     </div>
   );
 }

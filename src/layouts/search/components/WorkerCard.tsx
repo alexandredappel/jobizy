@@ -55,7 +55,7 @@ export function WorkerCard({ worker, onViewProfile }: WorkerCardProps) {
             </div>
 
             <Button 
-              variant="outline" 
+              variant="default" 
               className="w-full mt-4"
               onClick={() => onViewProfile(worker.id)}
             >

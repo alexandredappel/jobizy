@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Filter } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SearchFilters } from "./components/SearchFilters";
 
 interface SearchLayoutProps {
   children: React.ReactNode;
@@ -12,16 +13,9 @@ interface SearchLayoutProps {
 export function SearchLayout({ children }: SearchLayoutProps) {
   const isMobile = useIsMobile();
 
-  const FiltersContent = () => (
-    <div className="space-y-4 py-4">
-      <h3 className="font-medium">Filters</h3>
-      {/* Filter components will be added later */}
-    </div>
-  );
-
   return (
     <div className="container mx-auto p-4 md:p-8">
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col md:flex-row gap-6">
         {/* Mobile: Filters in Sheet */}
         {isMobile && (
           <Sheet>
@@ -32,24 +26,30 @@ export function SearchLayout({ children }: SearchLayoutProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-full sm:max-w-md">
-              <FiltersContent />
+              <SearchFilters />
             </SheetContent>
           </Sheet>
         )}
 
-        {/* Desktop: Horizontal Filters */}
+        {/* Desktop: Sidebar Filters */}
         {!isMobile && (
-          <div className="hidden md:block border rounded-lg p-4 bg-card">
-            <FiltersContent />
+          <div className="hidden md:block w-64 shrink-0">
+            <div className="sticky top-4">
+              <div className="border rounded-lg p-4 bg-card">
+                <SearchFilters />
+              </div>
+            </div>
           </div>
         )}
 
         {/* Results Area */}
-        <ScrollArea className="h-[calc(100vh-12rem)]">
-          <div className="space-y-4">
-            {children}
-          </div>
-        </ScrollArea>
+        <div className="flex-1">
+          <ScrollArea className="h-[calc(100vh-12rem)]">
+            <div className="space-y-4">
+              {children}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
     </div>
   );
