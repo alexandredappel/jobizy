@@ -1,121 +1,239 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Badge } from "@/components/ui/badge";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { BusinessType, WorkArea, JobType, Language } from "@/types/firebase.types";
+import { CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { WorkArea, BusinessProfile } from "@/types/database.types";
 
+const BUSINESS_TYPES: BusinessType[] = ['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'];
 const WORK_AREAS: WorkArea[] = [
   'Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 
   'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'
 ];
+const JOB_TYPES: JobType[] = [
+  'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
+  'Gardener', 'Pool guy', 'Bartender', 'Seller'
+];
+const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
-interface BusinessOnboardingForm {
-  company_name: string;
+interface OnboardingData {
+  business_type: BusinessType;
   location: WorkArea;
+  job_type: JobType;
+  languages: Language[];
+  business_name: string;
 }
 
 const BusinessOnboarding = () => {
   const navigate = useNavigate();
-  const { user, firebaseUser } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [step, setStep] = useState(1);
+  const [isCompleting, setIsCompleting] = useState(false);
   const authService = new AuthService();
-
-  const form = useForm<BusinessOnboardingForm>({
-    defaultValues: {
-      company_name: "",
-      location: WORK_AREAS[0],
-    },
+  const [data, setData] = useState<OnboardingData>({
+    business_type: 'Restaurant',
+    location: 'Seminyak',
+    job_type: 'Waiter',
+    languages: [],
+    business_name: "",
   });
 
-  const onSubmit = async (data: BusinessOnboardingForm) => {
-    if (!firebaseUser || !user) return;
-    
-    setIsLoading(true);
-    try {
-      await authService.updateUserProfile(firebaseUser, {
-        ...data,
-        role: 'business'
-      } as Partial<BusinessProfile>);
-      
-      toast({
-        title: "Profile Updated",
-        description: "Your business profile has been created successfully.",
-      });
-      
-      navigate("/business/dashboard");
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+  const progress = (step / 5) * 100;
+
+  const handleNext = async () => {
+    if (step === 5) {
+      await completeOnboarding();
+    } else {
+      setStep(step + 1);
     }
   };
 
-  return (
-    <div className="container mx-auto p-8">
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-secondary">Welcome to Jobizy</CardTitle>
-          <CardDescription>Let's set up your business profile</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="company_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Business Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your business name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your business location" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {WORK_AREAS.map((area) => (
-                          <SelectItem key={area} value={area}>
-                            {area}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+  const completeOnboarding = async () => {
+    if (!user?.id) return;
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Setting up..." : "Complete Setup"}
-              </Button>
-            </form>
-          </Form>
+    try {
+      setIsCompleting(true);
+      console.log("Completing business onboarding...");
+      
+      // Only save business_name to Firebase
+      await setDoc(doc(db, 'users', user.id), {
+        company_name: data.business_name,
+        role: 'business',
+        created_at: Timestamp.now(),
+        updated_at: Timestamp.now(),
+      });
+
+      toast({
+        title: "Profile Created",
+        description: "Your business profile has been created successfully!",
+      });
+
+      setTimeout(() => {
+        navigate("/business/dashboard");
+      }, 3000);
+
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create your profile. Please try again.",
+        variant: "destructive",
+      });
+      setIsCompleting(false);
+    }
+  };
+
+  if (isCompleting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <CheckCircle2 className="mx-auto h-16 w-16 text-primary animate-bounce" />
+          <h1 className="text-2xl font-bold">Welcome aboard!</h1>
+          <p className="text-muted-foreground">
+            Your business profile has been created.
+            Redirecting to your dashboard...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-lg">
+        <CardContent className="pt-6">
+          <Progress value={progress} className="mb-8" />
+          
+          <div className="space-y-6">
+            {step === 1 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">What is your Business Type?</h2>
+                <Select
+                  value={data.business_type}
+                  onValueChange={(value: BusinessType) => setData({ ...data, business_type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your business type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BUSINESS_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">Where is your business located?</h2>
+                <Select
+                  value={data.location}
+                  onValueChange={(value: WorkArea) => setData({ ...data, location: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {WORK_AREAS.map((area) => (
+                      <SelectItem key={area} value={area}>
+                        {area}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">What kind of worker are you looking for?</h2>
+                <Select
+                  value={data.job_type}
+                  onValueChange={(value: JobType) => setData({ ...data, job_type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select job type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {JOB_TYPES.map((job) => (
+                      <SelectItem key={job} value={job}>
+                        {job}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">What languages should the worker speak?</h2>
+                <ToggleGroup 
+                  type="multiple"
+                  value={data.languages}
+                  onValueChange={(value) => setData({ ...data, languages: value as Language[] })}
+                  className="flex flex-wrap gap-2"
+                >
+                  {LANGUAGES.map((language) => (
+                    <ToggleGroupItem
+                      key={language}
+                      value={language}
+                      aria-label={language}
+                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                    >
+                      {language}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {data.languages.map((lang) => (
+                    <Badge key={lang} variant="secondary">
+                      {lang}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">What is the name of your Business?</h2>
+                <Input
+                  value={data.business_name}
+                  onChange={(e) => setData({ ...data, business_name: e.target.value })}
+                  placeholder="Enter your business name"
+                />
+              </div>
+            )}
+
+            <Button 
+              className="w-full mt-8" 
+              onClick={handleNext}
+              disabled={
+                (step === 1 && !data.business_type) ||
+                (step === 2 && !data.location) ||
+                (step === 3 && !data.job_type) ||
+                (step === 4 && data.languages.length === 0) ||
+                (step === 5 && !data.business_name)
+              }
+            >
+              {step === 5 ? "Complete" : "Next"}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
