@@ -34,11 +34,11 @@ import { useStorage } from "@/hooks/useStorage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Building2 } from "lucide-react";
 
-const BUSINESS_TYPES: BusinessType[] = ['restaurant', 'hotel', 'property_management', 'guest_house', 'club'];
+const BUSINESS_TYPES: BusinessType[] = ['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'];
 const WORK_AREAS: WorkArea[] = ['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'];
 
 const formSchema = z.object({
-  business_type: z.enum(['restaurant', 'hotel', 'property_management', 'guest_house', 'club'] as const),
+  business_type: z.enum(['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'] as const),
   location: z.enum(['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'] as const),
   description: z.string().max(300, "Description must be less than 300 characters").optional(),
   profile_picture_url: z.string().optional(),
@@ -58,7 +58,7 @@ export const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainPro
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      business_type: profile?.business_type || "restaurant",
+      business_type: profile?.business_type || "Restaurant",
       location: profile?.location || "Seminyak",
       description: profile?.description || "",
       profile_picture_url: profile?.profile_picture_url || "",
@@ -162,7 +162,7 @@ export const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainPro
                     <SelectContent>
                       {BUSINESS_TYPES.map((type) => (
                         <SelectItem key={type} value={type}>
-                          {type.replace('_', ' ').charAt(0).toUpperCase() + type.slice(1)}
+                          {type}
                         </SelectItem>
                       ))}
                     </SelectContent>
