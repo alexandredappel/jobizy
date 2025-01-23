@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { JobType, WorkArea, Language } from "@/types/firebase.types";
 import { CheckCircle2 } from "lucide-react";
 
@@ -34,12 +34,11 @@ interface OnboardingData {
   full_name: string;
   gender: "male" | "female";
   phone_number: string;
-  email: string;
-  password: string;
 }
 
 const WorkerOnboarding = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [isCompleting, setIsCompleting] = useState(false);
@@ -50,14 +49,12 @@ const WorkerOnboarding = () => {
     full_name: "",
     gender: "male",
     phone_number: "",
-    email: "",
-    password: "",
   });
 
-  const progress = (step / 6) * 100;
+  const progress = (step / 5) * 100;
 
   const handleNext = async () => {
-    if (step === 6) {
+    if (step === 5) {
       await completeOnboarding();
     } else {
       setStep(step + 1);
@@ -65,14 +62,12 @@ const WorkerOnboarding = () => {
   };
 
   const completeOnboarding = async () => {
+    if (!user?.id) return;
+
     try {
       setIsCompleting(true);
       
-      // Create Firebase auth user
-      const { user } = await createUserWithEmailAndPassword(auth, data.email, data.password);
-      
-      // Save user data to Firestore
-      await setDoc(doc(db, 'users', user.uid), {
+      await setDoc(doc(db, 'users', user.id), {
         ...data,
         role: 'worker',
         availability_status: true,
@@ -89,7 +84,7 @@ const WorkerOnboarding = () => {
         navigate("/worker/dashboard");
       }, 3000);
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error saving profile:', error);
       toast({
         title: "Error",
@@ -233,37 +228,6 @@ const WorkerOnboarding = () => {
                   onChange={(e) => setData({ ...data, phone_number: e.target.value })}
                   placeholder="Enter your phone number"
                 />
-                <p className="text-sm text-muted-foreground">
-                  Your phone number is required for businesses to contact you about job opportunities.
-                </p>
-              </div>
-            )}
-
-            {step === 6 && (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">Create your account</h2>
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={data.email}
-                      onChange={(e) => setData({ ...data, email: e.target.value })}
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="password">Password</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      value={data.password}
-                      onChange={(e) => setData({ ...data, password: e.target.value })}
-                      placeholder="Create a password"
-                    />
-                  </div>
-                </div>
               </div>
             )}
 
@@ -275,11 +239,10 @@ const WorkerOnboarding = () => {
                 (step === 2 && data.location.length === 0) ||
                 (step === 3 && data.languages.length === 0) ||
                 (step === 4 && (!data.full_name || !data.gender)) ||
-                (step === 5 && !data.phone_number) ||
-                (step === 6 && (!data.email || !data.password))
+                (step === 5 && !data.phone_number)
               }
             >
-              {step === 6 ? "Complete" : "Next"}
+              {step === 5 ? "Complete" : "Next"}
             </Button>
           </div>
         </CardContent>

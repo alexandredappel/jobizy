@@ -1,45 +1,92 @@
 import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
 import { UserRole } from '@/types/firebase.types';
 
 const SignUp = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>('worker');
-  const [showRoleSelection, setShowRoleSelection] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleRoleSelect = (selectedRole: UserRole) => {
-    setRole(selectedRole);
-    setShowRoleSelection(false);
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      console.log('Creating new user with role:', role);
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      
+      await setDoc(doc(db, 'users', user.uid), {
+        email,
+        role,
+        createdAt: new Date().toISOString(),
+      });
+      
+      console.log('User created successfully, navigating to onboarding');
+      navigate(`/${role}/onboarding`);
+    } catch (error: any) {
+      console.error('SignUp error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create account. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
-  if (showRoleSelection) {
-    return (
-      <AuthLayout title="Choose your role">
-        <div className="space-y-4">
+  return (
+    <AuthLayout title="Create your Jobizy Account">
+      <form className="space-y-4" onSubmit={handleSignUp}>
+        <Input
+          type="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <div className="flex gap-4">
           <Button
             type="button"
             variant={role === 'worker' ? 'default' : 'outline'}
-            className="w-full"
-            onClick={() => handleRoleSelect('worker')}
+            className="flex-1"
+            onClick={() => setRole('worker')}
           >
             I'm a Worker
           </Button>
           <Button
             type="button"
             variant={role === 'business' ? 'default' : 'outline'}
-            className="w-full"
-            onClick={() => handleRoleSelect('business')}
+            className="flex-1"
+            onClick={() => setRole('business')}
           >
             I'm a Business
           </Button>
         </div>
-      </AuthLayout>
-    );
-  }
-
-  // Redirect to respective onboarding
-  window.location.href = `/${role}/onboarding`;
-  return null;
+        <Button type="submit" className="w-full">
+          Sign Up
+        </Button>
+        <div className="text-center text-sm text-secondary">
+          Already have an account?{' '}
+          <Link to="/signin" className="text-primary hover:text-primary/80">
+            Sign In
+          </Link>
+        </div>
+      </form>
+    </AuthLayout>
+  );
 };
 
 export default SignUp;
