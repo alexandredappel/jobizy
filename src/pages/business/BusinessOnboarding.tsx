@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { AuthService } from "@/services/authService";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -31,7 +30,7 @@ interface OnboardingData {
   location: WorkArea;
   job_type: JobType;
   languages: Language[];
-  business_name: string;
+  company_name: string;
 }
 
 const BusinessOnboarding = () => {
@@ -40,13 +39,12 @@ const BusinessOnboarding = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [isCompleting, setIsCompleting] = useState(false);
-  const authService = new AuthService();
   const [data, setData] = useState<OnboardingData>({
     business_type: 'Restaurant',
     location: 'Seminyak',
     job_type: 'Waiter',
     languages: [],
-    business_name: "",
+    company_name: "",
   });
 
   const progress = (step / 5) * 100;
@@ -66,9 +64,10 @@ const BusinessOnboarding = () => {
       setIsCompleting(true);
       console.log("Completing business onboarding...");
       
-      // Only save business_name to Firebase
       await setDoc(doc(db, 'users', user.id), {
-        company_name: data.business_name,
+        business_type: data.business_type,
+        location: data.location,
+        company_name: data.company_name,
         role: 'business',
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
@@ -79,8 +78,9 @@ const BusinessOnboarding = () => {
         description: "Your business profile has been created successfully!",
       });
 
+      // Redirect to search page after successful onboarding
       setTimeout(() => {
-        navigate("/business/dashboard");
+        navigate("/business/search");
       }, 3000);
 
     } catch (error) {
@@ -102,7 +102,7 @@ const BusinessOnboarding = () => {
           <h1 className="text-2xl font-bold">Welcome aboard!</h1>
           <p className="text-muted-foreground">
             Your business profile has been created.
-            Redirecting to your dashboard...
+            Redirecting to search page...
           </p>
         </div>
       </div>
@@ -213,8 +213,8 @@ const BusinessOnboarding = () => {
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">What is the name of your Business?</h2>
                 <Input
-                  value={data.business_name}
-                  onChange={(e) => setData({ ...data, business_name: e.target.value })}
+                  value={data.company_name}
+                  onChange={(e) => setData({ ...data, company_name: e.target.value })}
                   placeholder="Enter your business name"
                 />
               </div>
@@ -228,7 +228,7 @@ const BusinessOnboarding = () => {
                 (step === 2 && !data.location) ||
                 (step === 3 && !data.job_type) ||
                 (step === 4 && data.languages.length === 0) ||
-                (step === 5 && !data.business_name)
+                (step === 5 && !data.company_name)
               }
             >
               {step === 5 ? "Complete" : "Next"}
