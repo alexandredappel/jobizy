@@ -117,7 +117,8 @@ const Search = () => {
   };
 
   const handleViewProfile = (workerId: string) => {
-    navigate(`/profiles/worker/${workerId}`);
+    console.log('Navigating to worker profile:', workerId);
+    navigate(`/worker/${workerId}`);
   };
 
   const hasActiveFilters = Boolean(filters.job || filters.workArea || filters.languages.length > 0 || filters.gender);
