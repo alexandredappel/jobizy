@@ -22,10 +22,12 @@ const SignUp = () => {
       console.log('Creating new user with role:', role);
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       
+      // Save user data including email in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email,
         role,
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
       
       console.log('User created successfully, navigating to onboarding');

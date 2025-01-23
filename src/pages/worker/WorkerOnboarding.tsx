@@ -228,6 +228,9 @@ const WorkerOnboarding = () => {
                   onChange={(e) => setData({ ...data, phone_number: e.target.value })}
                   placeholder="Enter your phone number"
                 />
+                <p className="text-sm text-muted-foreground">
+                  Your phone number is required and will be used by businesses to contact you for job opportunities.
+                </p>
               </div>
             )}
 
