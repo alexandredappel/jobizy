@@ -18,7 +18,7 @@ import {
   Mail, 
   Phone, 
   Trash2, 
-  Upgrade 
+  ArrowUpCircle 
 } from "lucide-react";
 
 interface SettingsModalProps {
@@ -46,7 +46,7 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     { icon: Globe2, label: "Language", onClick: () => console.log("Language settings") },
     { icon: CreditCard, label: "Billing", onClick: () => console.log("Billing settings") },
     { icon: HelpCircle, label: "Contact Support", onClick: () => console.log("Contact support") },
-    { icon: Upgrade, label: "Upgrade Account", onClick: () => console.log("Upgrade account") },
+    { icon: ArrowUpCircle, label: "Upgrade Account", onClick: () => console.log("Upgrade account") },
     { icon: LogOut, label: "Sign Out", onClick: handleLogout, variant: "outline" as const },
     { icon: Trash2, label: "Delete Account", onClick: handleDeleteAccount, variant: "destructive" as const },
   ];
