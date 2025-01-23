@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
+import { doc, getDoc } from 'firebase/firestore';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -20,9 +21,30 @@ const SignIn = () => {
     
     try {
       console.log('Attempting to sign in with:', email);
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log('Sign in successful');
-      navigate('/');
+
+      // Fetch user data to get role
+      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const userRole = userData.role || userData.userType;
+        console.log('User role:', userRole);
+        
+        // Redirect based on role
+        if (userRole === 'worker') {
+          navigate('/worker/dashboard');
+        } else if (userRole === 'business') {
+          navigate('/business/dashboard');
+        } else {
+          console.error('Invalid user role:', userRole);
+          toast({
+            title: "Error",
+            description: "Invalid user role",
+            variant: "destructive"
+          });
+        }
+      }
     } catch (error: any) {
       console.error('Sign in error:', error);
       toast({
