@@ -1,2 +1,2 @@
 export { default as MainProfileSection } from './MainProfileSection';
-export { MainProfileEditModal } from './modals/MainProfileEditModal';
+export { default as MainProfileEditModal } from './modals/MainProfileEditModal';

@@ -3,7 +3,7 @@ import { ProfileContainer, ProfileHeader } from "@/layouts/profile";
 import { BusinessUser } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
 import { Edit } from 'lucide-react';
-import { MainProfileEditModal } from './modals/MainProfileEditModal';
+import MainProfileEditModal from './modals/MainProfileEditModal';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface MainProfileSectionProps {

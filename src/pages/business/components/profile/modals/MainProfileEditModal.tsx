@@ -19,7 +19,7 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { BusinessUser, BusinessType, WorkArea } from '@/types/firebase.types';
+import { BusinessUser } from '@/types/firebase.types';
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
