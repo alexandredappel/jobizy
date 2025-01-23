@@ -87,9 +87,11 @@ const Search = () => {
       }
 
       // Check job type
-      if (filters.job && worker.job && typeof worker.job === 'string' && 
-          worker.job.toLowerCase() !== filters.job.toLowerCase()) {
-        return false;
+      if (filters.job && worker.job) {
+        const workerJob = worker.job as JobType;
+        if (workerJob.toLowerCase() !== filters.job.toLowerCase()) {
+          return false;
+        }
       }
 
       // Check work area
