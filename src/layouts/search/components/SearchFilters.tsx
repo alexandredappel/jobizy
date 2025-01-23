@@ -58,8 +58,8 @@ export function SearchFilters({ onFilterChange, onSearch }: SearchFiltersProps) 
         <Label>Languages</Label>
         <MultiSelect
           options={[
-            { label: "English", value: "English" },
-            { label: "Bahasa", value: "Bahasa" }
+            "English",
+            "Bahasa"
           ]}
           selected={[]}
           onChange={(value) => onFilterChange?.('languages', value)}

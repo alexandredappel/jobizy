@@ -143,8 +143,13 @@ const SelectSeparator = React.forwardRef<
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 
+interface Option {
+  label: string
+  value: string
+}
+
 interface MultiSelectProps {
-  options: string[]
+  options: Option[] | string[]
   selected: string[]
   onChange: (selected: string[]) => void
   placeholder?: string
@@ -169,6 +174,14 @@ const MultiSelect = React.forwardRef<
     
     setSelectedItems(newSelection)
     onChange(newSelection)
+  }
+
+  const getOptionValue = (option: Option | string): string => {
+    return typeof option === 'string' ? option : option.value
+  }
+
+  const getOptionLabel = (option: Option | string): string => {
+    return typeof option === 'string' ? option : option.label
   }
 
   return (
@@ -210,11 +223,11 @@ const MultiSelect = React.forwardRef<
         <SelectPrimitive.Viewport className="p-1">
           {options.map((option) => (
             <SelectItem
-              key={option}
-              value={option}
-              onSelect={() => handleSelect(option)}
+              key={getOptionValue(option)}
+              value={getOptionValue(option)}
+              onSelect={() => handleSelect(getOptionValue(option))}
             >
-              {option}
+              {getOptionLabel(option)}
             </SelectItem>
           ))}
         </SelectPrimitive.Viewport>
