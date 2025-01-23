@@ -14,6 +14,7 @@ const Search = () => {
   const [filteredWorkers, setFilteredWorkers] = useState<WorkerUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalAvailable, setTotalAvailable] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -42,7 +43,6 @@ const Search = () => {
         console.log('Fetched worker data:', workerData);
         setWorkers(workerData);
         setTotalAvailable(workerData.length);
-        setFilteredWorkers(workerData);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching workers:', error);
@@ -67,6 +67,7 @@ const Search = () => {
 
   const handleSearch = () => {
     setIsLoading(true);
+    setHasSearched(true);
     console.log('Searching with filters:', filters);
     
     const filtered = workers.filter(worker => {
@@ -137,9 +138,9 @@ const Search = () => {
       <div className="mt-6 space-y-4">
         {isLoading ? (
           <div>Loading...</div>
-        ) : !hasActiveFilters ? (
+        ) : !hasSearched ? (
           <div className="text-center text-lg text-muted-foreground">
-            {totalAvailable} workers available in Bali
+            Use the filters above and click Search to find workers
           </div>
         ) : filteredWorkers.length === 0 ? (
           <div>No workers found matching your criteria</div>
