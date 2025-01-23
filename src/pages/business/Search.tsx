@@ -38,6 +38,7 @@ const Search = () => {
           ...doc.data()
         })) as WorkerUser[];
         
+        console.log('Fetched worker data:', workerData);
         setWorkers(workerData);
         setTotalAvailable(workerData.length);
         setIsLoading(false);
@@ -143,22 +144,25 @@ const Search = () => {
         ) : workers.length === 0 ? (
           <div>No workers found matching your criteria</div>
         ) : (
-          workers.map(worker => (
-            <WorkerCard
-              key={worker.id}
-              worker={{
-                id: worker.id,
-                name: worker.full_name,
-                imageUrl: worker.profile_picture_url,
-                job: worker.job,
-                isAvailable: worker.availability_status,
-                experience: worker.experience,
-                workArea: worker.location[0],
-                languages: worker.languages
-              }}
-              onViewProfile={handleViewProfile}
-            />
-          ))
+          workers.map(worker => {
+            console.log('Rendering worker card:', worker);
+            return (
+              <WorkerCard
+                key={worker.id}
+                worker={{
+                  id: worker.id,
+                  name: worker.full_name,
+                  imageUrl: worker.profile_picture_url,
+                  job: worker.job,
+                  isAvailable: worker.availability_status,
+                  experience: worker.experience,
+                  workArea: worker.location?.[0] || 'Not specified',
+                  languages: worker.languages || []
+                }}
+                onViewProfile={handleViewProfile}
+              />
+            );
+          })
         )}
       </div>
     </SearchLayout>
