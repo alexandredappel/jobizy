@@ -8,8 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MultiSelect } from "@/components/ui/multi-select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { JobType, WorkArea, Language } from "@/types/firebase.types";
@@ -80,7 +80,6 @@ const WorkerOnboarding = () => {
         description: "Your profile is now visible to businesses in Bali!",
       });
 
-      // Show success screen for 3 seconds
       setTimeout(() => {
         navigate("/worker/dashboard");
       }, 3000);
@@ -142,24 +141,46 @@ const WorkerOnboarding = () => {
             {step === 2 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">In which areas would you like to work?</h2>
-                <MultiSelect
-                  options={WORK_AREAS}
-                  selected={data.location}
-                  onChange={(selected) => setData({ ...data, location: selected as WorkArea[] })}
-                  placeholder="Select work areas"
-                />
+                <ToggleGroup 
+                  type="multiple"
+                  value={data.location}
+                  onValueChange={(value) => setData({ ...data, location: value as WorkArea[] })}
+                  className="flex flex-wrap gap-2"
+                >
+                  {WORK_AREAS.map((area) => (
+                    <ToggleGroupItem
+                      key={area}
+                      value={area}
+                      aria-label={area}
+                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                    >
+                      {area}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
               </div>
             )}
 
             {step === 3 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">What languages do you speak?</h2>
-                <MultiSelect
-                  options={LANGUAGES}
-                  selected={data.languages}
-                  onChange={(selected) => setData({ ...data, languages: selected as Language[] })}
-                  placeholder="Select languages"
-                />
+                <ToggleGroup 
+                  type="multiple"
+                  value={data.languages}
+                  onValueChange={(value) => setData({ ...data, languages: value as Language[] })}
+                  className="flex flex-wrap gap-2"
+                >
+                  {LANGUAGES.map((language) => (
+                    <ToggleGroupItem
+                      key={language}
+                      value={language}
+                      aria-label={language}
+                      className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                    >
+                      {language}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
               </div>
             )}
 

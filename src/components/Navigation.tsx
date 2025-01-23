@@ -40,9 +40,16 @@ export const Navigation = () => {
   const { toast } = useToast();
   const authService = new AuthService();
 
-  // Hide navigation on auth pages
-  const isAuthPage = ['/signin', '/signup', '/forgot-password', '/reset-password'].includes(location.pathname);
-  if (isAuthPage) return null;
+  // Hide navigation on auth pages and worker onboarding
+  const isHiddenPage = [
+    '/signin', 
+    '/signup', 
+    '/forgot-password', 
+    '/reset-password',
+    '/worker/onboarding'
+  ].includes(location.pathname);
+  
+  if (isHiddenPage) return null;
 
   const handleLogout = async () => {
     try {
