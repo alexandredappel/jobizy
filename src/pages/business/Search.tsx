@@ -59,50 +59,51 @@ const Search = () => {
 
   const handleFilterChange = (filterType: string, value: any) => {
     console.log('Filter change:', filterType, value);
-    const newFilters = {
-      ...filters,
+    setFilters(prev => ({
+      ...prev,
       [filterType]: value
-    };
-    setFilters(newFilters);
-    handleSearch(newFilters);
+    }));
   };
 
-  const handleSearch = (currentFilters = filters) => {
+  const handleSearch = () => {
     setIsLoading(true);
-    console.log('Searching with filters:', currentFilters);
+    console.log('Searching with filters:', filters);
     
     const filtered = workers.filter(worker => {
       // If no filters are active, return all workers
-      if (!currentFilters.job && !currentFilters.workArea && currentFilters.languages.length === 0 && !currentFilters.gender) {
+      if (!filters.job && !filters.workArea && filters.languages.length === 0 && !filters.gender) {
         return true;
       }
 
       // Check job type
-      if (currentFilters.job && worker.job) {
-        if (worker.job.toLowerCase() !== currentFilters.job.toLowerCase()) {
+      if (filters.job && worker.job) {
+        if (worker.job.toLowerCase() !== filters.job.toLowerCase()) {
           return false;
         }
       }
 
       // Check work area
-      if (currentFilters.workArea && Array.isArray(worker.location)) {
+      if (filters.workArea && Array.isArray(worker.location)) {
         const workerAreas = worker.location.map(area => area.toLowerCase());
-        if (!workerAreas.includes(currentFilters.workArea.toLowerCase())) {
+        if (!workerAreas.includes(filters.workArea.toLowerCase())) {
           return false;
         }
       }
 
-      // Check languages
-      if (currentFilters.languages.length > 0 && Array.isArray(worker.languages)) {
+      // Check languages (using AND logic)
+      if (filters.languages.length > 0 && Array.isArray(worker.languages)) {
         const workerLanguages = worker.languages.map(lang => lang.toLowerCase());
-        const filterLanguages = currentFilters.languages.map(lang => lang.toLowerCase());
-        if (!filterLanguages.every(lang => workerLanguages.includes(lang))) {
+        // Check if ALL selected languages are present in worker's languages
+        const hasAllLanguages = filters.languages.every(lang => 
+          workerLanguages.includes(lang.toLowerCase())
+        );
+        if (!hasAllLanguages) {
           return false;
         }
       }
 
       // Check gender
-      if (currentFilters.gender && worker.gender !== currentFilters.gender) {
+      if (filters.gender && worker.gender !== filters.gender) {
         return false;
       }
 
@@ -128,7 +129,10 @@ const Search = () => {
         onSaveSearch={() => {/* To be implemented */}}
       />
       
-      <SearchFilters onFilterChange={handleFilterChange} />
+      <SearchFilters 
+        onFilterChange={handleFilterChange}
+        onSearch={handleSearch}
+      />
       
       <div className="mt-6 space-y-4">
         {isLoading ? (

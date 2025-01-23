@@ -7,13 +7,10 @@ import { JobType, Language, WorkArea } from "@/types/firebase.types";
 
 interface SearchFiltersProps {
   onFilterChange?: (filterType: string, value: any) => void;
+  onSearch: () => void;
 }
 
-export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
-  const handleSearch = () => {
-    // This will be handled by the parent component
-  };
-
+export function SearchFilters({ onFilterChange, onSearch }: SearchFiltersProps) {
   return (
     <div className="space-y-6">
       {/* Job Type */}
@@ -60,7 +57,10 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
       <div className="space-y-2">
         <Label>Languages</Label>
         <MultiSelect
-          options={["English", "Bahasa"]}
+          options={[
+            { label: "English", value: "English" },
+            { label: "Bahasa", value: "Bahasa" }
+          ]}
           selected={[]}
           onChange={(value) => onFilterChange?.('languages', value)}
           placeholder="Select languages"
@@ -83,7 +83,7 @@ export function SearchFilters({ onFilterChange }: SearchFiltersProps) {
 
       <Button 
         className="w-full mt-6" 
-        onClick={handleSearch}
+        onClick={onSearch}
       >
         Search
       </Button>
