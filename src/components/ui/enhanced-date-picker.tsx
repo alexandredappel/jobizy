@@ -25,14 +25,6 @@ interface EnhancedDatePickerProps {
   label?: string;
 }
 
-// Define the correct type for Caption props
-interface CustomCaptionProps {
-  displayMonth: Date;
-  displayYear: number;
-  decreaseMonth: () => void;
-  increaseMonth: () => void;
-}
-
 export function EnhancedDatePicker({ 
   date, 
   onSelect, 
@@ -91,7 +83,7 @@ export function EnhancedDatePicker({
           classNames={{
             head_cell: "w-10 font-normal text-muted-foreground",
             cell: cn(
-              "h-10 w-10 text-center text-sm p-0 relative",
+              "h-10 w-10 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent",
               "hover:bg-accent hover:text-accent-foreground focus-within:relative focus-within:z-20"
             ),
             nav_button: cn(
@@ -107,7 +99,7 @@ export function EnhancedDatePicker({
             Caption: ({ displayMonth }: { displayMonth: Date }) => {
               const displayYear = displayMonth.getFullYear();
               return (
-                <div className="flex justify-center space-x-2 py-2">
+                <div className="flex justify-center space-x-2 py-2" onClick={handleCalendarClick}>
                   <Select
                     value={displayMonth.getMonth().toString()}
                     onValueChange={(value) => {
