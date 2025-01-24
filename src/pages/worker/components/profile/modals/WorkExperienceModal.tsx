@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { doc, deleteDoc, collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
+import { doc, deleteDoc, collection, addDoc, updateDoc, Timestamp, writeBatch } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface WorkExperienceListModalProps {
@@ -117,8 +117,9 @@ const WorkExperienceListModal = ({
   };
 
   const handleSaveChanges = async () => {
-    console.log('Saving changes to Firebase');
+    console.log('Starting save changes process');
     setIsLoading(true);
+    
     try {
       // Validate all experiences
       for (const exp of localExperiences) {
@@ -133,7 +134,20 @@ const WorkExperienceListModal = ({
         }
       }
 
-      // Save all experiences
+      const batch = writeBatch(db);
+      const experiencesRef = collection(db, 'work_experiences');
+
+      // Delete all existing experiences first
+      console.log('Deleting existing experiences');
+      for (const exp of experiences) {
+        if (exp.id) {
+          const docRef = doc(db, 'work_experiences', exp.id);
+          batch.delete(docRef);
+        }
+      }
+
+      // Add all current experiences as new documents
+      console.log('Adding new/updated experiences');
       for (const exp of localExperiences) {
         const experienceData = {
           user_id: userId,
@@ -141,18 +155,17 @@ const WorkExperienceListModal = ({
           position: exp.position,
           start_date: Timestamp.fromDate(exp.startDate),
           end_date: exp.isCurrentPosition ? null : exp.endDate ? Timestamp.fromDate(exp.endDate) : null,
-          updatedAt: Timestamp.now()
+          updated_at: Timestamp.now(),
+          created_at: Timestamp.now()
         };
 
-        if (exp.id) {
-          await updateDoc(doc(db, 'work_experiences', exp.id), experienceData);
-        } else {
-          await addDoc(collection(db, 'work_experiences'), {
-            ...experienceData,
-            createdAt: Timestamp.now()
-          });
-        }
+        const newDocRef = doc(experiencesRef);
+        batch.set(newDocRef, experienceData);
       }
+
+      // Commit all changes in one batch
+      await batch.commit();
+      console.log('Batch commit successful');
 
       toast({
         title: "Success",
