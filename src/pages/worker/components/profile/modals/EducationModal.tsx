@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { DatePicker } from "@/components/ui/date-picker";
+import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -216,12 +216,13 @@ const EducationModal = ({
 
                   <div className="space-y-2">
                     <Label>Start Date</Label>
-                    <DatePicker
+                    <EnhancedDatePicker
                       date={edu.startDate}
                       onSelect={(date) => date && handleUpdateField(index, 'startDate', date)}
                       disabled={(date) =>
                         date > new Date() || (edu.endDate && date > edu.endDate)
                       }
+                      label="Select start date"
                     />
                   </div>
 
@@ -241,12 +242,13 @@ const EducationModal = ({
                   {!edu.isCurrentStudy && (
                     <div className="space-y-2">
                       <Label>End Date</Label>
-                      <DatePicker
+                      <EnhancedDatePicker
                         date={edu.endDate}
                         onSelect={(date) => date && handleUpdateField(index, 'endDate', date)}
                         disabled={(date) =>
                           date > new Date() || date < edu.startDate
                         }
+                        label="Select end date"
                       />
                     </div>
                   )}
