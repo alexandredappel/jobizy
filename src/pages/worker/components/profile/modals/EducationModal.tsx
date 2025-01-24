@@ -4,15 +4,16 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Education } from "@/types/firebase.types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -144,10 +145,8 @@ const EducationModal = ({
         };
 
         if (edu.id) {
-          // Update existing education
           await updateDoc(doc(db, 'education', edu.id), educationData);
         } else {
-          // Add new education
           await addDoc(collection(db, 'education'), {
             ...educationData,
             createdAt: Timestamp.now()
@@ -176,107 +175,105 @@ const EducationModal = ({
   return (
     <>
       <Sheet open={open} onOpenChange={handleClose}>
-        <SheetContent className="w-full sm:max-w-lg">
-          <SheetHeader>
+        <SheetContent className="w-full sm:max-w-lg flex flex-col">
+          <SheetHeader className="px-6 pt-6">
             <SheetTitle>Education</SheetTitle>
           </SheetHeader>
 
-          <div className="mt-6 space-y-6 pb-20">
-            {localEducation.map((edu, index) => (
-              <div
-                key={index}
-                className="relative border rounded-lg p-4 space-y-4"
-              >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-2"
-                  onClick={() => handleDeleteEducation(index)}
+          <div className="flex-1 overflow-y-auto px-6">
+            <div className="space-y-6 pb-6">
+              {localEducation.map((edu, index) => (
+                <div
+                  key={index}
+                  className="relative border rounded-lg p-4 space-y-4"
                 >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-                
-                <div className="space-y-2">
-                  <Label>Institution</Label>
-                  <Input
-                    value={edu.institution}
-                    onChange={(e) => handleUpdateField(index, 'institution', e.target.value)}
-                    placeholder="Enter institution name"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Degree</Label>
-                  <Input
-                    value={edu.degree}
-                    onChange={(e) => handleUpdateField(index, 'degree', e.target.value)}
-                    placeholder="Enter degree"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Start Date</Label>
-                  <Calendar
-                    mode="single"
-                    selected={edu.startDate}
-                    onSelect={(date) => date && handleUpdateField(index, 'startDate', date)}
-                    disabled={(date) =>
-                      date > new Date() || (edu.endDate && date > edu.endDate)
-                    }
-                    className="rounded-md border"
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={edu.isCurrentStudy}
-                    onCheckedChange={(checked) => {
-                      handleUpdateField(index, 'isCurrentStudy', checked);
-                      if (checked) {
-                        handleUpdateField(index, 'endDate', undefined);
-                      }
-                    }}
-                  />
-                  <Label>Current Study</Label>
-                </div>
-
-                {!edu.isCurrentStudy && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-2"
+                    onClick={() => handleDeleteEducation(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  
                   <div className="space-y-2">
-                    <Label>End Date</Label>
-                    <Calendar
-                      mode="single"
-                      selected={edu.endDate}
-                      onSelect={(date) => date && handleUpdateField(index, 'endDate', date)}
-                      disabled={(date) =>
-                        date > new Date() || date < edu.startDate
-                      }
-                      className="rounded-md border"
+                    <Label>Institution</Label>
+                    <Input
+                      value={edu.institution}
+                      onChange={(e) => handleUpdateField(index, 'institution', e.target.value)}
+                      placeholder="Enter institution name"
                     />
                   </div>
-                )}
-              </div>
-            ))}
+
+                  <div className="space-y-2">
+                    <Label>Degree</Label>
+                    <Input
+                      value={edu.degree}
+                      onChange={(e) => handleUpdateField(index, 'degree', e.target.value)}
+                      placeholder="Enter degree"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Start Date</Label>
+                    <DatePicker
+                      date={edu.startDate}
+                      onSelect={(date) => date && handleUpdateField(index, 'startDate', date)}
+                      disabled={(date) =>
+                        date > new Date() || (edu.endDate && date > edu.endDate)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={edu.isCurrentStudy}
+                      onCheckedChange={(checked) => {
+                        handleUpdateField(index, 'isCurrentStudy', checked);
+                        if (checked) {
+                          handleUpdateField(index, 'endDate', undefined);
+                        }
+                      }}
+                    />
+                    <Label>Current Study</Label>
+                  </div>
+
+                  {!edu.isCurrentStudy && (
+                    <div className="space-y-2">
+                      <Label>End Date</Label>
+                      <DatePicker
+                        date={edu.endDate}
+                        onSelect={(date) => date && handleUpdateField(index, 'endDate', date)}
+                        disabled={(date) =>
+                          date > new Date() || date < edu.startDate
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="fixed bottom-20 right-6">
-            <Button
-              className="rounded-full shadow-lg"
-              onClick={handleAddEducation}
-              variant="default"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="fixed bottom-6 right-6 left-6">
-            <Button
-              className="w-full"
-              onClick={handleSaveChanges}
-              disabled={isLoading}
-            >
-              {isLoading ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
+          <SheetFooter className="px-6 py-4 border-t">
+            <div className="flex justify-between items-center w-full">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+                onClick={handleAddEducation}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                className="ml-auto"
+                onClick={handleSaveChanges}
+                disabled={isLoading}
+              >
+                {isLoading ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
 

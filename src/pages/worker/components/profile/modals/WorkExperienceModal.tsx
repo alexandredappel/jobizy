@@ -4,15 +4,16 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetFooter,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { WorkExperience } from "@/types/firebase.types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -144,10 +145,8 @@ const WorkExperienceListModal = ({
         };
 
         if (exp.id) {
-          // Update existing experience
           await updateDoc(doc(db, 'work_experiences', exp.id), experienceData);
         } else {
-          // Add new experience
           await addDoc(collection(db, 'work_experiences'), {
             ...experienceData,
             createdAt: Timestamp.now()
@@ -176,107 +175,105 @@ const WorkExperienceListModal = ({
   return (
     <>
       <Sheet open={open} onOpenChange={handleClose}>
-        <SheetContent className="w-full sm:max-w-lg">
-          <SheetHeader>
+        <SheetContent className="w-full sm:max-w-lg flex flex-col">
+          <SheetHeader className="px-6 pt-6">
             <SheetTitle>Work Experience</SheetTitle>
           </SheetHeader>
 
-          <div className="mt-6 space-y-6 pb-20">
-            {localExperiences.map((exp, index) => (
-              <div
-                key={index}
-                className="relative border rounded-lg p-4 space-y-4"
-              >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-2"
-                  onClick={() => handleDeleteExperience(index)}
+          <div className="flex-1 overflow-y-auto px-6">
+            <div className="space-y-6 pb-6">
+              {localExperiences.map((exp, index) => (
+                <div
+                  key={index}
+                  className="relative border rounded-lg p-4 space-y-4"
                 >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-                
-                <div className="space-y-2">
-                  <Label>Company Name</Label>
-                  <Input
-                    value={exp.companyName}
-                    onChange={(e) => handleUpdateField(index, 'companyName', e.target.value)}
-                    placeholder="Enter company name"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Position</Label>
-                  <Input
-                    value={exp.position}
-                    onChange={(e) => handleUpdateField(index, 'position', e.target.value)}
-                    placeholder="Enter position"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Start Date</Label>
-                  <Calendar
-                    mode="single"
-                    selected={exp.startDate}
-                    onSelect={(date) => date && handleUpdateField(index, 'startDate', date)}
-                    disabled={(date) =>
-                      date > new Date() || (exp.endDate && date > exp.endDate)
-                    }
-                    className="rounded-md border"
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    checked={exp.isCurrentPosition}
-                    onCheckedChange={(checked) => {
-                      handleUpdateField(index, 'isCurrentPosition', checked);
-                      if (checked) {
-                        handleUpdateField(index, 'endDate', undefined);
-                      }
-                    }}
-                  />
-                  <Label>Current Position</Label>
-                </div>
-
-                {!exp.isCurrentPosition && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-2"
+                    onClick={() => handleDeleteExperience(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  
                   <div className="space-y-2">
-                    <Label>End Date</Label>
-                    <Calendar
-                      mode="single"
-                      selected={exp.endDate}
-                      onSelect={(date) => date && handleUpdateField(index, 'endDate', date)}
-                      disabled={(date) =>
-                        date > new Date() || date < exp.startDate
-                      }
-                      className="rounded-md border"
+                    <Label>Company Name</Label>
+                    <Input
+                      value={exp.companyName}
+                      onChange={(e) => handleUpdateField(index, 'companyName', e.target.value)}
+                      placeholder="Enter company name"
                     />
                   </div>
-                )}
-              </div>
-            ))}
+
+                  <div className="space-y-2">
+                    <Label>Position</Label>
+                    <Input
+                      value={exp.position}
+                      onChange={(e) => handleUpdateField(index, 'position', e.target.value)}
+                      placeholder="Enter position"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Start Date</Label>
+                    <DatePicker
+                      date={exp.startDate}
+                      onSelect={(date) => date && handleUpdateField(index, 'startDate', date)}
+                      disabled={(date) =>
+                        date > new Date() || (exp.endDate && date > exp.endDate)
+                      }
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={exp.isCurrentPosition}
+                      onCheckedChange={(checked) => {
+                        handleUpdateField(index, 'isCurrentPosition', checked);
+                        if (checked) {
+                          handleUpdateField(index, 'endDate', undefined);
+                        }
+                      }}
+                    />
+                    <Label>Current Position</Label>
+                  </div>
+
+                  {!exp.isCurrentPosition && (
+                    <div className="space-y-2">
+                      <Label>End Date</Label>
+                      <DatePicker
+                        date={exp.endDate}
+                        onSelect={(date) => date && handleUpdateField(index, 'endDate', date)}
+                        disabled={(date) =>
+                          date > new Date() || date < exp.startDate
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="fixed bottom-20 right-6">
-            <Button
-              className="rounded-full shadow-lg"
-              onClick={handleAddExperience}
-              variant="default"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-
-          <div className="fixed bottom-6 right-6 left-6">
-            <Button
-              className="w-full"
-              onClick={handleSaveChanges}
-              disabled={isLoading}
-            >
-              {isLoading ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
+          <SheetFooter className="px-6 py-4 border-t">
+            <div className="flex justify-between items-center w-full">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+                onClick={handleAddExperience}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                className="ml-auto"
+                onClick={handleSaveChanges}
+                disabled={isLoading}
+              >
+                {isLoading ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
 
