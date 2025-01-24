@@ -16,12 +16,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DayPicker } from "react-day-picker";
 
 interface EnhancedDatePickerProps {
   date?: Date;
   onSelect: (date: Date | undefined) => void;
   disabled?: (date: Date) => boolean;
   label?: string;
+}
+
+// Define the correct type for Caption props
+interface CustomCaptionProps {
+  displayMonth: Date;
+  displayYear: number;
+  decreaseMonth: () => void;
+  increaseMonth: () => void;
 }
 
 export function EnhancedDatePicker({ 
@@ -95,54 +104,49 @@ export function EnhancedDatePicker({
             caption_label: "text-sm font-medium",
           }}
           components={{
-            Caption: ({ displayMonth, displayYear, decreaseMonth, increaseMonth }) => (
-              <div className="flex justify-center space-x-2 py-2">
-                <Select
-                  value={displayMonth.getMonth().toString()}
-                  onValueChange={(value) => {
-                    const newDate = new Date(displayMonth);
-                    newDate.setMonth(parseInt(value));
-                    const diff = Math.floor((newDate.getTime() - displayMonth.getTime()) / (1000 * 60 * 60 * 24 * 30));
-                    for (let i = 0; i < Math.abs(diff); i++) {
-                      diff > 0 ? increaseMonth() : decreaseMonth();
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue>{months[displayMonth.getMonth()]}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map((month, index) => (
-                      <SelectItem key={month} value={index.toString()}>
-                        {month}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={displayYear.toString()}
-                  onValueChange={(value) => {
-                    const newDate = new Date(displayMonth);
-                    newDate.setFullYear(parseInt(value));
-                    const diff = Math.floor((newDate.getTime() - displayMonth.getTime()) / (1000 * 60 * 60 * 24 * 365));
-                    for (let i = 0; i < Math.abs(diff); i++) {
-                      diff > 0 ? increaseMonth() : decreaseMonth();
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-[100px]">
-                    <SelectValue>{displayYear}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year.value} value={year.value}>
-                        {year.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ),
+            Caption: ({ displayMonth }: { displayMonth: Date }) => {
+              const displayYear = displayMonth.getFullYear();
+              return (
+                <div className="flex justify-center space-x-2 py-2">
+                  <Select
+                    value={displayMonth.getMonth().toString()}
+                    onValueChange={(value) => {
+                      const newDate = new Date(displayMonth);
+                      newDate.setMonth(parseInt(value));
+                    }}
+                  >
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue>{months[displayMonth.getMonth()]}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {months.map((month, index) => (
+                        <SelectItem key={month} value={index.toString()}>
+                          {month}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={displayYear.toString()}
+                    onValueChange={(value) => {
+                      const newDate = new Date(displayMonth);
+                      newDate.setFullYear(parseInt(value));
+                    }}
+                  >
+                    <SelectTrigger className="w-[100px]">
+                      <SelectValue>{displayYear}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {years.map((year) => (
+                        <SelectItem key={year.value} value={year.value}>
+                          {year.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            },
           }}
         />
       </PopoverContent>
