@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DayPicker } from "react-day-picker";
 
 interface EnhancedDatePickerProps {
   date?: Date;
@@ -32,6 +31,7 @@ export function EnhancedDatePicker({
   label 
 }: EnhancedDatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [displayedMonth, setDisplayedMonth] = React.useState(date || new Date());
   
   // Generate years for the past 50 years
   const years = Array.from({ length: 50 }, (_, i) => {
@@ -54,6 +54,18 @@ export function EnhancedDatePicker({
     e.stopPropagation();
   };
 
+  const handleMonthChange = (value: string) => {
+    const newDate = new Date(displayedMonth);
+    newDate.setMonth(parseInt(value));
+    setDisplayedMonth(newDate);
+  };
+
+  const handleYearChange = (value: string) => {
+    const newDate = new Date(displayedMonth);
+    newDate.setFullYear(parseInt(value));
+    setDisplayedMonth(newDate);
+  };
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -72,12 +84,15 @@ export function EnhancedDatePicker({
         className="w-auto p-0" 
         align="start"
         onClick={handleCalendarClick}
+        style={{ pointerEvents: 'auto' }}
       >
         <Calendar
           mode="single"
           selected={date}
           onSelect={handleSelect}
           disabled={disabled}
+          month={displayedMonth}
+          onMonthChange={setDisplayedMonth}
           initialFocus
           className="rounded-md border"
           classNames={{
@@ -102,10 +117,7 @@ export function EnhancedDatePicker({
                 <div className="flex justify-center space-x-2 py-2" onClick={handleCalendarClick}>
                   <Select
                     value={displayMonth.getMonth().toString()}
-                    onValueChange={(value) => {
-                      const newDate = new Date(displayMonth);
-                      newDate.setMonth(parseInt(value));
-                    }}
+                    onValueChange={handleMonthChange}
                   >
                     <SelectTrigger className="w-[120px]">
                       <SelectValue>{months[displayMonth.getMonth()]}</SelectValue>
@@ -120,10 +132,7 @@ export function EnhancedDatePicker({
                   </Select>
                   <Select
                     value={displayYear.toString()}
-                    onValueChange={(value) => {
-                      const newDate = new Date(displayMonth);
-                      newDate.setFullYear(parseInt(value));
-                    }}
+                    onValueChange={handleYearChange}
                   >
                     <SelectTrigger className="w-[100px]">
                       <SelectValue>{displayYear}</SelectValue>
