@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Sheet,
   SheetContent,
@@ -31,7 +32,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { auth, db } from '@/lib/firebase';
-import { updateEmail, updatePassword } from 'firebase/auth';
+import { updateEmail } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { BusinessUser } from '@/types/firebase.types';
 import { Timestamp } from 'firebase/firestore';
@@ -43,12 +44,10 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [email, setEmail] = useState(profile?.email || '');
   const [phone, setPhone] = useState(profile?.phone_number || '');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [language, setLanguage] = useState<'English' | 'Bahasa'>('English');
@@ -58,15 +57,11 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     if (!auth.currentUser || !profile?.id) return;
     setIsLoading(true);
     try {
-      // First update Firebase Auth
       await updateEmail(auth.currentUser, email);
-      
-      // Then update Firestore
       await updateDoc(doc(db, 'users', profile.id), {
         email: email,
         updated_at: Timestamp.now()
       });
-      
       toast({
         title: "Success",
         description: "Email updated successfully",
@@ -105,37 +100,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     }
   };
 
-  const handlePasswordUpdate = async () => {
-    if (!auth.currentUser) return;
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
-    setIsLoading(true);
-    try {
-      await updatePassword(auth.currentUser, newPassword);
-      toast({
-        title: "Success",
-        description: "Password updated successfully",
-      });
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="overflow-y-auto">
@@ -144,7 +108,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
         </SheetHeader>
         
         <div className="py-6 space-y-6">
-          {/* Upgrade Account Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <ArrowUpCircle className="h-4 w-4" />
@@ -157,7 +120,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Notifications Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
@@ -185,7 +147,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Language Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Globe2 className="h-4 w-4" />
@@ -204,7 +165,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Billing Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
@@ -217,7 +177,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Email Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
@@ -248,50 +207,17 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
               <Lock className="h-4 w-4" />
               <h3 className="font-medium">Password</h3>
             </div>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="current-password">Current Password</Label>
-                <Input
-                  id="current-password"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input
-                  id="new-password"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              <Button 
-                onClick={handlePasswordUpdate} 
-                className="w-full"
-                disabled={isLoading}
-              >
-                Update Password
-              </Button>
-            </div>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => navigate('/reset-password')}
+            >
+              Change Password
+            </Button>
           </div>
 
           <Separator />
 
-          {/* Phone Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
@@ -316,7 +242,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Support Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4" />
@@ -329,7 +254,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Sign Out Section */}
           <Button variant="outline" className="w-full" onClick={() => auth.signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out

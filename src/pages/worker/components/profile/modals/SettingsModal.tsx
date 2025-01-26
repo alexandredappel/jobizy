@@ -41,8 +41,8 @@ interface SettingsModalProps {
 }
 
 export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) => {
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [email, setEmail] = useState(profile?.email || '');
   const [phone, setPhone] = useState(profile?.phone_number || '');
   const [gender, setGender] = useState<'male' | 'female'>(profile?.gender || 'male');
@@ -130,7 +130,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
         </SheetHeader>
         
         <div className="py-6 space-y-6">
-          {/* Email Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
@@ -155,7 +154,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Phone Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
@@ -180,7 +178,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Gender Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <UserCircle className="h-4 w-4" />
@@ -200,7 +197,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Language Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Globe2 className="h-4 w-4" />
@@ -236,7 +232,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Notifications Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
@@ -264,7 +259,6 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Separator />
 
-          {/* Sign Out Section */}
           <Button variant="outline" className="w-full" onClick={() => auth.signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
