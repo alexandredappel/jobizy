@@ -45,7 +45,7 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
   const navigate = useNavigate();
   const [email, setEmail] = useState(profile?.email || '');
   const [phone, setPhone] = useState(profile?.phone_number || '');
-  const [gender, setGender] = useState(profile?.gender || 'male');
+  const [gender, setGender] = useState<'male' | 'female'>(profile?.gender || 'male');
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [language, setLanguage] = useState<'English' | 'Bahasa'>('English');
@@ -98,7 +98,7 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     }
   };
 
-  const handleGenderUpdate = async (newGender: string) => {
+  const handleGenderUpdate = async (newGender: 'male' | 'female') => {
     if (!profile?.id) return;
     setIsLoading(true);
     try {
