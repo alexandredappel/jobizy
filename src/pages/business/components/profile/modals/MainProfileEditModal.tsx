@@ -48,6 +48,19 @@ const MainProfileEditModal = ({ open, onClose, profile, updateProfile }: MainPro
     }
   });
 
+  // Reset form when modal closes or profile changes
+  React.useEffect(() => {
+    if (!open) {
+      console.log('Modal closed, resetting form to profile values');
+      form.reset({
+        company_name: profile?.company_name || '',
+        business_type: profile?.business_type || 'Restaurant',
+        location: profile?.location || 'Seminyak',
+        description: profile?.description || '',
+      });
+    }
+  }, [open, profile, form]);
+
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       console.log('Updating profile with values:', values);
