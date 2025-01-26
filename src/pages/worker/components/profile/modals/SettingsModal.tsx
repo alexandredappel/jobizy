@@ -1,223 +1,283 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { 
+  Bell, 
+  Globe2, 
+  Lock, 
+  LogOut, 
+  Mail, 
+  Phone,
+  Trash2,
+  UserCircle
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { auth, db } from '@/lib/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 import { WorkerUser } from '@/types/firebase.types';
-
-const formSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  birthDate: z.date(),
-  gender: z.enum(["male", "female"]),
-  currentPassword: z.string().min(6, "Password must be at least 6 characters"),
-  newPassword: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string(),
-  emailNotifications: z.boolean(),
-  pushNotifications: z.boolean(),
-  language: z.enum(["English", "Bahasa"])
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface SettingsModalProps {
   open: boolean;
   onClose: () => void;
-  profile: WorkerUser;
+  profile: WorkerUser | null;
 }
 
-const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: profile.email,
-      phone: profile.phone_number || '',
-      birthDate: profile.birthday_date?.toDate() || new Date(),
-      gender: profile.gender,
-      emailNotifications: true,
-      pushNotifications: true,
-      language: "English"
-    }
-  });
+export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState(profile?.email || '');
+  const [phone, setPhone] = useState(profile?.phone_number || '');
+  const [gender, setGender] = useState(profile?.gender || 'male');
+  const [pushNotifications, setPushNotifications] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [language, setLanguage] = useState<'English' | 'Bahasa'>('English');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Handle save logic here
-    onClose();
+  const handleEmailUpdate = async () => {
+    if (!profile?.id) return;
+    setIsLoading(true);
+    try {
+      await updateDoc(doc(db, 'users', profile.id), {
+        email: email,
+        updated_at: new Date()
+      });
+      toast({
+        title: "Success",
+        description: "Email updated successfully",
+      });
+    } catch (error: any) {
+      console.error('Error updating email:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePhoneUpdate = async () => {
+    if (!profile?.id) return;
+    setIsLoading(true);
+    try {
+      await updateDoc(doc(db, 'users', profile.id), {
+        phone_number: phone,
+        updated_at: new Date()
+      });
+      toast({
+        title: "Success",
+        description: "Phone number updated successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGenderUpdate = async (newGender: string) => {
+    if (!profile?.id) return;
+    setIsLoading(true);
+    try {
+      await updateDoc(doc(db, 'users', profile.id), {
+        gender: newGender,
+        updated_at: new Date()
+      });
+      setGender(newGender);
+      toast({
+        title: "Success",
+        description: "Gender updated successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Personal Information</h3>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="tel" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gender</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex space-x-4"
-                      >
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <RadioGroupItem value="male" />
-                          </FormControl>
-                          <FormLabel className="font-normal">Male</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <RadioGroupItem value="female" />
-                          </FormControl>
-                          <FormLabel className="font-normal">Female</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <Sheet open={open} onOpenChange={onClose}>
+      <SheetContent className="overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Settings</SheetTitle>
+        </SheetHeader>
+        
+        <div className="py-6 space-y-6">
+          {/* Email Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <h3 className="font-medium">Email</h3>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  disabled={isLoading}
+                />
+                <Button onClick={handleEmailUpdate} disabled={isLoading}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Security</h3>
-              <FormField
-                control={form.control}
-                name="currentPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Password</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="newPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>New Password</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <Separator />
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Preferences</h3>
-              <FormField
-                control={form.control}
-                name="emailNotifications"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between">
-                    <FormLabel>Email Notifications</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="pushNotifications"
-                render={({ field }) => (
-                  <FormItem className="flex items-center justify-between">
-                    <FormLabel>Push Notifications</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+          {/* Phone Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              <h3 className="font-medium">Phone</h3>
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter your phone number"
+                  disabled={isLoading}
+                />
+                <Button onClick={handlePhoneUpdate} disabled={isLoading}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Danger Zone</h3>
-              <Button variant="destructive" type="button">
-                Delete Account
-              </Button>
-            </div>
+          <Separator />
 
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button type="submit">Save Changes</Button>
+          {/* Gender Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <UserCircle className="h-4 w-4" />
+              <h3 className="font-medium">Gender</h3>
             </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            <RadioGroup value={gender} onValueChange={handleGenderUpdate}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="male" id="male" />
+                <Label htmlFor="male">Male</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="female" id="female" />
+                <Label htmlFor="female">Female</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <Separator />
+
+          {/* Language Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Globe2 className="h-4 w-4" />
+              <h3 className="font-medium">Language</h3>
+            </div>
+            <Select value={language} onValueChange={(value: 'English' | 'Bahasa') => setLanguage(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="English">English</SelectItem>
+                <SelectItem value="Bahasa">Bahasa</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Separator />
+
+          {/* Password Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              <h3 className="font-medium">Password</h3>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => navigate('/reset-password')}
+            >
+              Change Password
+            </Button>
+          </div>
+
+          <Separator />
+
+          {/* Notifications Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Bell className="h-4 w-4" />
+              <h3 className="font-medium">Notifications</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="push-notifications">Push Notifications</Label>
+                <Switch
+                  id="push-notifications"
+                  checked={pushNotifications}
+                  onCheckedChange={setPushNotifications}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="email-notifications">Email Notifications</Label>
+                <Switch
+                  id="email-notifications"
+                  checked={emailNotifications}
+                  onCheckedChange={setEmailNotifications}
+                />
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Sign Out Section */}
+          <Button variant="outline" className="w-full" onClick={() => auth.signOut()}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
+
+          {/* Delete Account Section */}
+          <Button variant="destructive" className="w-full">
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete Account
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
