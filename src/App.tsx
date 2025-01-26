@@ -56,7 +56,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
   const isAuthPage = ['/signin', '/signup', '/forgot-password', '/reset-password', '/worker/onboarding', '/business/onboarding'].includes(location.pathname);
   
   return (
-    <main className={`min-h-screen bg-sand ${!isAuthPage ? 'lg:pl-64 pb-16 lg:pb-0' : ''}`}>
+    <main className={`min-h-screen bg-sand ${!isAuthPage ? 'lg:ml-64 pb-16 lg:pb-0' : ''}`}>
       {children}
     </main>
   );
