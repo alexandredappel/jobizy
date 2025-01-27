@@ -8,7 +8,7 @@ interface ProfileContainerProps {
 
 const ProfileContainer = ({ children, type, mode }: ProfileContainerProps) => {
   return (
-    <div className="container mx-auto max-w-none">
+    <div className="mx-auto max-w-none">
       <div className="space-y-8 animate-in fade-in duration-500">
         {children}
       </div>
