@@ -4,7 +4,7 @@ import { Education } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 interface EducationSectionProps {
   education: Education[];
@@ -18,7 +18,7 @@ export function EducationSection({ education, isLoading, onEdit }: EducationSect
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">Education</h2>
-          <Skeleton className="h-10 w-20" />
+          <Skeleton className="h-10 w-10" />
         </div>
         {[1, 2].map((i) => (
           <Skeleton key={i} className="h-24 w-full" />
@@ -29,15 +29,19 @@ export function EducationSection({ education, isLoading, onEdit }: EducationSect
 
   return (
     <Card className="w-full">
-      <CardContent className="pt-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">Education</h2>
-          <Button variant="outline" size="sm" onClick={onEdit}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
-        </div>
-        
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <h2 className="text-xl font-semibold text-secondary">Education</h2>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="h-10 w-10 text-primary hover:text-primary-hover"
+          onClick={onEdit}
+        >
+          <Pencil className="h-6 w-6" />
+        </Button>
+      </CardHeader>
+      
+      <CardContent>
         <div className="space-y-6">
           {education.map((edu) => (
             <div key={edu.id} className="relative pl-4 border-l-2 border-muted">
