@@ -7,7 +7,11 @@ interface DashboardContainerProps {
 
 const DashboardContainer = ({ children, className }: DashboardContainerProps) => {
   return (
-    <div className={cn("container mx-auto p-4 md:p-6 lg:py-8 lg:pr-8 lg:pl-0", className)}>
+    <div className={cn(
+      "container mx-auto p-4 md:p-6 lg:py-8 lg:pr-8 lg:pl-0",
+      "bg-background/50 min-h-screen",
+      className
+    )}>
       {children}
     </div>
   );
