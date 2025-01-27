@@ -23,7 +23,7 @@ const WelcomeSection = ({ fullName, profilePicture }: WelcomeSectionProps) => {
         <AvatarImage 
           src={profilePicture} 
           alt={fullName}
-          className="rounded-[var(--radius-sm)]" 
+          className="!rounded-[0.5rem]" 
         />
         <AvatarFallback>
           <User className="h-6 w-6" />
