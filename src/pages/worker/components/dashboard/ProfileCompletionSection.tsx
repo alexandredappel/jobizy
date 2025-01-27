@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/carousel";
 import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
-import { UserCircle, Briefcase, GraduationCap, Languages, ChevronLeft, ChevronRight } from "lucide-react";
+import { UserCircle, Briefcase, GraduationCap, Languages } from "lucide-react";
 import { WorkerUser } from "@/types/firebase.types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -80,10 +80,15 @@ const ProfileCompletionSection = ({
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Complete Your Profile</h3>
         {!isMobile && (
-          <div className="flex items-center gap-1">
-            <CarouselPrevious className="static translate-y-0 h-8" />
-            <CarouselNext className="static translate-y-0 h-8" />
-          </div>
+          <Carousel>
+            <CarouselContent className="hidden">
+              <CarouselItem>Empty item to make context work</CarouselItem>
+            </CarouselContent>
+            <div className="flex items-center gap-1">
+              <CarouselPrevious className="static translate-y-0 h-8" />
+              <CarouselNext className="static translate-y-0 h-8" />
+            </div>
+          </Carousel>
         )}
       </div>
       
