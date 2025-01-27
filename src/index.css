@@ -32,7 +32,17 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 108 75% 34%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-full: 9999px;
+
+    --padding-card: 1.5rem;
+    --padding-section: 2rem;
+    --padding-element: 1rem;
+    --padding-avatar: 0.75rem;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.05);
 
     --font-sans: 'Urbanist', system-ui, sans-serif;
   }
@@ -42,6 +52,12 @@
     font-weight: 500;
   }
 
+  body {
+    @apply bg-background text-foreground min-h-screen;
+    background: linear-gradient(180deg, #5EC435 0%, rgba(94, 196, 53, 0) 25%, #FFFFFF 25%);
+    background-attachment: fixed;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
   }
@@ -49,8 +65,30 @@
   * {
     @apply border-border;
   }
+}
 
-  body {
-    @apply bg-background text-foreground;
+@layer components {
+  .card {
+    @apply rounded-[var(--radius)] bg-white/95 shadow-sm hover:shadow-hover transition-shadow duration-200 p-[var(--padding-card)];
+  }
+
+  .avatar {
+    @apply rounded-full border border-border/20;
+  }
+
+  .badge {
+    @apply rounded-[var(--radius-full)] px-2 py-0.5 text-xs font-medium;
+  }
+
+  .notification-badge {
+    @apply w-2 h-2 rounded-full bg-primary;
+  }
+
+  .button {
+    @apply rounded-[var(--radius-sm)] transition-colors duration-200;
+  }
+
+  .input {
+    @apply rounded-[var(--radius-sm)] bg-muted/50;
   }
 }
