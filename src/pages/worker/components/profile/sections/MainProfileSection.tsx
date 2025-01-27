@@ -4,7 +4,6 @@ import { WorkerUser } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
 import { Edit } from 'lucide-react';
 import MainProfileEditModal from '../modals/MainProfileEditModal';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
@@ -44,15 +43,6 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
             onAvailabilityChange={(value) => onSave({ availability_status: value })}
           />
         </div>
-
-        <Card>
-          <CardContent className="pt-6">
-            <h3 className="text-lg font-semibold mb-2">About Me</h3>
-            <p className="text-muted-foreground">
-              {profile.about_me || "No description provided yet."}
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       <MainProfileEditModal

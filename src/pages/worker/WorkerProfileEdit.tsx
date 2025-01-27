@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProfileSection } from "@/layouts/profile";
 import { 
   MainProfileSection,
   WorkExperienceSection,
   EducationSection,
+  AboutMeSection,
+} from './components/profile';
+import { 
   SettingsModal,
   WorkExperienceModal,
   EducationModal,
@@ -55,7 +57,7 @@ const WorkerProfileEdit = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#eefceb]">
       <div className="container mx-auto p-4 space-y-8">
         <div className="flex justify-end mb-4">
           <Button
@@ -71,6 +73,12 @@ const WorkerProfileEdit = () => {
         <MainProfileSection
           profile={profile}
           onSave={handleSaveChanges}
+        />
+
+        <AboutMeSection
+          aboutMe={profile?.about_me}
+          isLoading={profileLoading}
+          onEdit={() => setShowSettingsModal(true)}
         />
 
         <WorkExperienceSection
