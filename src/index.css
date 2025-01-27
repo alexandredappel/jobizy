@@ -53,9 +53,8 @@
   }
 
   body {
-    @apply bg-background text-foreground min-h-screen;
-    background: linear-gradient(180deg, #5EC435 0%, rgba(94, 196, 53, 0) 25%, #FFFFFF 25%);
-    background-attachment: fixed;
+    @apply min-h-screen text-foreground;
+    background-color: #eefceb;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -69,7 +68,7 @@
 
 @layer components {
   .card {
-    @apply rounded-[var(--radius)] bg-white/95 shadow-sm hover:shadow-hover transition-shadow duration-200 p-[var(--padding-card)];
+    @apply rounded-[var(--radius)] bg-secondary text-white shadow-sm hover:shadow-hover transition-shadow duration-200 p-[var(--padding-card)];
   }
 
   .avatar {
