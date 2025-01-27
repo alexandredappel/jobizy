@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit, Clock, Globe, MapPin, Briefcase } from 'lucide-react';
+import { Edit, Clock, Globe, MapPin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { ProfileContainer } from "@/layouts/profile";
 import MainProfileEditModal from '../modals/MainProfileEditModal';
@@ -78,10 +78,9 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
               </Avatar>
             </div>
 
-            <h2 className="text-2xl font-bold text-primary">{profile.full_name}</h2>
+            <h2 className="text-2xl font-bold text-primary mt-6">{profile.full_name}</h2>
             
             <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
-              <Briefcase className="h-5 w-5" />
               {profile.job}
             </Badge>
 
@@ -90,10 +89,8 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
                 const Icon = section.icon;
                 return (
                   <div key={sectionIndex} className="flex flex-col items-center bg-primary text-white p-4 rounded-lg">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Icon className="h-5 w-5" />
-                      <span>{section.label}</span>
-                    </div>
+                    <Icon className="h-6 w-6 mb-2" />
+                    <span className="mb-3">{section.label}</span>
                     <div className="flex flex-wrap gap-2 justify-center">
                       {renderBadges(section.values).map((value, index) => (
                         <Badge 

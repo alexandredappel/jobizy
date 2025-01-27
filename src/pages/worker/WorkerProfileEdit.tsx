@@ -59,7 +59,7 @@ const WorkerProfileEdit = () => {
   return (
     <div className="min-h-screen bg-[#eefceb]">
       <div className="container mx-auto p-4 space-y-8">
-        <div className="flex justify-end mb-4 relative pb-16">
+        <div className="flex justify-end mb-4 relative">
           <Button
             variant="ghost"
             size="icon"
