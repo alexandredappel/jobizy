@@ -7,8 +7,9 @@ import {
 } from "@/components/ui/carousel";
 import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
-import { UserCircle, Briefcase, GraduationCap, Languages, ChevronRight } from "lucide-react";
+import { UserCircle, Briefcase, GraduationCap, Languages, ChevronLeft, ChevronRight } from "lucide-react";
 import { WorkerUser } from "@/types/firebase.types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProfileCompletionSectionProps {
   profile: WorkerUser;
@@ -25,6 +26,8 @@ const ProfileCompletionSection = ({
   onEditExperience,
   onEditEducation,
 }: ProfileCompletionSectionProps) => {
+  const isMobile = useIsMobile();
+
   const completionCards = [
     {
       title: "Complete Your Profile",
@@ -76,7 +79,12 @@ const ProfileCompletionSection = ({
       
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Complete Your Profile</h3>
-        <ChevronRight className="w-5 h-5 text-muted-foreground animate-pulse" />
+        {!isMobile && (
+          <div className="flex items-center gap-1">
+            <CarouselPrevious className="static translate-y-0 h-8" />
+            <CarouselNext className="static translate-y-0 h-8" />
+          </div>
+        )}
       </div>
       
       <Carousel className="w-full">
@@ -87,8 +95,12 @@ const ProfileCompletionSection = ({
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        {isMobile && (
+          <>
+            <CarouselPrevious className="hidden" />
+            <CarouselNext className="hidden" />
+          </>
+        )}
       </Carousel>
     </div>
   );
