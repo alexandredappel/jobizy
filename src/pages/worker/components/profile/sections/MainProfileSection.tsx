@@ -18,6 +18,16 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
 
   if (!profile) return null;
 
+  const handleAvailabilityChange = async (checked: boolean) => {
+    await onSave({ availability_status: checked });
+  };
+
+  const renderBadges = (values: string[]) => {
+    if (!values?.length) return ['None'];
+    if (values.length <= 2) return values;
+    return [...values.slice(0, 2), `+${values.length - 2} others`];
+  };
+
   const badgeSections = [
     {
       label: 'Work Schedule',
@@ -27,46 +37,19 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
     {
       label: 'Languages',
       icon: Globe,
-      values: profile.languages?.length ? profile.languages : ['None']
+      values: profile.languages || []
     },
     {
       label: 'Location',
       icon: MapPin,
-      values: profile.location?.length ? profile.location : ['Not specified']
+      values: profile.location || []
     }
   ];
-
-  const handleAvailabilityChange = async (checked: boolean) => {
-    await onSave({ availability_status: checked });
-  };
-
-  const renderBadges = (values: string[]) => {
-    if (values.length <= 2) {
-      return values.map((value, index) => (
-        <Badge 
-          key={index}
-          className="text-sm bg-white text-primary"
-        >
-          {value}
-        </Badge>
-      ));
-    }
-
-    return (
-      <>
-        <Badge className="text-sm bg-white text-primary">{values[0]}</Badge>
-        <Badge className="text-sm bg-white text-primary">{values[1]}</Badge>
-        <Badge className="text-sm bg-white text-primary">
-          +{values.length - 2} others
-        </Badge>
-      </>
-    );
-  };
 
   return (
     <ProfileContainer type="worker" mode="edit">
       <div className="space-y-6">
-        <div className="relative bg-white rounded-[var(--radius)]">
+        <div className="relative bg-white rounded-[var(--radius)] pt-16">
           <div className="absolute right-4 top-4 flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Switch
@@ -87,13 +70,15 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
             </Button>
           </div>
 
-          <div className="flex flex-col items-center -mt-16">
-            <Avatar className="w-32 h-32 border-4 border-white">
-              <AvatarImage src={profile.profile_picture_url} alt={profile.full_name} />
-              <AvatarFallback>{profile.full_name?.charAt(0)}</AvatarFallback>
-            </Avatar>
+          <div className="flex flex-col items-center">
+            <div className="absolute -top-16">
+              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
+                <AvatarImage src={profile.profile_picture_url} alt={profile.full_name} />
+                <AvatarFallback>{profile.full_name?.charAt(0)}</AvatarFallback>
+              </Avatar>
+            </div>
 
-            <h2 className="mt-4 text-2xl font-bold text-primary">{profile.full_name}</h2>
+            <h2 className="mt-20 text-2xl font-bold text-primary">{profile.full_name}</h2>
             
             <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
               <Briefcase className="h-5 w-5" />
@@ -110,7 +95,14 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
                       <span>{section.label}</span>
                     </div>
                     <div className="flex flex-wrap gap-2 justify-center">
-                      {renderBadges(section.values)}
+                      {renderBadges(section.values).map((value, index) => (
+                        <Badge 
+                          key={index}
+                          className="text-sm bg-white text-primary px-4 py-2 rounded-lg"
+                        >
+                          {value}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 );
