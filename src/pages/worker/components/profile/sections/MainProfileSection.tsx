@@ -6,6 +6,7 @@ import { Edit, Briefcase, Clock, Globe, MapPin } from 'lucide-react';
 import MainProfileEditModal from '../modals/MainProfileEditModal';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
@@ -35,18 +36,33 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
     }
   ];
 
+  const handleAvailabilityChange = async (checked: boolean) => {
+    await onSave({ is_available: checked });
+  };
+
   return (
     <ProfileContainer type="worker" mode="edit">
       <div className="space-y-6">
         <div className="relative bg-white rounded-[var(--radius)]">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4"
-            onClick={() => setShowEditModal(true)}
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
+          <div className="absolute right-4 top-4 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={profile.is_available}
+                onCheckedChange={handleAvailabilityChange}
+                aria-label="Availability toggle"
+              />
+              <span className="text-sm text-muted-foreground">
+                {profile.is_available ? "Available" : "Unavailable"}
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowEditModal(true)}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          </div>
 
           <div className="flex flex-col items-center -mt-16">
             <Avatar className="w-32 h-32 border-4 border-white">
@@ -70,11 +86,11 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
                       <Icon className="h-5 w-5" />
                       <span>{section.label}</span>
                     </div>
-                    <div className="flex flex-col gap-2 w-full">
+                    <div className="flex flex-wrap gap-2">
                       {section.values.map((value, valueIndex) => (
                         <Badge 
                           key={valueIndex}
-                          className="w-full flex items-center justify-center py-2 px-4"
+                          className="inline-flex items-center justify-center py-2 px-4 rounded-lg"
                           variant="secondary"
                         >
                           {value}
