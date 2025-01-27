@@ -2,8 +2,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
@@ -77,41 +75,32 @@ const ProfileCompletionSection = ({
         <Progress value={completionPercentage} className="h-2" />
       </div>
       
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-medium">Complete Your Profile</h3>
-        {!isMobile && (
-          <Carousel>
-            <CarouselContent className="hidden">
-              <CarouselItem>Empty item to make context work</CarouselItem>
+      <div>
+        <h3 className="text-lg font-medium mb-4">Complete Your Profile</h3>
+        
+        {isMobile ? (
+          <Carousel
+            opts={{
+              align: "start",
+              dragFree: true,
+            }}
+          >
+            <CarouselContent className="-ml-4">
+              {completionCards.map((card, index) => (
+                <CarouselItem key={index} className="pl-4 basis-[85%]">
+                  <ProfileCompletionCard {...card} />
+                </CarouselItem>
+              ))}
             </CarouselContent>
-            <div className="flex items-center gap-1">
-              <CarouselPrevious className="static translate-y-0 h-8" />
-              <CarouselNext className="static translate-y-0 h-8" />
-            </div>
           </Carousel>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {completionCards.map((card, index) => (
+              <ProfileCompletionCard key={index} {...card} />
+            ))}
+          </div>
         )}
       </div>
-      
-      <Carousel
-        opts={{
-          align: "start",
-          dragFree: true,
-        }}
-      >
-        <CarouselContent className="-ml-4">
-          {completionCards.map((card, index) => (
-            <CarouselItem key={index} className="pl-4 basis-[85%] md:basis-1/2 lg:basis-1/3">
-              <ProfileCompletionCard {...card} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        {isMobile && (
-          <>
-            <CarouselPrevious className="hidden" />
-            <CarouselNext className="hidden" />
-          </>
-        )}
-      </Carousel>
     </div>
   );
 };

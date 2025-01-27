@@ -68,7 +68,10 @@ const WorkerDashboard = () => {
 
   return createDashboardLayout(
     <>
-      <WelcomeSection fullName={profile.full_name} />
+      <WelcomeSection 
+        fullName={profile.full_name} 
+        profilePicture={profile.profile_picture_url}
+      />
       
       <AvailabilitySection
         isAvailable={profile.availability_status}
