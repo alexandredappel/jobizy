@@ -4,7 +4,7 @@ import { WorkerUser } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
 import { Edit } from 'lucide-react';
 import MainProfileEditModal from '../modals/MainProfileEditModal';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
@@ -29,10 +29,10 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-4 top-4 h-10 w-10 text-primary hover:text-primary-hover"
+            className="absolute right-4 top-4"
             onClick={() => setShowEditModal(true)}
           >
-            <Edit className="h-6 w-6" />
+            <Edit className="h-4 w-4" />
           </Button>
 
           <ProfileHeader
@@ -46,18 +46,8 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
         </div>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-            <h2 className="text-xl font-semibold text-secondary">About Me</h2>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-10 w-10 text-primary hover:text-primary-hover"
-              onClick={() => setShowEditModal(true)}
-            >
-              <Edit className="h-6 w-6" />
-            </Button>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
+            <h3 className="text-lg font-semibold mb-2">About Me</h3>
             <p className="text-muted-foreground">
               {profile.about_me || "No description provided yet."}
             </p>
