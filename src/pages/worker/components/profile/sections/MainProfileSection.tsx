@@ -40,6 +40,29 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
     await onSave({ availability_status: checked });
   };
 
+  const renderBadges = (values: string[]) => {
+    if (values.length <= 2) {
+      return values.map((value, index) => (
+        <Badge 
+          key={index}
+          className="text-sm bg-white text-primary"
+        >
+          {value}
+        </Badge>
+      ));
+    }
+
+    return (
+      <>
+        <Badge className="text-sm bg-white text-primary">{values[0]}</Badge>
+        <Badge className="text-sm bg-white text-primary">{values[1]}</Badge>
+        <Badge className="text-sm bg-white text-primary">
+          +{values.length - 2} others
+        </Badge>
+      </>
+    );
+  };
+
   return (
     <ProfileContainer type="worker" mode="edit">
       <div className="space-y-6">
@@ -72,30 +95,22 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
 
             <h2 className="mt-4 text-2xl font-bold text-primary">{profile.full_name}</h2>
             
-            <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
+            <Badge className="mt-4 mb-8 px-6 py-3 flex items-center gap-2 rounded-lg bg-white text-primary hover:bg-white/90">
               <Briefcase className="h-5 w-5" />
               {profile.job}
             </Badge>
 
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 w-full p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full p-6">
               {badgeSections.map((section, sectionIndex) => {
                 const Icon = section.icon;
                 return (
-                  <div key={sectionIndex} className="flex flex-col items-center gap-4">
-                    <div className="flex items-center gap-2 text-primary font-medium">
+                  <div key={sectionIndex} className="flex flex-col items-center bg-primary text-white p-4 rounded-lg">
+                    <div className="flex items-center gap-2 mb-4">
                       <Icon className="h-5 w-5" />
                       <span>{section.label}</span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {section.values.map((value, valueIndex) => (
-                        <Badge 
-                          key={valueIndex}
-                          className="inline-flex items-center justify-center py-2 px-4 rounded-lg"
-                          variant="secondary"
-                        >
-                          {value}
-                        </Badge>
-                      ))}
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {renderBadges(section.values)}
                     </div>
                   </div>
                 );
