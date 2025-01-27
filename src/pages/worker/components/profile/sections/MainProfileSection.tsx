@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ProfileContainer, ProfileHeader } from "@/layouts/profile";
+import { ProfileContainer } from "@/layouts/profile";
 import { WorkerUser } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
-import { Edit } from 'lucide-react';
+import { Edit, Briefcase } from 'lucide-react';
 import MainProfileEditModal from '../modals/MainProfileEditModal';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
@@ -34,14 +36,28 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
             <Edit className="h-4 w-4" />
           </Button>
 
-          <ProfileHeader
-            image={profile.profile_picture_url}
-            name={profile.full_name}
-            role={profile.job}
-            isAvailable={profile.availability_status}
-            badges={badges}
-            onAvailabilityChange={(value) => onSave({ availability_status: value })}
-          />
+          <div className="flex flex-col items-center -mt-16">
+            <Avatar className="w-32 h-32 border-4 border-white">
+              <AvatarImage src={profile.profile_picture_url} alt={profile.full_name} />
+              <AvatarFallback>{profile.full_name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+
+            <h2 className="mt-4 text-2xl font-bold text-primary">{profile.full_name}</h2>
+            
+            <Badge className="mt-2 px-4 py-2 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20">
+              <Briefcase className="h-4 w-4" />
+              {profile.job}
+            </Badge>
+
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+              {badges.map((badge, index) => (
+                <div key={index} className="text-center">
+                  <p className="text-sm text-muted-foreground">{badge.label}</p>
+                  <p className="font-medium">{badge.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
