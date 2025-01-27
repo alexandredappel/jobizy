@@ -72,11 +72,11 @@
   }
 
   .avatar {
-    @apply w-24 h-24 rounded-[24px] border border-border/20;
+    @apply rounded-full border border-border/20;
   }
 
   .badge {
-    @apply rounded-[var(--radius-full)] bg-primary text-primary-foreground px-2 py-0.5 text-xs font-medium;
+    @apply rounded-[var(--radius-full)] px-2 py-0.5 text-xs font-medium;
   }
 
   .notification-badge {
@@ -84,18 +84,10 @@
   }
 
   .button {
-    @apply rounded-[var(--radius-sm)] py-3 transition-colors duration-200;
+    @apply rounded-[var(--radius-sm)] transition-colors duration-200;
   }
 
   .input {
     @apply rounded-[var(--radius-sm)] bg-muted/50;
-  }
-
-  [data-state='unchecked'].toggle-group-item {
-    @apply bg-[#eefceb] text-foreground hover:bg-[#eefceb]/90;
-  }
-
-  [data-state='checked'].toggle-group-item {
-    @apply bg-primary text-primary-foreground;
   }
 }
