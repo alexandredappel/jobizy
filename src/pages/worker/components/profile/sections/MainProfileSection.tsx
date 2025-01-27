@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
+import { Edit, Clock, Globe, MapPin, Briefcase } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { ProfileContainer } from "@/layouts/profile";
-import { WorkerUser } from '@/types/firebase.types';
-import { Button } from '@/components/ui/button';
-import { Edit, Briefcase, Clock, Globe, MapPin } from 'lucide-react';
 import MainProfileEditModal from '../modals/MainProfileEditModal';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import type { WorkerUser } from '@/types/firebase.types';
 
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
@@ -37,7 +37,7 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
   ];
 
   const handleAvailabilityChange = async (checked: boolean) => {
-    await onSave({ is_available: checked });
+    await onSave({ availability_status: checked });
   };
 
   return (
@@ -47,12 +47,12 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
           <div className="absolute right-4 top-4 flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Switch
-                checked={profile.is_available}
+                checked={profile.availability_status}
                 onCheckedChange={handleAvailabilityChange}
                 aria-label="Availability toggle"
               />
               <span className="text-sm text-muted-foreground">
-                {profile.is_available ? "Available" : "Unavailable"}
+                {profile.availability_status ? "Available" : "Unavailable"}
               </span>
             </div>
             <Button
