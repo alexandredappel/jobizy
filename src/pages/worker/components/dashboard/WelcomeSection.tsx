@@ -12,9 +12,9 @@ const WelcomeSection = ({ fullName, profilePicture }: WelcomeSectionProps) => {
 
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 12) setGreeting('Good morning');
-    else if (hour < 18) setGreeting('Good afternoon');
-    else setGreeting('Good evening');
+    if (hour < 12) setGreeting('good morning');
+    else if (hour < 18) setGreeting('good afternoon');
+    else setGreeting('good evening');
   }, []);
 
   return (
@@ -30,8 +30,8 @@ const WelcomeSection = ({ fullName, profilePicture }: WelcomeSectionProps) => {
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col md:flex-row md:items-center md:gap-1">
-        <h1 className="text-3xl font-bold text-primary">Hi {fullName}</h1>
-        <span className="text-3xl font-bold text-primary">, {greeting}!</span>
+        <h1 className="text-3xl font-bold text-primary">Hi {fullName},</h1>
+        <span className="text-3xl font-bold text-primary">{greeting}!</span>
       </div>
     </div>
   );
