@@ -17,16 +17,28 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
 
   if (!profile) return null;
 
-  const badges = [
-    { label: 'Work Schedule', value: profile.experience || '0 years', icon: Clock },
-    { label: 'Languages', value: profile.languages?.join(', ') || 'None', icon: Globe },
-    { label: 'Location', value: profile.location?.join(', ') || 'Not specified', icon: MapPin }
+  const badgeSections = [
+    {
+      label: 'Work Schedule',
+      icon: Clock,
+      values: profile.experience ? [profile.experience] : ['0 years']
+    },
+    {
+      label: 'Languages',
+      icon: Globe,
+      values: profile.languages?.length ? profile.languages : ['None']
+    },
+    {
+      label: 'Location',
+      icon: MapPin,
+      values: profile.location?.length ? profile.location : ['Not specified']
+    }
   ];
 
   return (
     <ProfileContainer type="worker" mode="edit">
       <div className="space-y-6">
-        <div className="relative bg-accent rounded-[var(--radius)]">
+        <div className="relative bg-white rounded-[var(--radius)]">
           <Button
             variant="ghost"
             size="icon"
@@ -49,19 +61,26 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
               {profile.job}
             </Badge>
 
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 w-full p-6">
-              {badges.map((badge, index) => {
-                const Icon = badge.icon;
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8 w-full p-6">
+              {badgeSections.map((section, sectionIndex) => {
+                const Icon = section.icon;
                 return (
-                  <div key={index} className="flex flex-col items-center gap-2">
-                    <Badge 
-                      className="w-full flex items-center justify-center gap-2 py-2 px-4"
-                      variant="secondary"
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{badge.value}</span>
-                    </Badge>
-                    <p className="text-sm text-muted-foreground">{badge.label}</p>
+                  <div key={sectionIndex} className="flex flex-col items-center gap-4">
+                    <div className="flex items-center gap-2 text-primary font-medium">
+                      <Icon className="h-5 w-5" />
+                      <span>{section.label}</span>
+                    </div>
+                    <div className="flex flex-col gap-2 w-full">
+                      {section.values.map((value, valueIndex) => (
+                        <Badge 
+                          key={valueIndex}
+                          className="w-full flex items-center justify-center py-2 px-4"
+                          variant="secondary"
+                        >
+                          {value}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 );
               })}
