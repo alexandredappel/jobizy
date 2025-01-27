@@ -68,7 +68,7 @@
 
 @layer components {
   .card {
-    @apply rounded-[var(--radius)] bg-secondary text-white shadow-sm hover:shadow-hover transition-shadow duration-200 p-[var(--padding-card)];
+    @apply rounded-[var(--radius)] bg-white text-foreground shadow-sm hover:shadow-hover transition-shadow duration-200 p-[var(--padding-card)];
   }
 
   .avatar {
