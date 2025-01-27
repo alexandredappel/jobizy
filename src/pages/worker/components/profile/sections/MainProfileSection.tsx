@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ProfileContainer } from "@/layouts/profile";
 import { WorkerUser } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
-import { Edit, Briefcase } from 'lucide-react';
+import { Edit, Briefcase, Clock, Globe, MapPin } from 'lucide-react';
 import MainProfileEditModal from '../modals/MainProfileEditModal';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -18,15 +18,15 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
   if (!profile) return null;
 
   const badges = [
-    { label: 'Experience', value: profile.experience || '0 years' },
-    { label: 'Languages', value: profile.languages?.join(', ') || 'None' },
-    { label: 'Location', value: profile.location?.join(', ') || 'Not specified' }
+    { label: 'Work Schedule', value: profile.experience || '0 years', icon: Clock },
+    { label: 'Languages', value: profile.languages?.join(', ') || 'None', icon: Globe },
+    { label: 'Location', value: profile.location?.join(', ') || 'Not specified', icon: MapPin }
   ];
 
   return (
     <ProfileContainer type="worker" mode="edit">
       <div className="space-y-6">
-        <div className="relative">
+        <div className="relative bg-accent rounded-[var(--radius)]">
           <Button
             variant="ghost"
             size="icon"
@@ -44,18 +44,27 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
 
             <h2 className="mt-4 text-2xl font-bold text-primary">{profile.full_name}</h2>
             
-            <Badge className="mt-2 px-4 py-2 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20">
-              <Briefcase className="h-4 w-4" />
+            <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
+              <Briefcase className="h-5 w-5" />
               {profile.job}
             </Badge>
 
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-              {badges.map((badge, index) => (
-                <div key={index} className="text-center">
-                  <p className="text-sm text-muted-foreground">{badge.label}</p>
-                  <p className="font-medium">{badge.value}</p>
-                </div>
-              ))}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 w-full p-6">
+              {badges.map((badge, index) => {
+                const Icon = badge.icon;
+                return (
+                  <div key={index} className="flex flex-col items-center gap-2">
+                    <Badge 
+                      className="w-full flex items-center justify-center gap-2 py-2 px-4"
+                      variant="secondary"
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{badge.value}</span>
+                    </Badge>
+                    <p className="text-sm text-muted-foreground">{badge.label}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
