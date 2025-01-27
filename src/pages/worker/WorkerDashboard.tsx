@@ -10,7 +10,6 @@ import MainProfileEditModal from "./components/profile/modals/MainProfileEditMod
 import WorkExperienceModal from "./components/profile/modals/WorkExperienceModal";
 import EducationModal from "./components/profile/modals/EducationModal";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DashboardGrid } from "@/layouts/dashboard";
 
 const WorkerDashboard = () => {
   const { user } = useAuth();
@@ -68,22 +67,21 @@ const WorkerDashboard = () => {
   }
 
   return createDashboardLayout(
-    <div className="space-y-8">
+    <>
       <WelcomeSection fullName={profile.full_name} />
       
-      <DashboardGrid columns={{ sm: 1, md: 2, lg: 2 }} className="lg:grid-cols-[2fr,1fr]">
-        <ProfileCompletionSection
-          profile={profile}
-          completionPercentage={calculateProfileCompletion()}
-          onEditProfile={() => setShowProfileModal(true)}
-          onEditExperience={() => setShowExperienceModal(true)}
-          onEditEducation={() => setShowEducationModal(true)}
-        />
-        <AvailabilitySection
-          isAvailable={profile.availability_status}
-          onToggleAvailability={handleToggleAvailability}
-        />
-      </DashboardGrid>
+      <AvailabilitySection
+        isAvailable={profile.availability_status}
+        onToggleAvailability={handleToggleAvailability}
+      />
+      
+      <ProfileCompletionSection
+        profile={profile}
+        completionPercentage={calculateProfileCompletion()}
+        onEditProfile={() => setShowProfileModal(true)}
+        onEditExperience={() => setShowExperienceModal(true)}
+        onEditEducation={() => setShowEducationModal(true)}
+      />
 
       <MainProfileEditModal
         open={showProfileModal}
@@ -105,7 +103,7 @@ const WorkerDashboard = () => {
         education={profile.education || []}
         userId={profile.id}
       />
-    </div>
+    </>
   );
 };
 

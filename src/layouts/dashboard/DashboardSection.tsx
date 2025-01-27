@@ -11,11 +11,7 @@ interface DashboardSectionProps {
 
 const DashboardSection = ({ title, children, className, action }: DashboardSectionProps) => {
   return (
-    <Card className={cn(
-      "animate-in fade-in duration-500",
-      "bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow",
-      className
-    )}>
+    <Card className={cn("animate-in fade-in duration-500", className)}>
       <CardHeader className="p-6">
         <DashboardSectionHeader title={title} action={action} />
       </CardHeader>
