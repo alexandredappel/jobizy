@@ -95,7 +95,7 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
 
             <h2 className="mt-4 text-2xl font-bold text-primary">{profile.full_name}</h2>
             
-            <Badge className="mt-4 mb-8 px-6 py-3 flex items-center gap-2 rounded-lg bg-white text-primary hover:bg-white/90">
+            <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
               <Briefcase className="h-5 w-5" />
               {profile.job}
             </Badge>
