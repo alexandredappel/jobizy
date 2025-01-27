@@ -9,7 +9,7 @@ interface AboutMeSectionProps {
   onEdit: () => void;
 }
 
-export function AboutMeSection({ aboutMe, isLoading, onEdit }: AboutMeSectionProps) {
+export const AboutMeSection = ({ aboutMe, isLoading, onEdit }: AboutMeSectionProps) => {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -39,4 +39,4 @@ export function AboutMeSection({ aboutMe, isLoading, onEdit }: AboutMeSectionPro
       </CardContent>
     </Card>
   );
-}
+};

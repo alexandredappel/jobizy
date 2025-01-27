@@ -5,3 +5,4 @@ export { default as SettingsModal } from './modals/SettingsModal';
 export { default as MainProfileEditModal } from './modals/MainProfileEditModal';
 export { WorkExperienceSection } from './sections/WorkExperienceSection';
 export { EducationSection } from './sections/EducationSection';
+export { AboutMeSection } from './sections/AboutMeSection';
