@@ -78,7 +78,7 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
               </Avatar>
             </div>
 
-            <h2 className="mt-20 text-2xl font-bold text-primary">{profile.full_name}</h2>
+            <h2 className="text-2xl font-bold text-primary">{profile.full_name}</h2>
             
             <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
               <Briefcase className="h-5 w-5" />
