@@ -86,34 +86,53 @@ export const Navigation = () => {
           <span className="text-2xl font-bold text-primary">Jobizy</span>
         </Link>
 
-        <div className="px-6 flex flex-col space-y-6">
-          {user ? (
-            <>
-              <NavigationLink 
-                to={getDashboardLink()} 
-                icon={<Home className="w-4 h-4" />}
-                label="Dashboard"
-              />
-              
-              {user.role === 'business' && (
+        <div className="px-6 flex flex-col h-full">
+          {/* Main navigation links */}
+          <div className="flex-1 flex flex-col space-y-6">
+            {user ? (
+              <>
                 <NavigationLink 
-                  to="/business/search" 
-                  icon={<Search className="w-4 h-4" />}
-                  label="Search"
+                  to={getDashboardLink()} 
+                  icon={<Home className="w-4 h-4" />}
+                  label="Dashboard"
                 />
-              )}
-              
-              <NavigationLink 
-                to={getProfileLink()} 
-                icon={<UserIcon className="w-4 h-4" />}
-                label="Profile"
-              />
-              
+                
+                {user.role === 'business' && (
+                  <NavigationLink 
+                    to="/business/search" 
+                    icon={<Search className="w-4 h-4" />}
+                    label="Search"
+                  />
+                )}
+                
+                <NavigationLink 
+                  to={getProfileLink()} 
+                  icon={<UserIcon className="w-4 h-4" />}
+                  label="Profile"
+                />
+              </>
+            ) : (
+              <>
+                <NavigationLink 
+                  to="/signin" 
+                  label="Sign In"
+                />
+                <NavigationLink 
+                  to="/signup" 
+                  label="Sign Up"
+                />
+              </>
+            )}
+          </div>
+
+          {/* Logout button at the bottom */}
+          {user && (
+            <div className="mt-auto pt-6">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="text-secondary hover:text-primary flex items-center gap-2 justify-start p-0"
+                    className="text-secondary hover:text-primary flex items-center gap-2 justify-start p-0 w-full"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Logout</span>
@@ -132,18 +151,7 @@ export const Navigation = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            </>
-          ) : (
-            <>
-              <NavigationLink 
-                to="/signin" 
-                label="Sign In"
-              />
-              <NavigationLink 
-                to="/signup" 
-                label="Sign Up"
-              />
-            </>
+            </div>
           )}
         </div>
       </nav>
