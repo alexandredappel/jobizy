@@ -38,17 +38,17 @@ export function WorkerCard({ worker, onViewProfile }: WorkerCardProps) {
                 <p className="text-sm text-muted-foreground">{worker.job}</p>
               </div>
               {worker.isAvailable && (
-                <Badge variant="secondary" className="bg-green-50 text-green-700">
+                <Badge variant="default">
                   Available Now
                 </Badge>
               )}
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline">{worker.experience}</Badge>
-              <Badge variant="outline">{worker.workArea}</Badge>
+              <Badge variant="default">{worker.experience}</Badge>
+              <Badge variant="default">{worker.workArea}</Badge>
               {worker.languages.map((lang) => (
-                <Badge key={lang} variant="outline">
+                <Badge key={lang} variant="default">
                   {lang}
                 </Badge>
               ))}

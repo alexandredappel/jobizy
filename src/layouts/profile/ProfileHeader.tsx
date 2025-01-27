@@ -20,7 +20,7 @@ const ProfileHeader = ({
   role,
   businessType,
   isAvailable,
-  badges = [], // Add default empty array
+  badges = [],
   onAvailabilityChange
 }: ProfileHeaderProps) => {
   return (
@@ -45,7 +45,7 @@ const ProfileHeader = ({
           
           <div className="flex flex-wrap gap-2 justify-center md:justify-start">
             {badges.map((badge, index) => (
-              <Badge key={index} variant="secondary">
+              <Badge key={index} variant="default">
                 {badge.label}: {badge.value}
               </Badge>
             ))}
