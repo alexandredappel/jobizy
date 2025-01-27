@@ -5,8 +5,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
-import { UserCircle, Briefcase, GraduationCap, Languages } from "lucide-react";
+import { UserCircle, Briefcase, GraduationCap, Languages, ChevronRight } from "lucide-react";
 import { WorkerUser } from "@/types/firebase.types";
 
 interface ProfileCompletionSectionProps {
@@ -65,11 +66,17 @@ const ProfileCompletionSection = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Complete Your Profile</h2>
-        <div className="text-lg font-medium">
-          {completionPercentage}% Complete
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">Profile Completion</h2>
+          <span className="text-lg font-medium">{completionPercentage}%</span>
         </div>
+        <Progress value={completionPercentage} className="h-2" />
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-medium">Complete Your Profile</h3>
+        <ChevronRight className="w-5 h-5 text-muted-foreground animate-pulse" />
       </div>
       
       <Carousel className="w-full">
