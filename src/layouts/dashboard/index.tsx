@@ -12,7 +12,7 @@ export { default as DashboardSectionHeader } from './DashboardSectionHeader';
 
 // Helper for consistent layout structure
 export const createDashboardLayout = (children: React.ReactNode) => (
-  <div className="min-h-screen bg-sand lg:pl-64">
+  <div className="min-h-screen bg-sand">
     <DashboardContainer>
       <div className="mb-20 lg:mb-0">
         {children}
