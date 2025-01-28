@@ -187,7 +187,7 @@ const WorkExperienceListModal = ({
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="fixed inset-0 flex flex-col h-[90vh] w-[95vw] md:w-[50vw] md:h-[90vh] md:inset-auto max-w-[95vw] p-0 gap-0 sm:px-6 relative overflow-hidden">
+        <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] flex flex-col h-[90vh] w-[95vw] md:w-[50vw] max-w-[95vw] p-0 gap-0 sm:px-6 relative overflow-hidden">
           <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
             <h2 className="text-2xl font-bold text-center mb-8">Work Experience</h2>
           </DialogHeader>
