@@ -11,10 +11,19 @@ import type { WorkerUser } from '@/types/firebase.types';
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
   onSave: (values: Partial<WorkerUser>) => Promise<void>;
+  onEdit?: () => void;  // Made optional to maintain backward compatibility
 }
 
-const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
+const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps) => {
   const [showEditModal, setShowEditModal] = useState(false);
+
+  const handleEditClick = () => {
+    if (onEdit) {
+      onEdit();
+    } else {
+      setShowEditModal(true);
+    }
+  };
 
   if (!profile) return null;
 
@@ -64,7 +73,7 @@ const MainProfileSection = ({ profile, onSave }: MainProfileSectionProps) => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setShowEditModal(true)}
+              onClick={handleEditClick}
             >
               <Edit className="h-4 w-4" />
             </Button>
