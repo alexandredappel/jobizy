@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
@@ -174,9 +173,9 @@ const EducationModal = ({
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="h-[90vh] w-[95vw] max-w-[95vw] p-0 gap-0 sm:px-6">
-          <DialogHeader className="px-4 sm:px-6 pt-6">
-            <DialogTitle>Education</DialogTitle>
+        <DialogContent className="h-[90vh] w-[95vw] md:w-[50vw] max-w-[95vw] p-0 gap-0 sm:px-6 relative">
+          <DialogHeader className="px-4 sm:px-6 pt-6 mb-8">
+            <h2 className="text-2xl font-bold text-center mb-8">Education</h2>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto px-4 sm:px-6">
@@ -264,20 +263,20 @@ const EducationModal = ({
                   </div>
                 </div>
               ))}
-              
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full w-full"
-                onClick={handleAddEducation}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
             </div>
           </div>
 
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full fixed bottom-24 right-8 bg-accent hover:bg-accent/90 border-0"
+            onClick={handleAddEducation}
+          >
+            <Plus className="h-4 w-4 text-primary" />
+          </Button>
+
           <div className="border-t p-4 sm:px-6">
-            <div className="flex justify-end">
+            <div className="flex justify-start">
               <Button
                 onClick={handleSaveChanges}
                 disabled={isLoading}
