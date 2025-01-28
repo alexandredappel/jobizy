@@ -11,7 +11,9 @@ import {
   SettingsModal,
   WorkExperienceModal,
   EducationModal,
-} from './components/profile';
+  AboutMeModal,
+  MainProfileEditModal,
+} from './components/profile/modals';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
@@ -29,6 +31,8 @@ const WorkerProfileEdit = () => {
   const [showWorkExperienceModal, setShowWorkExperienceModal] = useState(false);
   const [showEducationModal, setShowEducationModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showMainProfileModal, setShowMainProfileModal] = useState(false);
+  const [showAboutMeModal, setShowAboutMeModal] = useState(false);
   const { toast } = useToast();
 
   const handleSaveChanges = async (values: Partial<WorkerUser>) => {
@@ -72,13 +76,13 @@ const WorkerProfileEdit = () => {
 
         <MainProfileSection
           profile={profile}
-          onSave={handleSaveChanges}
+          onEdit={() => setShowMainProfileModal(true)}
         />
 
         <AboutMeSection
           aboutMe={profile?.about_me}
           isLoading={profileLoading}
-          onEdit={() => setShowSettingsModal(true)}
+          onEdit={() => setShowAboutMeModal(true)}
         />
 
         <WorkExperienceSection
@@ -91,6 +95,20 @@ const WorkerProfileEdit = () => {
           education={education}
           isLoading={eduLoading}
           onEdit={() => setShowEducationModal(true)}
+        />
+
+        <MainProfileEditModal
+          open={showMainProfileModal}
+          onClose={() => setShowMainProfileModal(false)}
+          profile={profile}
+          onSave={handleSaveChanges}
+        />
+
+        <AboutMeModal
+          open={showAboutMeModal}
+          onClose={() => setShowAboutMeModal(false)}
+          aboutMe={profile?.about_me || ""}
+          userId={user?.id || ""}
         />
 
         <WorkExperienceModal
