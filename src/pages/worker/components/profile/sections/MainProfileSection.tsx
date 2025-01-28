@@ -1,17 +1,34 @@
 import React, { useState } from 'react';
-import { Edit, Clock, Globe, MapPin } from 'lucide-react';
+import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag, ChevronUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { ProfileContainer } from "@/layouts/profile";
 import MainProfileEditModal from '../modals/MainProfileEditModal';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import type { WorkerUser } from '@/types/firebase.types';
+
+const JOB_ICONS: Record<string, React.ElementType> = {
+  'Waiter': Coffee,
+  'Cook': ChefHat,
+  'Cashier': CreditCard,
+  'Manager': User2,
+  'Housekeeper': Home,
+  'Gardener': Flower2,
+  'Pool guy': Droplets,
+  'Bartender': Wine,
+  'Seller': ShoppingBag,
+};
 
 interface MainProfileSectionProps {
   profile: WorkerUser | null;
   onSave: (values: Partial<WorkerUser>) => Promise<void>;
-  onEdit?: () => void;  // Made optional to maintain backward compatibility
+  onEdit?: () => void;
 }
 
 const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps) => {
@@ -55,11 +72,59 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
     }
   ];
 
+  const AvailabilitySheetContent = () => {
+    return (
+      <Sheet>
+        <SheetTrigger asChild className="md:hidden">
+          <div className="fixed bottom-0 left-0 right-0">
+            <div className="container mx-auto p-4 bg-white border-t shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    checked={profile.availability_status}
+                    onCheckedChange={handleAvailabilityChange}
+                    className="data-[state=checked]:bg-green-500"
+                  />
+                  <span className={`font-semibold ${profile.availability_status ? 'text-green-500' : 'text-red-500'}`}>
+                    {profile.availability_status ? 'Available for work' : 'Not available'}
+                  </span>
+                </div>
+                <ChevronUp className="h-5 w-5 text-gray-500" />
+              </div>
+            </div>
+          </div>
+        </SheetTrigger>
+        <SheetContent side="bottom" className="h-[30vh]">
+          <div className="flex flex-col h-full">
+            <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+              <h3 className="text-lg font-semibold">Availability Status</h3>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={profile.availability_status}
+                  onCheckedChange={handleAvailabilityChange}
+                  className="data-[state=checked]:bg-green-500 h-8 w-14"
+                />
+                <span className={`font-semibold ${profile.availability_status ? 'text-green-500' : 'text-red-500'}`}>
+                  {profile.availability_status ? 'Available for work' : 'Not available'}
+                </span>
+              </div>
+              <p className="text-muted-foreground text-center max-w-xs">
+                {profile.availability_status 
+                  ? "Employers can see your profile and contact you" 
+                  : "Your profile is hidden from employers"}
+              </p>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  };
+
   return (
     <ProfileContainer type="worker" mode="edit">
       <div className="space-y-6">
         <div className="relative bg-white rounded-[var(--radius)] pt-16">
-          <div className="absolute right-4 top-4 flex items-center gap-4">
+          <div className="absolute right-4 top-4 flex items-center gap-4 hidden md:flex">
             <div className="flex items-center gap-2">
               <Switch
                 checked={profile.availability_status}
@@ -90,6 +155,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
             <h2 className="text-2xl font-bold text-primary mt-6">{profile.full_name}</h2>
             
             <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
+              {profile.job && JOB_ICONS[profile.job] && React.createElement(JOB_ICONS[profile.job], { className: "h-5 w-5" })}
               {profile.job}
             </Badge>
 
@@ -124,6 +190,8 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
         profile={profile}
         onSave={onSave}
       />
+      
+      <AvailabilitySheetContent />
     </ProfileContainer>
   );
 };

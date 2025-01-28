@@ -55,17 +55,17 @@ const AboutMeModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col h-[90vh] w-[95vw] md:h-[70vh] md:w-[50vw] max-w-[95vw] p-0 gap-0 sm:px-6 overflow-hidden">
+      <DialogContent className="flex flex-col w-[95vw] md:w-[50vw] max-w-[95vw] max-h-[90vh] p-0 gap-0 sm:px-6">
         <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
           <DialogTitle className="text-2xl font-bold text-center">About Me</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-20">
+        <div className="px-4 sm:px-6 pb-6">
           <Textarea
             value={localAboutMe}
             onChange={(e) => setLocalAboutMe(e.target.value)}
             placeholder="Tell us about yourself"
-            className="min-h-[200px]"
+            className="min-h-[200px] resize-none"
             maxLength={300}
           />
           <p className="text-sm text-gray-500 mt-2">
