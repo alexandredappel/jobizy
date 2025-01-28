@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { WorkExperience } from "@/types/firebase.types";
@@ -187,13 +186,13 @@ const WorkExperienceListModal = ({
 
   return (
     <>
-      <Sheet open={open} onOpenChange={handleClose}>
-        <SheetContent className="w-full sm:max-w-lg flex flex-col">
-          <SheetHeader className="px-6 pt-6">
-            <SheetTitle>Work Experience</SheetTitle>
-          </SheetHeader>
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="h-[90vh] w-[95vw] max-w-[95vw] p-0 gap-0 sm:px-6">
+          <DialogHeader className="px-4 sm:px-6 pt-6">
+            <DialogTitle>Work Experience</DialogTitle>
+          </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto px-6">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6">
             <div className="space-y-6 pb-6">
               {localExperiences.map((exp, index) => (
                 <div
@@ -227,18 +226,6 @@ const WorkExperienceListModal = ({
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Start Date</Label>
-                    <EnhancedDatePicker
-                      date={exp.startDate}
-                      onSelect={(date) => date && handleUpdateField(index, 'startDate', date)}
-                      disabled={(date) =>
-                        date > new Date() || (exp.endDate && date > exp.endDate)
-                      }
-                      label="Select start date"
-                    />
-                  </div>
-
                   <div className="flex items-center space-x-2">
                     <Switch
                       checked={exp.isCurrentPosition}
@@ -252,45 +239,68 @@ const WorkExperienceListModal = ({
                     <Label>Current Position</Label>
                   </div>
 
-                  {!exp.isCurrentPosition && (
-                    <div className="space-y-2">
-                      <Label>End Date</Label>
-                      <EnhancedDatePicker
-                        date={exp.endDate}
-                        onSelect={(date) => date && handleUpdateField(index, 'endDate', date)}
-                        disabled={(date) =>
-                          date > new Date() || date < exp.startDate
-                        }
-                        label="Select end date"
-                      />
+                  <div className="space-y-2">
+                    <div className="flex justify-between gap-4">
+                      <div className="flex-1">
+                        <Label>Start Date</Label>
+                      </div>
+                      {!exp.isCurrentPosition && (
+                        <div className="flex-1">
+                          <Label>End Date</Label>
+                        </div>
+                      )}
                     </div>
-                  )}
+                    <div className="flex gap-4">
+                      <div className="flex-1">
+                        <EnhancedDatePicker
+                          date={exp.startDate}
+                          onSelect={(date) => date && handleUpdateField(index, 'startDate', date)}
+                          disabled={(date) =>
+                            date > new Date() || (exp.endDate && date > exp.endDate)
+                          }
+                          label="Select start date"
+                        />
+                      </div>
+                      {!exp.isCurrentPosition && (
+                        <div className="flex-1">
+                          <EnhancedDatePicker
+                            date={exp.endDate}
+                            onSelect={(date) => date && handleUpdateField(index, 'endDate', date)}
+                            disabled={(date) =>
+                              date > new Date() || date < exp.startDate
+                            }
+                            label="Select end date"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          <SheetFooter className="px-6 py-4 border-t">
-            <div className="flex justify-between items-center w-full">
+              
               <Button
                 variant="outline"
                 size="icon"
-                className="rounded-full"
+                className="rounded-full w-full"
                 onClick={handleAddExperience}
               >
                 <Plus className="h-4 w-4" />
               </Button>
+            </div>
+          </div>
+
+          <div className="border-t p-4 sm:px-6">
+            <div className="flex justify-end">
               <Button
-                className="ml-auto"
                 onClick={handleSaveChanges}
                 disabled={isLoading}
               >
                 {isLoading ? "Saving..." : "Save Changes"}
               </Button>
             </div>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
