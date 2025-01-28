@@ -77,6 +77,7 @@ const WorkerProfileEdit = () => {
         <MainProfileSection
           profile={profile}
           onEdit={() => setShowMainProfileModal(true)}
+          onSave={handleSaveChanges}
         />
 
         <AboutMeSection
