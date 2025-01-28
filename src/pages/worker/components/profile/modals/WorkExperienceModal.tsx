@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { doc, deleteDoc, collection, addDoc, updateDoc, Timestamp, writeBatch } from 'firebase/firestore';
+import { doc, deleteDoc, collection, writeBatch, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface WorkExperienceListModalProps {
@@ -187,13 +187,13 @@ const WorkExperienceListModal = ({
   return (
     <>
       <Dialog open={open} onOpenChange={handleClose}>
-        <DialogContent className="h-[90vh] w-[95vw] md:w-[50vw] max-w-[95vw] p-0 gap-0 sm:px-6 relative">
-          <DialogHeader className="px-4 sm:px-6 pt-6 mb-8">
+        <DialogContent className="fixed inset-0 flex flex-col h-[90vh] w-[95vw] md:w-[50vw] md:h-[90vh] md:inset-auto max-w-[95vw] p-0 gap-0 sm:px-6 relative overflow-hidden">
+          <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
             <h2 className="text-2xl font-bold text-center mb-8">Work Experience</h2>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto px-4 sm:px-6">
-            <div className="space-y-6 pb-6">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-20">
+            <div className="space-y-6">
               {localExperiences.map((exp, index) => (
                 <div
                   key={index}
@@ -281,7 +281,7 @@ const WorkExperienceListModal = ({
               <Button
                 variant="outline"
                 size="icon"
-                className="rounded-full fixed bottom-24 right-8 bg-accent hover:bg-accent/90 border-0"
+                className="rounded-full fixed bottom-24 right-8 bg-accent hover:bg-accent/90 border-0 z-50"
                 onClick={handleAddExperience}
               >
                 <Plus className="h-4 w-4 text-primary" />
@@ -289,7 +289,7 @@ const WorkExperienceListModal = ({
             </div>
           </div>
 
-          <div className="border-t p-4 sm:px-6">
+          <div className="border-t p-4 sm:px-6 bg-background flex-shrink-0">
             <div className="flex justify-start">
               <Button
                 onClick={handleSaveChanges}
