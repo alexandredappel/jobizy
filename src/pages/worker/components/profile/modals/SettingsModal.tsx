@@ -121,6 +121,31 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     }
   };
 
+  const handleGenderUpdate = async (value: 'male' | 'female') => {
+    if (!profile?.id) return;
+    setIsLoading(true);
+    try {
+      await updateDoc(doc(db, 'users', profile.id), {
+        gender: value,
+        updated_at: new Date()
+      });
+      setGender(value);
+      toast({
+        title: "Success",
+        description: "Gender updated successfully",
+      });
+    } catch (error: any) {
+      console.error('Error updating gender:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update gender",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="overflow-y-auto">
@@ -151,61 +176,59 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
             </div>
           </div>
 
-          <Separator />
+        <Separator />
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4" />
-              <h3 className="font-medium">Phone</h3>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <span className="text-gray-500">+62</span>
-                  </div>
-                  <Input
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
-                    className="pl-12"
-                    placeholder="Enter your phone number"
-                    disabled={isLoading}
-                  />
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4" />
+            <h3 className="font-medium">Phone</h3>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span className="text-gray-500">+62</span>
                 </div>
-                <Button onClick={handlePhoneUpdate} disabled={isLoading}>
-                  Save
-                </Button>
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                  className="pl-12"
+                  placeholder="Enter your phone number"
+                  disabled={isLoading}
+                />
               </div>
-              {phone && !validatePhoneNumber(phone) && (
-                <p className="text-sm text-destructive">
-                  Phone number must be between 8 and 12 digits
-                </p>
-              )}
+              <Button onClick={handlePhoneUpdate} disabled={isLoading}>
+                Save
+              </Button>
             </div>
+            {phone && !validatePhoneNumber(phone) && (
+              <p className="text-sm text-destructive">
+                Phone number must be between 8 and 12 digits
+              </p>
+            )}
           </div>
+        </div>
 
-          <Separator />
+        <Separator />
 
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <UserCircle className="h-4 w-4" />
-              <h3 className="font-medium">Gender</h3>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <UserCircle className="h-4 w-4" />
+            <h3 className="font-medium">Gender</h3>
+          </div>
+          <RadioGroup value={gender} onValueChange={handleGenderUpdate}>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="male" id="male" />
+              <Label htmlFor="male">Male</Label>
             </div>
-            <RadioGroup value={gender} onValueChange={handleGenderUpdate}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="male" id="male" />
-                <Label htmlFor="male">Male</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="female" id="female" />
-                <Label htmlFor="female">Female</Label>
-              </div>
-            </RadioGroup>
-          </div>
-
-          <Separator />
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="female" id="female" />
+              <Label htmlFor="female">Female</Label>
+            </div>
+          </RadioGroup>
+        </div>
 
           <div className="space-y-4">
             <div className="flex items-center gap-2">
