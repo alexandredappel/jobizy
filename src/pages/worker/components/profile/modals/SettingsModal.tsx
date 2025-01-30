@@ -51,6 +51,20 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
   const [language, setLanguage] = useState<'English' | 'Bahasa'>('English');
   const [isLoading, setIsLoading] = useState(false);
 
+  const validatePhoneNumber = (number: string) => {
+    // Remove the prefix if it exists and any leading zeros
+    const cleanNumber = number.replace('+62', '').replace(/^0+/, '');
+    
+    // Check if the remaining number is between 8 and 12 digits
+    return cleanNumber.length >= 8 && cleanNumber.length <= 12;
+  };
+
+  const formatPhoneNumber = (number: string) => {
+    // Remove any existing +62 prefix and leading zeros
+    let cleaned = number.replace('+62', '').replace(/^0+/, '');
+    return cleaned;
+  };
+
   const handleEmailUpdate = async () => {
     if (!profile?.id) return;
     setIsLoading(true);
@@ -77,39 +91,24 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
   const handlePhoneUpdate = async () => {
     if (!profile?.id) return;
+    if (!validatePhoneNumber(phone)) {
+      toast({
+        title: "Error",
+        description: "Phone number must be between 8 and 12 digits",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       await updateDoc(doc(db, 'users', profile.id), {
-        phone_number: phone,
+        phone_number: `+62${formatPhoneNumber(phone)}`,
         updated_at: new Date()
       });
       toast({
         title: "Success",
         description: "Phone number updated successfully",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGenderUpdate = async (newGender: 'male' | 'female') => {
-    if (!profile?.id) return;
-    setIsLoading(true);
-    try {
-      await updateDoc(doc(db, 'users', profile.id), {
-        gender: newGender,
-        updated_at: new Date()
-      });
-      setGender(newGender);
-      toast({
-        title: "Success",
-        description: "Gender updated successfully",
       });
     } catch (error: any) {
       toast({
@@ -162,17 +161,28 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
               <div className="flex gap-2">
-                <Input
-                  id="phone"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter your phone number"
-                  disabled={isLoading}
-                />
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span className="text-gray-500">+62</span>
+                  </div>
+                  <Input
+                    id="phone"
+                    value={phone}
+                    onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                    className="pl-12"
+                    placeholder="Enter your phone number"
+                    disabled={isLoading}
+                  />
+                </div>
                 <Button onClick={handlePhoneUpdate} disabled={isLoading}>
                   Save
                 </Button>
               </div>
+              {phone && !validatePhoneNumber(phone) && (
+                <p className="text-sm text-destructive">
+                  Phone number must be between 8 and 12 digits
+                </p>
+              )}
             </div>
           </div>
 

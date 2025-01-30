@@ -57,6 +57,16 @@ const WorkerOnboarding = () => {
 
   const progress = (step / 6) * 100;
 
+  const validatePhoneNumber = (number: string) => {
+    const cleanNumber = number.replace('+62', '').replace(/^0+/, '');
+    return cleanNumber.length >= 8 && cleanNumber.length <= 12;
+  };
+
+  const formatPhoneNumber = (number: string) => {
+    let cleaned = number.replace('+62', '').replace(/^0+/, '');
+    return cleaned;
+  };
+
   const handleNext = async () => {
     if (step === 6) {
       await completeOnboarding();
@@ -77,6 +87,7 @@ const WorkerOnboarding = () => {
         availability_status: true,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
+        phone_number: `+62${formatPhoneNumber(data.phone_number)}`,
       });
 
       toast({
@@ -244,12 +255,26 @@ const WorkerOnboarding = () => {
             {step === 6 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">What's your phone number?</h2>
-                <Input
-                  type="tel"
-                  value={data.phone_number}
-                  onChange={(e) => setData({ ...data, phone_number: e.target.value })}
-                  placeholder="Enter your phone number"
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span className="text-gray-500">+62</span>
+                  </div>
+                  <Input
+                    type="tel"
+                    value={data.phone_number}
+                    onChange={(e) => {
+                      const value = formatPhoneNumber(e.target.value);
+                      setData({ ...data, phone_number: value });
+                    }}
+                    className="pl-12"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+                {data.phone_number && !validatePhoneNumber(data.phone_number) && (
+                  <p className="text-sm text-destructive">
+                    Phone number must be between 8 and 12 digits
+                  </p>
+                )}
                 <p className="text-sm text-muted-foreground">
                   Your phone number is required and will be used by businesses to contact you for job opportunities.
                 </p>
