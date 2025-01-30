@@ -30,6 +30,7 @@ export interface WorkerUser {
   full_name: string;
   gender: "male" | "female";
   job: JobType;
+  type_contract: "Full time" | "Part time";
   languages: Language[];
   location: WorkArea[];
   work_history: WorkExperience[];
