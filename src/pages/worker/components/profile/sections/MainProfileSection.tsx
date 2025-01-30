@@ -59,7 +59,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
     {
       label: 'Work Schedule',
       icon: Clock,
-      values: profile.experience ? [profile.experience] : ['0 years']
+      values: profile?.type_contract ? [profile.type_contract, profile.experience] : [profile.experience]
     },
     {
       label: 'Languages',

@@ -30,14 +30,16 @@ import { useStorage } from "@/hooks/useStorage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useToast } from "@/hooks/use-toast";
-import type { WorkerUser, JobType, Language, WorkArea } from "@/types/firebase.types";
+import type { WorkerUser, JobType, Language, WorkArea } from '@/types/firebase.types';
 
 const JOB_TYPES: JobType[] = ['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'];
 const LANGUAGES: Language[] = ['English', 'Bahasa'];
 const WORK_AREAS: WorkArea[] = ['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'];
+const CONTRACT_TYPES = ['Full time', 'Part time'] as const;
 
 const formSchema = z.object({
   job: z.enum(['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'] as const),
+  type_contract: z.enum(['Full time', 'Part time'] as const),
   languages: z.array(z.enum(['English', 'Bahasa'] as const)).default([]),
   location: z.array(z.enum(['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'] as const)).default([]),
   profile_picture_url: z.string().optional(),
@@ -59,6 +61,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
     resolver: zodResolver(formSchema),
     defaultValues: {
       job: profile?.job || "Waiter",
+      type_contract: profile?.type_contract || "Full time",
       languages: profile?.languages || [],
       location: profile?.location || [],
       profile_picture_url: profile?.profile_picture_url || "",
@@ -98,6 +101,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
       
       const updateData: Partial<WorkerUser> = {
         job: values.job,
+        type_contract: values.type_contract,
         languages: values.languages || [],
         location: values.location || [],
         profile_picture_url: values.profile_picture_url,
@@ -131,7 +135,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col h-[90vh] w-[95vw] md:h-[70vh] md:w-[50vw] max-w-[95vw] p-0 gap-0 sm:px-6 overflow-hidden">
+      <DialogContent className="flex flex-col w-[95vw] md:w-[50vw] max-w-[95vw] max-h-[90vh] p-0 gap-0 sm:px-6">
         <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
           <DialogTitle className="text-2xl font-bold text-center">Edit Profile</DialogTitle>
         </DialogHeader>
@@ -182,6 +186,31 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                         {JOB_TYPES.map((job) => (
                           <SelectItem key={job} value={job}>
                             {job}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="type_contract"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Work Schedule</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select work schedule" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {CONTRACT_TYPES.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
                           </SelectItem>
                         ))}
                       </SelectContent>
