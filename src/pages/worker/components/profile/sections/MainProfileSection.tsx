@@ -6,6 +6,7 @@ import MainProfileEditModal from '../modals/MainProfileEditModal';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -76,25 +77,31 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
     return (
       <Sheet>
         <SheetTrigger asChild className="md:hidden">
-          <div className="fixed bottom-0 left-0 right-0">
-            <div className="container mx-auto p-4 bg-white border-t shadow-lg">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Switch
-                    checked={profile.availability_status}
-                    onCheckedChange={handleAvailabilityChange}
-                    className="data-[state=checked]:bg-green-500"
-                  />
-                  <span className={`font-semibold ${profile.availability_status ? 'text-green-500' : 'text-red-500'}`}>
-                    {profile.availability_status ? 'Available for work' : 'Not available'}
-                  </span>
-                </div>
-                <ChevronUp className="h-5 w-5 text-gray-500" />
-              </div>
-            </div>
-          </div>
+          <button
+            className={cn(
+              "fixed bottom-[64px] left-0 right-0 z-50 w-full py-4 px-6 shadow-lg transition-colors",
+              profile.availability_status 
+                ? "bg-accent hover:bg-accent/90 text-accent-foreground"
+                : "bg-red-500 hover:bg-red-600 text-white"
+            )}
+          >
+            <p className="text-center font-medium">
+              {profile.availability_status 
+                ? "You are currently available for work"
+                : "You are currently not available for work"
+              }
+            </p>
+          </button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[30vh]">
+        <SheetContent 
+          side="bottom" 
+          className="h-[30vh]"
+          onInteractOutside={(e) => {
+            if (e.target instanceof HTMLElement && e.target.closest('[role="switch"]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           <div className="flex flex-col h-full">
             <div className="flex-1 flex flex-col items-center justify-center space-y-4">
               <h3 className="text-lg font-semibold">Availability Status</h3>
@@ -102,9 +109,17 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                 <Switch
                   checked={profile.availability_status}
                   onCheckedChange={handleAvailabilityChange}
-                  className="data-[state=checked]:bg-green-500 h-8 w-14"
+                  className={cn(
+                    "h-8 w-14",
+                    profile.availability_status 
+                      ? "data-[state=checked]:bg-accent" 
+                      : "data-[state=checked]:bg-red-500"
+                  )}
                 />
-                <span className={`font-semibold ${profile.availability_status ? 'text-green-500' : 'text-red-500'}`}>
+                <span className={cn(
+                  "font-semibold",
+                  profile.availability_status ? "text-accent" : "text-red-500"
+                )}>
                   {profile.availability_status ? 'Available for work' : 'Not available'}
                 </span>
               </div>
