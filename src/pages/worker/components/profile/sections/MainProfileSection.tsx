@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag, ChevronUp } from 'lucide-react';
+import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { ProfileContainer } from "@/layouts/profile";
 import MainProfileEditModal from '../modals/MainProfileEditModal';
@@ -59,7 +59,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
     {
       label: 'Work Schedule',
       icon: Clock,
-      values: profile?.type_contract ? [profile.type_contract, profile.experience] : [profile.experience]
+      values: [profile.type_contract]
     },
     {
       label: 'Languages',
