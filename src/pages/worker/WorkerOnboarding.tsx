@@ -27,10 +27,13 @@ const WORK_AREAS: WorkArea[] = [
 
 const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
+type ContractType = 'Full time' | 'Part time';
+
 interface OnboardingData {
   job: JobType;
   location: WorkArea[];
   languages: Language[];
+  type_contract: ContractType;
   full_name: string;
   gender: "male" | "female";
   phone_number: string;
@@ -46,15 +49,16 @@ const WorkerOnboarding = () => {
     job: 'Waiter',
     location: [],
     languages: [],
+    type_contract: 'Full time',
     full_name: "",
     gender: "male",
     phone_number: "",
   });
 
-  const progress = (step / 5) * 100;
+  const progress = (step / 6) * 100;
 
   const handleNext = async () => {
-    if (step === 5) {
+    if (step === 6) {
       await completeOnboarding();
     } else {
       setStep(step + 1);
@@ -185,6 +189,24 @@ const WorkerOnboarding = () => {
             )}
 
             {step === 4 && (
+              <div className="space-y-4">
+                <h2 className="text-2xl font-bold">What kind of work contract are you looking for?</h2>
+                <Select
+                  value={data.type_contract}
+                  onValueChange={(value: ContractType) => setData({ ...data, type_contract: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select contract type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Full time">Full time</SelectItem>
+                    <SelectItem value="Part time">Part time</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {step === 5 && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold">Tell us about yourself</h2>
                 <div className="space-y-4">
@@ -219,7 +241,7 @@ const WorkerOnboarding = () => {
               </div>
             )}
 
-            {step === 5 && (
+            {step === 6 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">What's your phone number?</h2>
                 <Input
@@ -241,11 +263,12 @@ const WorkerOnboarding = () => {
                 (step === 1 && !data.job) ||
                 (step === 2 && data.location.length === 0) ||
                 (step === 3 && data.languages.length === 0) ||
-                (step === 4 && (!data.full_name || !data.gender)) ||
-                (step === 5 && !data.phone_number)
+                (step === 4 && !data.type_contract) ||
+                (step === 5 && (!data.full_name || !data.gender)) ||
+                (step === 6 && !data.phone_number)
               }
             >
-              {step === 5 ? "Complete" : "Next"}
+              {step === 6 ? "Complete" : "Next"}
             </Button>
           </div>
         </CardContent>
