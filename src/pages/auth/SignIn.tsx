@@ -83,19 +83,19 @@ const SignIn = () => {
           required
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing in..." : t('auth.signIn')}
+          {isLoading ? t('auth.signIn.loading') : t('auth.signIn')}
         </Button>
         <div className="flex flex-col gap-2 text-center text-sm">
           <Link 
             to="/forgot-password"
             className="text-primary hover:text-primary/80"
           >
-            {t('auth.forgotPassword')}
+            {t('auth.forgotPassword.link')}
           </Link>
           <span className="text-secondary">
-            Don't have an account?{' '}
+            {t('auth.noAccount')}{' '}
             <Link to="/signup" className="text-primary hover:text-primary/80">
-              {t('auth.signUp')}
+              {t('auth.signUp.title')}
             </Link>
           </span>
         </div>

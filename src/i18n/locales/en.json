@@ -18,6 +18,7 @@
       }
     },
     "forgotPassword": {
+      "link": "Forgot Password?",
       "title": "Reset Password",
       "emailLabel": "Email address",
       "emailPlaceholder": "Enter your email",
@@ -62,6 +63,7 @@
           "description": "You can now sign in with your new password"
         }
       }
-    }
+    },
+    "noAccount": "Don't have an account?"
   }
 }
