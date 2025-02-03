@@ -6,7 +6,6 @@ import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import AuthLayout from '@/layouts/auth';
 import { UserRole } from '@/types/firebase.types';
 
 const SignUp = () => {
@@ -43,51 +42,49 @@ const SignUp = () => {
   };
 
   return (
-    <AuthLayout title="Create your Jobizy Account">
-      <form className="space-y-4" onSubmit={handleSignUp}>
-        <Input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <div className="flex gap-4">
-          <Button
-            type="button"
-            variant={role === 'worker' ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => setRole('worker')}
-          >
-            I'm a Worker
-          </Button>
-          <Button
-            type="button"
-            variant={role === 'business' ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => setRole('business')}
-          >
-            I'm a Business
-          </Button>
-        </div>
-        <Button type="submit" className="w-full">
-          Sign Up
+    <form className="space-y-4" onSubmit={handleSignUp}>
+      <Input
+        type="email"
+        placeholder="Email address"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <Input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <div className="flex gap-4">
+        <Button
+          type="button"
+          variant={role === 'worker' ? 'default' : 'outline'}
+          className="flex-1"
+          onClick={() => setRole('worker')}
+        >
+          I'm a Worker
         </Button>
-        <div className="text-center text-sm text-secondary">
-          Already have an account?{' '}
-          <Link to="/signin" className="text-primary hover:text-primary/80">
-            Sign In
-          </Link>
-        </div>
-      </form>
-    </AuthLayout>
+        <Button
+          type="button"
+          variant={role === 'business' ? 'default' : 'outline'}
+          className="flex-1"
+          onClick={() => setRole('business')}
+        >
+          I'm a Business
+        </Button>
+      </div>
+      <Button type="submit" className="w-full">
+        Sign Up
+      </Button>
+      <div className="text-center text-sm text-secondary">
+        Already have an account?{' '}
+        <Link to="/signin" className="text-primary hover:text-primary/80">
+          Sign In
+        </Link>
+      </div>
+    </form>
   );
 };
 

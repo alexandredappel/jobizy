@@ -5,7 +5,6 @@ import { auth, db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import AuthLayout from '@/layouts/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
 const SignIn = () => {
@@ -58,43 +57,41 @@ const SignIn = () => {
   };
 
   return (
-    <AuthLayout title="Sign In to Your Account">
-      <form onSubmit={handleSignIn} className="space-y-4">
-        <Input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
-          required
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={isLoading}
-          required
-        />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign In"}
-        </Button>
-        <div className="flex flex-col gap-2 text-center text-sm">
-          <Link 
-            to="/forgot-password"
-            className="text-primary hover:text-primary/80"
-          >
-            Forgot Password?
+    <form onSubmit={handleSignIn} className="space-y-4">
+      <Input
+        type="email"
+        placeholder="Email address"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        disabled={isLoading}
+        required
+      />
+      <Input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        disabled={isLoading}
+        required
+      />
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Signing in..." : "Sign In"}
+      </Button>
+      <div className="flex flex-col gap-2 text-center text-sm">
+        <Link 
+          to="/forgot-password"
+          className="text-primary hover:text-primary/80"
+        >
+          Forgot Password?
+        </Link>
+        <span className="text-secondary">
+          Don't have an account?{' '}
+          <Link to="/signup" className="text-primary hover:text-primary/80">
+            Sign Up
           </Link>
-          <span className="text-secondary">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-primary hover:text-primary/80">
-              Sign Up
-            </Link>
-          </span>
-        </div>
-      </form>
-    </AuthLayout>
+        </span>
+      </div>
+    </form>
   );
 };
 
