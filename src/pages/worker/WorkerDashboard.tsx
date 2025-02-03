@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
 import { useToast } from "@/hooks/use-toast";
 import { createDashboardLayout } from "@/layouts/dashboard";
+import { useTranslation } from 'react-i18next';
 import WelcomeSection from "./components/dashboard/WelcomeSection";
 import AvailabilitySection from "./components/dashboard/AvailabilitySection";
 import ProfileCompletionSection from "./components/dashboard/ProfileCompletionSection";
@@ -15,6 +16,7 @@ const WorkerDashboard = () => {
   const { user } = useAuth();
   const { profile, isLoading, updateProfile } = useWorkerProfile(user?.id || '');
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showExperienceModal, setShowExperienceModal] = useState(false);
@@ -24,16 +26,16 @@ const WorkerDashboard = () => {
     try {
       await updateProfile({ availability_status: value });
       toast({
-        title: value ? "You're now available" : "You're now unavailable",
+        title: value ? t('worker.dashboard.availability.toast.available.title') : t('worker.dashboard.availability.toast.unavailable.title'),
         description: value 
-          ? "Businesses can now find and contact you"
-          : "You won't appear in search results",
+          ? t('worker.dashboard.availability.toast.available.description')
+          : t('worker.dashboard.availability.toast.unavailable.description'),
       });
     } catch (error) {
       console.error('Error updating availability:', error);
       toast({
-        title: "Error",
-        description: "Failed to update availability status",
+        title: t('worker.dashboard.availability.toast.error.title'),
+        description: t('worker.dashboard.availability.toast.error.description'),
         variant: "destructive",
       });
     }

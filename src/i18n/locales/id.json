@@ -65,5 +65,63 @@
       }
     },
     "noAccount": "Belum punya akun?"
+  },
+  "worker": {
+    "dashboard": {
+      "welcome": {
+        "morning": "selamat pagi",
+        "afternoon": "selamat siang",
+        "evening": "selamat malam",
+        "greeting": "Hai {{name}}"
+      },
+      "availability": {
+        "title": "Status Ketersediaan",
+        "available": "Anda saat ini tersedia untuk bekerja",
+        "unavailable": "Anda saat ini tidak tersedia untuk bekerja",
+        "toast": {
+          "available": {
+            "title": "Anda sekarang tersedia",
+            "description": "Bisnis sekarang dapat menemukan dan menghubungi Anda"
+          },
+          "unavailable": {
+            "title": "Anda sekarang tidak tersedia",
+            "description": "Anda tidak akan muncul dalam hasil pencarian"
+          },
+          "error": {
+            "title": "Error",
+            "description": "Gagal memperbarui status ketersediaan"
+          }
+        }
+      },
+      "profile": {
+        "completion": {
+          "title": "Kelengkapan Profil",
+          "subtitle": "Lengkapi Profil Anda",
+          "button": "Lengkapi Sekarang"
+        },
+        "cards": {
+          "main": {
+            "title": "Lengkapi Profil Anda",
+            "empty": "Tambahkan deskripsi tentang diri Anda untuk membantu bisnis mengenal Anda lebih baik",
+            "update": "Perbarui informasi profil Anda"
+          },
+          "experience": {
+            "title": "Tambah Pengalaman Kerja",
+            "empty": "Tambahkan pengalaman kerja Anda untuk menunjukkan keahlian Anda",
+            "update": "Perbarui pengalaman kerja Anda"
+          },
+          "education": {
+            "title": "Tambah Pendidikan",
+            "empty": "Tambahkan latar belakang pendidikan Anda untuk menyoroti kualifikasi Anda",
+            "update": "Perbarui detail pendidikan Anda"
+          },
+          "language": {
+            "title": "Kemampuan Bahasa",
+            "empty": "Tambahkan bahasa yang Anda kuasai untuk meningkatkan peluang Anda",
+            "update": "Perbarui kemampuan bahasa Anda"
+          }
+        }
+      }
+    }
   }
 }

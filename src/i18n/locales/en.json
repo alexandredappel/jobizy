@@ -65,5 +65,63 @@
       }
     },
     "noAccount": "Don't have an account?"
+  },
+  "worker": {
+    "dashboard": {
+      "welcome": {
+        "morning": "good morning",
+        "afternoon": "good afternoon",
+        "evening": "good evening",
+        "greeting": "Hi {{name}}"
+      },
+      "availability": {
+        "title": "Availability Status",
+        "available": "You're currently available for work",
+        "unavailable": "You're currently unavailable for work",
+        "toast": {
+          "available": {
+            "title": "You're now available",
+            "description": "Businesses can now find and contact you"
+          },
+          "unavailable": {
+            "title": "You're now unavailable",
+            "description": "You won't appear in search results"
+          },
+          "error": {
+            "title": "Error",
+            "description": "Failed to update availability status"
+          }
+        }
+      },
+      "profile": {
+        "completion": {
+          "title": "Profile Completion",
+          "subtitle": "Complete Your Profile",
+          "button": "Complete Now"
+        },
+        "cards": {
+          "main": {
+            "title": "Complete Your Profile",
+            "empty": "Add a description about yourself to help businesses know you better",
+            "update": "Update your profile information"
+          },
+          "experience": {
+            "title": "Add Work Experience",
+            "empty": "Add your work experience to showcase your expertise",
+            "update": "Update your work experience"
+          },
+          "education": {
+            "title": "Add Education",
+            "empty": "Add your education background to highlight your qualifications",
+            "update": "Update your education details"
+          },
+          "language": {
+            "title": "Language Skills",
+            "empty": "Add the languages you speak to improve your chances",
+            "update": "Update your language skills"
+          }
+        }
+      }
+    }
   }
 }

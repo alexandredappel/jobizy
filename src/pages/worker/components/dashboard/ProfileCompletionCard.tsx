@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 interface ProfileCompletionCardProps {
   title: string;
@@ -10,6 +11,8 @@ interface ProfileCompletionCardProps {
 }
 
 const ProfileCompletionCard = ({ title, description, icon: Icon, onClick }: ProfileCompletionCardProps) => {
+  const { t } = useTranslation();
+
   return (
     <Card className="p-6 h-full flex flex-col justify-between">
       <div className="space-y-4">
@@ -20,7 +23,7 @@ const ProfileCompletionCard = ({ title, description, icon: Icon, onClick }: Prof
         <p className="text-muted-foreground">{description}</p>
       </div>
       <Button onClick={onClick} className="mt-4">
-        Complete Now
+        {t('worker.dashboard.profile.completion.button')}
       </Button>
     </Card>
   );

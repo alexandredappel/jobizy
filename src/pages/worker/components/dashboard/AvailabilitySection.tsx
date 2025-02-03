@@ -1,6 +1,6 @@
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
-import { WorkerUser } from "@/types/firebase.types";
+import { useTranslation } from 'react-i18next';
 
 interface AvailabilitySectionProps {
   isAvailable: boolean;
@@ -8,13 +8,18 @@ interface AvailabilitySectionProps {
 }
 
 const AvailabilitySection = ({ isAvailable, onToggleAvailability }: AvailabilitySectionProps) => {
+  const { t } = useTranslation();
+
   return (
     <Card className="p-6 mb-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold mb-2">Availability Status</h2>
+          <h2 className="text-xl font-semibold mb-2">{t('worker.dashboard.availability.title')}</h2>
           <p className="text-muted-foreground">
-            {isAvailable ? "You're currently available for work" : "You're currently unavailable for work"}
+            {isAvailable 
+              ? t('worker.dashboard.availability.available')
+              : t('worker.dashboard.availability.unavailable')
+            }
           </p>
         </div>
         <Switch

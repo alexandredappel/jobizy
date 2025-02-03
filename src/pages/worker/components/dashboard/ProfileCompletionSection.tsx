@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   Carousel,
   CarouselContent,
@@ -25,40 +26,41 @@ const ProfileCompletionSection = ({
   onEditEducation,
 }: ProfileCompletionSectionProps) => {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
 
   const completionCards = [
     {
-      title: "Complete Your Profile",
+      title: t('worker.dashboard.profile.cards.main.title'),
       description: !profile.about_me 
-        ? "Add a description about yourself to help businesses know you better"
-        : "Update your profile information",
+        ? t('worker.dashboard.profile.cards.main.empty')
+        : t('worker.dashboard.profile.cards.main.update'),
       icon: UserCircle,
       onClick: onEditProfile,
       isComplete: !!profile.about_me,
     },
     {
-      title: "Add Work Experience",
+      title: t('worker.dashboard.profile.cards.experience.title'),
       description: profile.work_history?.length === 0
-        ? "Add your work experience to showcase your expertise"
-        : "Update your work experience",
+        ? t('worker.dashboard.profile.cards.experience.empty')
+        : t('worker.dashboard.profile.cards.experience.update'),
       icon: Briefcase,
       onClick: onEditExperience,
       isComplete: profile.work_history?.length > 0,
     },
     {
-      title: "Add Education",
+      title: t('worker.dashboard.profile.cards.education.title'),
       description: profile.education?.length === 0
-        ? "Add your education background to highlight your qualifications"
-        : "Update your education details",
+        ? t('worker.dashboard.profile.cards.education.empty')
+        : t('worker.dashboard.profile.cards.education.update'),
       icon: GraduationCap,
       onClick: onEditEducation,
       isComplete: profile.education?.length > 0,
     },
     {
-      title: "Language Skills",
+      title: t('worker.dashboard.profile.cards.language.title'),
       description: profile.languages?.length === 0
-        ? "Add the languages you speak to improve your chances"
-        : "Update your language skills",
+        ? t('worker.dashboard.profile.cards.language.empty')
+        : t('worker.dashboard.profile.cards.language.update'),
       icon: Languages,
       onClick: onEditProfile,
       isComplete: profile.languages?.length > 0,
@@ -69,14 +71,14 @@ const ProfileCompletionSection = ({
     <div className="space-y-6">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">Profile Completion</h2>
+          <h2 className="text-2xl font-semibold">{t('worker.dashboard.profile.completion.title')}</h2>
           <span className="text-lg font-medium">{completionPercentage}%</span>
         </div>
         <Progress value={completionPercentage} className="h-2" />
       </div>
       
       <div>
-        <h3 className="text-lg font-medium mb-4">Complete Your Profile</h3>
+        <h3 className="text-lg font-medium mb-4">{t('worker.dashboard.profile.completion.subtitle')}</h3>
         
         {isMobile ? (
           <Carousel
