@@ -129,6 +129,12 @@
           "title": "Tentang Saya",
           "edit": "Edit",
           "empty": "Belum ada deskripsi."
+        },
+        "education": {
+          "title": "Pendidikan",
+          "edit": "Edit",
+          "empty": "Belum ada riwayat pendidikan yang ditambahkan.",
+          "present": "Sekarang"
         }
       }
     }
