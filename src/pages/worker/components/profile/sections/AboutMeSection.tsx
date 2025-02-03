@@ -27,7 +27,7 @@ export const AboutMeSection = ({ aboutMe, isLoading, onEdit }: AboutMeSectionPro
     <Card className="w-full">
       <CardContent className="pt-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">{t('worker.profile.sections.aboutMe.title')}</h2>
+          <h2 className="text-2xl font-semibold">{t('worker.dashboard.profile.completion.button')}</h2>
           <Button variant="outline" size="sm" onClick={onEdit}>
             <Pencil className="h-4 w-4 mr-2" />
             {t('worker.profile.sections.aboutMe.edit')}
