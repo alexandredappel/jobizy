@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
 import { UserRole } from '@/types/firebase.types';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '@/components/ui/language-selector';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -15,6 +17,13 @@ const SignUp = () => {
   const [role, setRole] = useState<UserRole>('worker');
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, i18n } = useTranslation();
+
+  // Set default language to Bahasa Indonesia
+  useEffect(() => {
+    console.log('Setting default language to Indonesian');
+    i18n.changeLanguage('id');
+  }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +31,11 @@ const SignUp = () => {
       console.log('Creating new user with role:', role);
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Save user data including email in Firestore
+      // Save user data including email and language preference in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email,
         role,
+        preferred_language: 'id', // Set Bahasa as default
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
@@ -43,18 +53,21 @@ const SignUp = () => {
   };
 
   return (
-    <AuthLayout title="Create your Jobizy Account">
+    <AuthLayout title={t('auth.signUp')}>
+      <div className="absolute top-4 right-4">
+        <LanguageSelector />
+      </div>
       <form className="space-y-4" onSubmit={handleSignUp}>
         <Input
           type="email"
-          placeholder="Email address"
+          placeholder={t('auth.email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
         <Input
           type="password"
-          placeholder="Password"
+          placeholder={t('auth.password')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -78,12 +91,12 @@ const SignUp = () => {
           </Button>
         </div>
         <Button type="submit" className="w-full">
-          Sign Up
+          {t('auth.signUp')}
         </Button>
         <div className="text-center text-sm text-secondary">
           Already have an account?{' '}
           <Link to="/signin" className="text-primary hover:text-primary/80">
-            Sign In
+            {t('auth.signIn')}
           </Link>
         </div>
       </form>
