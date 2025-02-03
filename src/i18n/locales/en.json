@@ -1,10 +1,22 @@
 {
   "auth": {
     "signIn": "Sign In",
-    "signUp": "Sign Up",
     "signOut": "Sign Out",
     "email": "Email",
     "password": "Password",
+    "signUp": {
+      "title": "Sign Up",
+      "submitButton": "Sign Up",
+      "roleButtons": {
+        "worker": "I'm a Worker",
+        "business": "I'm a Business"
+      },
+      "alreadyHaveAccount": "Already have an account?",
+      "error": {
+        "title": "Error",
+        "description": "Failed to create account. Please try again."
+      }
+    },
     "forgotPassword": {
       "title": "Reset Password",
       "emailLabel": "Email address",
@@ -49,17 +61,6 @@
           "title": "Password reset successful",
           "description": "You can now sign in with your new password"
         }
-      }
-    },
-    "signUp": {
-      "roleButtons": {
-        "worker": "I'm a Worker",
-        "business": "I'm a Business"
-      },
-      "alreadyHaveAccount": "Already have an account?",
-      "error": {
-        "title": "Error",
-        "description": "Failed to create account. Please try again."
       }
     }
   }

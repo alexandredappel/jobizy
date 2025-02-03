@@ -1,10 +1,22 @@
 {
   "auth": {
     "signIn": "Masuk",
-    "signUp": "Daftar",
     "signOut": "Keluar",
     "email": "Email",
     "password": "Kata Sandi",
+    "signUp": {
+      "title": "Daftar",
+      "submitButton": "Daftar",
+      "roleButtons": {
+        "worker": "Saya Pekerja",
+        "business": "Saya Pengusaha"
+      },
+      "alreadyHaveAccount": "Sudah punya akun?",
+      "error": {
+        "title": "Error",
+        "description": "Gagal membuat akun. Silakan coba lagi."
+      }
+    },
     "forgotPassword": {
       "title": "Reset Kata Sandi",
       "emailLabel": "Alamat email",
@@ -49,17 +61,6 @@
           "title": "Reset kata sandi berhasil",
           "description": "Anda sekarang dapat masuk dengan kata sandi baru"
         }
-      }
-    },
-    "signUp": {
-      "roleButtons": {
-        "worker": "Saya Pekerja",
-        "business": "Saya Pengusaha"
-      },
-      "alreadyHaveAccount": "Sudah punya akun?",
-      "error": {
-        "title": "Error",
-        "description": "Gagal membuat akun. Silakan coba lagi."
       }
     }
   }
