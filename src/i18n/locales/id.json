@@ -135,6 +135,25 @@
           "edit": "Edit",
           "empty": "Belum ada riwayat pendidikan yang ditambahkan.",
           "present": "Sekarang"
+        },
+        "main": {
+          "noneValue": "Tidak Ada",
+          "othersCount": "+{{count}} lainnya",
+          "workSchedule": "Jadwal Kerja",
+          "languages": "Bahasa",
+          "location": "Lokasi",
+          "availability": {
+            "title": "Status Ketersediaan",
+            "toggleLabel": "Ubah status ketersediaan",
+            "mobileAvailable": "Anda saat ini tersedia untuk bekerja",
+            "mobileUnavailable": "Anda saat ini tidak tersedia untuk bekerja",
+            "available": "Tersedia untuk bekerja",
+            "unavailable": "Tidak tersedia",
+            "shortAvailable": "Tersedia",
+            "shortUnavailable": "Tidak Tersedia",
+            "availableDescription": "Pengusaha dapat melihat profil dan menghubungi Anda",
+            "unavailableDescription": "Profil Anda tersembunyi dari pengusaha"
+          }
         }
       }
     }
