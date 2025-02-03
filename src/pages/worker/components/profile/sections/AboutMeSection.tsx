@@ -17,7 +17,7 @@ export const AboutMeSection = ({ aboutMe, isLoading, onEdit }: AboutMeSectionPro
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">{t('worker.profile.sections.aboutMe.title')}</h2>
+          <h2 className="text-2xl font-semibold">{t('worker.dashboard.profile.completion.button')}</h2>
         </div>
       </div>
     );
