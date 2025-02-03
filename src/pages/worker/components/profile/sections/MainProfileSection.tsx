@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
 import {
   Sheet,
   SheetContent,
@@ -34,6 +35,7 @@ interface MainProfileSectionProps {
 
 const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps) => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const { t } = useTranslation();
 
   const handleEditClick = () => {
     if (onEdit) {
@@ -50,24 +52,24 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
   };
 
   const renderBadges = (values: string[]) => {
-    if (!values?.length) return ['None'];
+    if (!values?.length) return [t('worker.profile.sections.main.noneValue')];
     if (values.length <= 2) return values;
-    return [...values.slice(0, 2), `+${values.length - 2} others`];
+    return [...values.slice(0, 2), t('worker.profile.sections.main.othersCount', { count: values.length - 2 })];
   };
 
   const badgeSections = [
     {
-      label: 'Work Schedule',
+      label: t('worker.profile.sections.main.workSchedule'),
       icon: Clock,
       values: [profile.type_contract]
     },
     {
-      label: 'Languages',
+      label: t('worker.profile.sections.main.languages'),
       icon: Globe,
       values: profile.languages || []
     },
     {
-      label: 'Location',
+      label: t('worker.profile.sections.main.location'),
       icon: MapPin,
       values: profile.location || []
     }
@@ -87,8 +89,8 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
           >
             <p className="text-center font-medium">
               {profile.availability_status 
-                ? "You are currently available for work"
-                : "You are currently not available for work"
+                ? t('worker.profile.sections.main.availability.mobileAvailable')
+                : t('worker.profile.sections.main.availability.mobileUnavailable')
               }
             </p>
           </button>
@@ -104,7 +106,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
         >
           <div className="flex flex-col h-full">
             <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-              <h3 className="text-lg font-semibold">Availability Status</h3>
+              <h3 className="text-lg font-semibold">{t('worker.profile.sections.main.availability.title')}</h3>
               <div className="flex items-center gap-3">
                 <Switch
                   checked={profile.availability_status}
@@ -120,13 +122,17 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                   "font-semibold",
                   profile.availability_status ? "text-accent" : "text-red-500"
                 )}>
-                  {profile.availability_status ? 'Available for work' : 'Not available'}
+                  {profile.availability_status 
+                    ? t('worker.profile.sections.main.availability.available')
+                    : t('worker.profile.sections.main.availability.unavailable')
+                  }
                 </span>
               </div>
               <p className="text-muted-foreground text-center max-w-xs">
                 {profile.availability_status 
-                  ? "Employers can see your profile and contact you" 
-                  : "Your profile is hidden from employers"}
+                  ? t('worker.profile.sections.main.availability.availableDescription')
+                  : t('worker.profile.sections.main.availability.unavailableDescription')
+                }
               </p>
             </div>
           </div>
@@ -144,10 +150,13 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
               <Switch
                 checked={profile.availability_status}
                 onCheckedChange={handleAvailabilityChange}
-                aria-label="Availability toggle"
+                aria-label={t('worker.profile.sections.main.availability.toggleLabel')}
               />
               <span className="text-sm text-muted-foreground">
-                {profile.availability_status ? "Available" : "Unavailable"}
+                {profile.availability_status 
+                  ? t('worker.profile.sections.main.availability.shortAvailable')
+                  : t('worker.profile.sections.main.availability.shortUnavailable')
+                }
               </span>
             </div>
             <Button
