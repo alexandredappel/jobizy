@@ -14,11 +14,63 @@ import Search from "./pages/business/Search";
 import WorkerProfile from "./pages/profiles/WorkerProfile";
 import BusinessProfile from "./pages/profiles/BusinessProfile";
 import AuthLayout from "./layouts/auth";
+import BaseLayout from "./layouts/base/BaseLayout";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Index />,
+    element: <BaseLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Index />,
+      },
+      {
+        path: "/worker",
+        children: [
+          {
+            path: "dashboard",
+            element: <WorkerDashboard />,
+          },
+          {
+            path: "onboarding",
+            element: <WorkerOnboarding />,
+          },
+          {
+            path: "profile/edit",
+            element: <WorkerProfileEdit />,
+          },
+        ],
+      },
+      {
+        path: "/business",
+        children: [
+          {
+            path: "dashboard",
+            element: <BusinessDashboard />,
+          },
+          {
+            path: "onboarding",
+            element: <BusinessOnboarding />,
+          },
+          {
+            path: "profile/edit",
+            element: <BusinessProfileEdit />,
+          },
+          {
+            path: "search",
+            element: <Search />,
+          },
+        ],
+      },
+      {
+        path: "/profiles/worker/:id",
+        element: <WorkerProfile />,
+      },
+      {
+        path: "/profiles/business/:id",
+        element: <BusinessProfile />,
+      },
+    ],
   },
   {
     element: <AuthLayout />,
@@ -40,51 +92,5 @@ export const router = createBrowserRouter([
         element: <ResetPassword />,
       },
     ],
-  },
-  {
-    path: "/worker",
-    children: [
-      {
-        path: "dashboard",
-        element: <WorkerDashboard />,
-      },
-      {
-        path: "onboarding",
-        element: <WorkerOnboarding />,
-      },
-      {
-        path: "profile/edit",
-        element: <WorkerProfileEdit />,
-      },
-    ],
-  },
-  {
-    path: "/business",
-    children: [
-      {
-        path: "dashboard",
-        element: <BusinessDashboard />,
-      },
-      {
-        path: "onboarding",
-        element: <BusinessOnboarding />,
-      },
-      {
-        path: "profile/edit",
-        element: <BusinessProfileEdit />,
-      },
-      {
-        path: "search",
-        element: <Search />,
-      },
-    ],
-  },
-  {
-    path: "/profiles/worker/:id",
-    element: <WorkerProfile />,
-  },
-  {
-    path: "/profiles/business/:id",
-    element: <BusinessProfile />,
   },
 ]);

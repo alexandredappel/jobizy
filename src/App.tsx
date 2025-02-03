@@ -8,7 +8,14 @@ import './App.css';
 import './lib/i18n';
 
 // Create a client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   const { user } = useAuth();
@@ -25,6 +32,8 @@ function App() {
       });
     }
   }, [user?.id]);
+
+  console.log('App rendering with user:', user);
 
   return (
     <QueryClientProvider client={queryClient}>
