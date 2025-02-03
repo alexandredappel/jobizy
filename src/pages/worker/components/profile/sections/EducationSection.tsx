@@ -1,11 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { Education } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
 
 interface EducationSectionProps {
   education: Education[];
@@ -48,8 +48,12 @@ export function EducationSection({ education, isLoading, onEdit }: EducationSect
               <div className="mb-1">
                 <h3 className="text-lg font-medium text-primary">{edu.institution}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {format(edu.start_date.toDate(), 'MMM yyyy')} - 
-                  {edu.end_date ? format(edu.end_date.toDate(), 'MMM yyyy') : t('worker.profile.edit.education.present')}
+                  {t('worker.profile.edit.education.duration', {
+                    startDate: format(edu.start_date.toDate(), 'MMM yyyy'),
+                    endDate: edu.end_date 
+                      ? format(edu.end_date.toDate(), 'MMM yyyy')
+                      : t('worker.profile.edit.education.present')
+                  })}
                 </p>
               </div>
               <p className="text-secondary">{edu.degree}</p>

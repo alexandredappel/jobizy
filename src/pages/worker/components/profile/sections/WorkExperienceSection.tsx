@@ -1,11 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { WorkExperience } from '@/types/firebase.types';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
-import { useTranslation } from 'react-i18next';
 
 interface WorkExperienceSectionProps {
   experiences: WorkExperience[];
@@ -48,8 +48,12 @@ export function WorkExperienceSection({ experiences, isLoading, onEdit }: WorkEx
               <div className="mb-1">
                 <h3 className="text-lg font-medium text-primary">{exp.company}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {format(exp.start_date.toDate(), 'MMM yyyy')} - 
-                  {exp.end_date ? format(exp.end_date.toDate(), 'MMM yyyy') : t('worker.profile.edit.workExperience.present')}
+                  {t('worker.profile.edit.workExperience.duration', {
+                    startDate: format(exp.start_date.toDate(), 'MMM yyyy'),
+                    endDate: exp.end_date 
+                      ? format(exp.end_date.toDate(), 'MMM yyyy')
+                      : t('worker.profile.edit.workExperience.present')
+                  })}
                 </p>
               </div>
               <p className="text-secondary">{exp.position}</p>

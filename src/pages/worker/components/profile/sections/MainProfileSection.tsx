@@ -13,6 +13,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { WorkerUser } from '@/types/firebase.types';
+import { useTranslation } from 'react-i18next';
 
 const JOB_ICONS: Record<string, React.ElementType> = {
   'Waiter': Coffee,
@@ -33,6 +34,7 @@ interface MainProfileSectionProps {
 }
 
 const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps) => {
+  const { t } = useTranslation();
   const [showEditModal, setShowEditModal] = useState(false);
 
   const handleEditClick = () => {
@@ -50,24 +52,24 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
   };
 
   const renderBadges = (values: string[]) => {
-    if (!values?.length) return ['None'];
+    if (!values?.length) return [t('worker.profile.edit.mainProfile.sections.none')];
     if (values.length <= 2) return values;
-    return [...values.slice(0, 2), `+${values.length - 2} others`];
+    return [...values.slice(0, 2), t('worker.profile.edit.mainProfile.sections.othersCount', { count: values.length - 2 })];
   };
 
   const badgeSections = [
     {
-      label: 'Work Schedule',
+      label: t('worker.profile.edit.mainProfile.sections.workSchedule'),
       icon: Clock,
       values: [profile.type_contract]
     },
     {
-      label: 'Languages',
+      label: t('worker.profile.edit.mainProfile.sections.languages'),
       icon: Globe,
       values: profile.languages || []
     },
     {
-      label: 'Location',
+      label: t('worker.profile.edit.mainProfile.sections.location'),
       icon: MapPin,
       values: profile.location || []
     }
@@ -87,8 +89,8 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
           >
             <p className="text-center font-medium">
               {profile.availability_status 
-                ? "You are currently available for work"
-                : "You are currently not available for work"
+                ? t('worker.profile.edit.mainProfile.availability.mobileAvailable')
+                : t('worker.profile.edit.mainProfile.availability.mobileUnavailable')
               }
             </p>
           </button>
@@ -104,7 +106,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
         >
           <div className="flex flex-col h-full">
             <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-              <h3 className="text-lg font-semibold">Availability Status</h3>
+              <h3 className="text-lg font-semibold">{t('worker.profile.edit.mainProfile.availability.title')}</h3>
               <div className="flex items-center gap-3">
                 <Switch
                   checked={profile.availability_status}
@@ -120,13 +122,15 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                   "font-semibold",
                   profile.availability_status ? "text-accent" : "text-red-500"
                 )}>
-                  {profile.availability_status ? 'Available for work' : 'Not available'}
+                  {profile.availability_status 
+                    ? t('worker.profile.edit.mainProfile.availability.availableForWork')
+                    : t('worker.profile.edit.mainProfile.availability.notAvailable')}
                 </span>
               </div>
               <p className="text-muted-foreground text-center max-w-xs">
                 {profile.availability_status 
-                  ? "Employers can see your profile and contact you" 
-                  : "Your profile is hidden from employers"}
+                  ? t('worker.profile.edit.mainProfile.availability.visibleHint')
+                  : t('worker.profile.edit.mainProfile.availability.hiddenHint')}
               </p>
             </div>
           </div>
@@ -147,7 +151,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                 aria-label="Availability toggle"
               />
               <span className="text-sm text-muted-foreground">
-                {profile.availability_status ? "Available" : "Unavailable"}
+                {profile.availability_status ? t('worker.profile.edit.mainProfile.availability.available') : t('worker.profile.edit.mainProfile.availability.unavailable')}
               </span>
             </div>
             <Button
