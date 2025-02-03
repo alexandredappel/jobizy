@@ -154,6 +154,12 @@
             "availableDescription": "Pengusaha dapat melihat profil dan menghubungi Anda",
             "unavailableDescription": "Profil Anda tersembunyi dari pengusaha"
           }
+        },
+        "workExperience": {
+          "title": "Pengalaman Kerja",
+          "edit": "Edit",
+          "empty": "Belum ada pengalaman kerja yang ditambahkan.",
+          "present": "Sekarang"
         }
       }
     }
