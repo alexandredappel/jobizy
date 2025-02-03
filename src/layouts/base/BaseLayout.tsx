@@ -1,8 +1,9 @@
 import { ReactNode } from 'react';
+import { Outlet } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
 
 interface BaseLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const BaseLayout = ({ children }: BaseLayoutProps) => {
@@ -11,7 +12,7 @@ const BaseLayout = ({ children }: BaseLayoutProps) => {
       <Navigation />
       <main className="lg:pl-64 pt-16 lg:pt-0">
         <div className="container mx-auto p-4 lg:p-8">
-          {children}
+          {children || <Outlet />}
         </div>
       </main>
     </div>
