@@ -56,7 +56,7 @@ const SignUp = () => {
   };
 
   return (
-    <AuthLayout title={t('auth.signUp')}>
+    <AuthLayout title={t('auth.signUp.title')}>
       <div className="absolute top-4 right-4">
         <LanguageSelector />
       </div>
@@ -94,7 +94,7 @@ const SignUp = () => {
           </Button>
         </div>
         <Button type="submit" className="w-full">
-          {t('auth.signUp')}
+          {t('auth.signUp.submitButton')}
         </Button>
         <div className="text-center text-sm text-secondary">
           {t('auth.signUp.alreadyHaveAccount')}{' '}
