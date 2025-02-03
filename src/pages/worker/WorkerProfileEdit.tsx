@@ -21,6 +21,7 @@ import { useWorkerEducation } from "@/hooks/useWorkerEducation";
 import { useWorkerExperience } from "@/hooks/useWorkerExperience";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { WorkerUser } from '@/types/firebase.types';
+import LanguageSelector from '@/components/ui/language-selector';
 
 const WorkerProfileEdit = () => {
   const { user } = useAuth();
@@ -64,14 +65,17 @@ const WorkerProfileEdit = () => {
     <div className="min-h-screen bg-[#eefceb]">
       <div className="container mx-auto p-4 space-y-8">
         <div className="flex justify-end mb-4 relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowSettingsModal(true)}
-            className="text-muted-foreground hover:text-primary"
-          >
-            <Settings className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <LanguageSelector />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowSettingsModal(true)}
+              className="text-muted-foreground hover:text-primary"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
 
         <MainProfileSection

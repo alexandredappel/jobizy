@@ -4,6 +4,7 @@ import { User as FirebaseUser } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import type { User } from '@/types/database.types';
 import { doc, getDoc, Timestamp } from 'firebase/firestore';
+import i18next from 'i18next';
 
 interface AuthContextType {
   user: User | null;
@@ -32,6 +33,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (userDoc.exists()) {
             const userData = userDoc.data();
             console.log('User data retrieved:', userData);
+            
+            // Set language preference if it exists
+            if (userData.preferred_language) {
+              console.log('Setting language to:', userData.preferred_language);
+              i18next.changeLanguage(userData.preferred_language);
+            }
             
             // Ensure we're using the correct role field
             const userRole = userData.role || userData.userType;
