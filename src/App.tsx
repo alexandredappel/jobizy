@@ -7,6 +7,26 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigation } from "@/components/Navigation";
+
+// Auth pages
+import SignIn from "@/pages/auth/SignIn";
+import SignUp from "@/pages/auth/SignUp";
+import ForgotPassword from "@/pages/auth/ForgotPassword";
+import ResetPassword from "@/pages/auth/ResetPassword";
+
+// Worker pages
+import WorkerOnboarding from "@/pages/worker/WorkerOnboarding";
+import WorkerDashboard from "@/pages/worker/WorkerDashboard";
+import WorkerProfileEdit from "@/pages/worker/WorkerProfileEdit";
+import WorkerProfile from "@/pages/profiles/WorkerProfile";
+
+// Business pages
+import BusinessOnboarding from "@/pages/business/BusinessOnboarding";
+import BusinessDashboard from "@/pages/business/BusinessDashboard";
+import BusinessProfileEdit from "@/pages/business/BusinessProfileEdit";
+import Search from "@/pages/business/Search";
+
+// i18n configuration
 import './i18n';
 
 const queryClient = new QueryClient();
