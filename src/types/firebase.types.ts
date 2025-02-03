@@ -40,7 +40,6 @@ export interface WorkerUser {
   phone_number?: string;
   birthday_date?: Timestamp;
   about_me?: string;
-  preferred_language?: string;
   created_at: Timestamp;
   updated_at: Timestamp;
 }

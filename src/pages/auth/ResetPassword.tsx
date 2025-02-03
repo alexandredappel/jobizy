@@ -5,6 +5,7 @@ import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import AuthLayout from '@/layouts/auth';
 import { z } from 'zod';
 
 const passwordSchema = z.string()
@@ -76,27 +77,29 @@ const ResetPassword = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        type="password"
-        placeholder="New password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        disabled={isLoading}
-        required
-      />
-      <Input
-        type="password"
-        placeholder="Confirm new password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        disabled={isLoading}
-        required
-      />
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Resetting..." : "Reset Password"}
-      </Button>
-    </form>
+    <AuthLayout title="Set New Password">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          type="password"
+          placeholder="New password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={isLoading}
+          required
+        />
+        <Input
+          type="password"
+          placeholder="Confirm new password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          disabled={isLoading}
+          required
+        />
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Resetting..." : "Reset Password"}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 };
 

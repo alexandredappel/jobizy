@@ -5,6 +5,7 @@ import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import AuthLayout from '@/layouts/auth';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email address');
@@ -49,28 +50,30 @@ const ForgotPassword = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        type="email"
-        placeholder="Email address"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={isLoading}
-        required
-      />
-      <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Sending..." : "Send Reset Link"}
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        className="w-full"
-        onClick={() => navigate('/signin')}
-        disabled={isLoading}
-      >
-        Back to Sign In
-      </Button>
-    </form>
+    <AuthLayout title="Reset Password">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          type="email"
+          placeholder="Email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
+          required
+        />
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Sending..." : "Send Reset Link"}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-full"
+          onClick={() => navigate('/signin')}
+          disabled={isLoading}
+        >
+          Back to Sign In
+        </Button>
+      </form>
+    </AuthLayout>
   );
 };
 
