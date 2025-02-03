@@ -129,6 +129,12 @@
           "title": "About Me",
           "edit": "Edit",
           "empty": "No description provided yet."
+        },
+        "education": {
+          "title": "Education",
+          "edit": "Edit",
+          "empty": "No education history added yet.",
+          "present": "Present"
         }
       }
     }
