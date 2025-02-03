@@ -121,6 +121,15 @@
             "update": "Perbarui kemampuan bahasa Anda"
           }
         }
+      },
+      "profile": {
+        "sections": {
+          "aboutMe": {
+            "title": "Tentang Saya",
+            "edit": "Edit",
+            "empty": "Belum ada deskripsi."
+          }
+        }
       }
     }
   }
