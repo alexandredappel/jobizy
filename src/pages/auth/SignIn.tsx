@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import { useTranslation } from 'react-i18next';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,7 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,11 +60,11 @@ const SignIn = () => {
   };
 
   return (
-    <AuthLayout title="Sign In to Your Account">
+    <AuthLayout title={t('auth.signIn')}>
       <form onSubmit={handleSignIn} className="space-y-4">
         <Input
           type="email"
-          placeholder="Email address"
+          placeholder={t('auth.email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading}
@@ -70,26 +72,26 @@ const SignIn = () => {
         />
         <Input
           type="password"
-          placeholder="Password"
+          placeholder={t('auth.password')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={isLoading}
           required
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign In"}
+          {isLoading ? "Signing in..." : t('auth.signIn')}
         </Button>
         <div className="flex flex-col gap-2 text-center text-sm">
           <Link 
             to="/forgot-password"
             className="text-primary hover:text-primary/80"
           >
-            Forgot Password?
+            {t('auth.forgotPassword')}
           </Link>
           <span className="text-secondary">
             Don't have an account?{' '}
             <Link to="/signup" className="text-primary hover:text-primary/80">
-              Sign Up
+              {t('auth.signUp')}
             </Link>
           </span>
         </div>
