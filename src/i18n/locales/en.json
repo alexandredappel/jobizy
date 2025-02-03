@@ -122,15 +122,6 @@
           }
         }
       }
-    },
-    "profile": {
-      "sections": {
-        "aboutMe": {
-          "title": "About Me",
-          "edit": "Edit",
-          "empty": "No description provided yet."
-        }
-      }
     }
   }
 }
