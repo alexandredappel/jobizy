@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +24,6 @@ const AboutMeModal = ({
   aboutMe,
   userId,
 }: AboutMeModalProps) => {
-  const { t } = useTranslation();
   const [localAboutMe, setLocalAboutMe] = useState(aboutMe);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -39,15 +37,15 @@ const AboutMeModal = ({
       });
 
       toast({
-        title: t('worker.profile.edit.aboutMe.toast.success.title'),
-        description: t('worker.profile.edit.aboutMe.toast.success.description')
+        title: "Success",
+        description: "About me section updated successfully"
       });
       onClose();
     } catch (error) {
       console.error('Error updating about me:', error);
       toast({
-        title: t('worker.profile.edit.aboutMe.toast.error.title'),
-        description: t('worker.profile.edit.aboutMe.toast.error.description'),
+        title: "Error",
+        description: "Failed to update about me section",
         variant: "destructive"
       });
     } finally {
@@ -59,24 +57,19 @@ const AboutMeModal = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="flex flex-col w-[95vw] md:w-[50vw] max-w-[95vw] max-h-[90vh] p-0 gap-0 sm:px-6">
         <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
-          <DialogTitle className="text-2xl font-bold text-center">
-            {t('worker.profile.edit.aboutMe.title')}
-          </DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-center">About Me</DialogTitle>
         </DialogHeader>
 
         <div className="px-4 sm:px-6 pb-6">
           <Textarea
             value={localAboutMe}
             onChange={(e) => setLocalAboutMe(e.target.value)}
-            placeholder={t('worker.profile.edit.aboutMe.placeholder')}
+            placeholder="Tell us about yourself"
             className="min-h-[200px] resize-none"
             maxLength={300}
           />
           <p className="text-sm text-gray-500 mt-2">
-            {t('worker.profile.edit.aboutMe.characterCount', {
-              current: localAboutMe.length,
-              max: 300
-            })}
+            {localAboutMe.length}/300 characters
           </p>
         </div>
 
@@ -86,7 +79,7 @@ const AboutMeModal = ({
               onClick={handleSave}
               disabled={isLoading}
             >
-              {isLoading ? t('worker.profile.edit.buttons.saving') : t('worker.profile.edit.buttons.save')}
+              {isLoading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>

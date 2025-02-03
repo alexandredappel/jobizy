@@ -94,65 +94,31 @@
         }
       },
       "profile": {
-        "edit": {
-          "buttons": {
-            "edit": "Edit",
-            "save": "Save Changes",
-            "saving": "Saving..."
+        "completion": {
+          "title": "Profile Completion",
+          "subtitle": "Complete Your Profile",
+          "button": "Complete Now"
+        },
+        "cards": {
+          "main": {
+            "title": "Complete Your Profile",
+            "empty": "Add a description about yourself to help businesses know you better",
+            "update": "Update your profile information"
           },
-          "mainProfile": {
-            "availability": {
-              "title": "Availability Status",
-              "available": "Available",
-              "unavailable": "Unavailable",
-              "availableForWork": "Available for work",
-              "notAvailable": "Not available",
-              "mobileAvailable": "You are currently available for work",
-              "mobileUnavailable": "You are currently not available for work",
-              "visibleHint": "Employers can see your profile and contact you",
-              "hiddenHint": "Your profile is hidden from employers"
-            },
-            "sections": {
-              "workSchedule": "Work Schedule",
-              "languages": "Languages",
-              "location": "Location",
-              "none": "None",
-              "othersCount": "+{{count}} others"
-            }
-          },
-          "aboutMe": {
-            "title": "About Me",
-            "placeholder": "Tell us about yourself",
-            "empty": "No description provided yet.",
-            "characterCount": "{{current}}/{{max}} characters",
-            "toast": {
-              "success": {
-                "title": "Success",
-                "description": "About me section updated successfully"
-              },
-              "error": {
-                "title": "Error",
-                "description": "Failed to update about me section"
-              }
-            }
-          },
-          "workExperience": {
-            "title": "Work Experience",
-            "present": "Present",
-            "company": "{{name}}",
-            "duration": "{{startDate}} - {{endDate}}"
+          "experience": {
+            "title": "Add Work Experience",
+            "empty": "Add your work experience to showcase your expertise",
+            "update": "Update your work experience"
           },
           "education": {
-            "title": "Education",
-            "present": "Present",
-            "institution": "{{name}}",
-            "duration": "{{startDate}} - {{endDate}}"
+            "title": "Add Education",
+            "empty": "Add your education background to highlight your qualifications",
+            "update": "Update your education details"
           },
-          "toast": {
-            "error": {
-              "title": "Error",
-              "description": "Failed to save changes. Please try again."
-            }
+          "language": {
+            "title": "Language Skills",
+            "empty": "Add the languages you speak to improve your chances",
+            "update": "Update your language skills"
           }
         }
       }
