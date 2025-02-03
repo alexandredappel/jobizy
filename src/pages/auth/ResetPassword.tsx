@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 
 const passwordSchema = z.string()
   .min(8, 'Password must be at least 8 characters')
@@ -22,6 +23,7 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const oobCode = searchParams.get('oobCode');
 
@@ -30,8 +32,8 @@ const ResetPassword = () => {
 
     if (!oobCode) {
       toast({
-        title: "Invalid reset link",
-        description: "Please use the link from your email",
+        title: t('auth.resetPassword.toast.invalidLink.title'),
+        description: t('auth.resetPassword.toast.invalidLink.description'),
         variant: "destructive"
       });
       return;
@@ -39,8 +41,8 @@ const ResetPassword = () => {
 
     if (password !== confirmPassword) {
       toast({
-        title: "Passwords don't match",
-        description: "Please ensure both passwords are identical",
+        title: t('auth.resetPassword.toast.passwordMismatch.title'),
+        description: t('auth.resetPassword.toast.passwordMismatch.description'),
         variant: "destructive"
       });
       return;
@@ -51,7 +53,7 @@ const ResetPassword = () => {
     } catch (error: any) {
       toast({
         title: "Invalid password",
-        description: error.errors[0].message,
+        description: t(`auth.resetPassword.passwordRequirements.${error.errors[0].code}`),
         variant: "destructive"
       });
       return;
@@ -61,8 +63,8 @@ const ResetPassword = () => {
     try {
       await confirmPasswordReset(auth, oobCode, password);
       toast({
-        title: "Password reset successful",
-        description: "You can now sign in with your new password"
+        title: t('auth.resetPassword.toast.resetSuccess.title'),
+        description: t('auth.resetPassword.toast.resetSuccess.description')
       });
       navigate('/signin');
     } catch (error: any) {
@@ -77,11 +79,11 @@ const ResetPassword = () => {
   };
 
   return (
-    <AuthLayout title="Set New Password">
+    <AuthLayout title={t('auth.resetPassword.title')}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           type="password"
-          placeholder="New password"
+          placeholder={t('auth.resetPassword.newPasswordLabel')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={isLoading}
@@ -89,14 +91,14 @@ const ResetPassword = () => {
         />
         <Input
           type="password"
-          placeholder="Confirm new password"
+          placeholder={t('auth.resetPassword.confirmPasswordLabel')}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           disabled={isLoading}
           required
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Resetting..." : "Reset Password"}
+          {isLoading ? t('auth.resetPassword.resettingButton') : t('auth.resetPassword.resetButton')}
         </Button>
       </form>
     </AuthLayout>

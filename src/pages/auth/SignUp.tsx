@@ -35,7 +35,6 @@ const SignUp = () => {
       console.log('Creating new user with role:', role);
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Save user data including email and language preference in Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email,
         role,
@@ -49,8 +48,8 @@ const SignUp = () => {
     } catch (error: any) {
       console.error('SignUp error:', error);
       toast({
-        title: "Error",
-        description: "Failed to create account. Please try again.",
+        title: t('auth.signUp.error.title'),
+        description: t('auth.signUp.error.description'),
         variant: "destructive"
       });
     }
@@ -83,7 +82,7 @@ const SignUp = () => {
             className="flex-1"
             onClick={() => setRole('worker')}
           >
-            I'm a Worker
+            {t('auth.signUp.roleButtons.worker')}
           </Button>
           <Button
             type="button"
@@ -91,14 +90,14 @@ const SignUp = () => {
             className="flex-1"
             onClick={() => setRole('business')}
           >
-            I'm a Business
+            {t('auth.signUp.roleButtons.business')}
           </Button>
         </div>
         <Button type="submit" className="w-full">
           {t('auth.signUp')}
         </Button>
         <div className="text-center text-sm text-secondary">
-          Already have an account?{' '}
+          {t('auth.signUp.alreadyHaveAccount')}{' '}
           <Link to="/signin" className="text-primary hover:text-primary/80">
             {t('auth.signIn')}
           </Link>

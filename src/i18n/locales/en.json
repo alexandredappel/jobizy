@@ -5,6 +5,62 @@
     "signOut": "Sign Out",
     "email": "Email",
     "password": "Password",
-    "forgotPassword": "Forgot Password"
+    "forgotPassword": {
+      "title": "Reset Password",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "sendButton": "Send Reset Link",
+      "sendingButton": "Sending...",
+      "backToSignIn": "Back to Sign In",
+      "toast": {
+        "invalidEmail": {
+          "title": "Invalid email",
+          "description": "Please enter a valid email address"
+        },
+        "resetSent": {
+          "title": "Reset email sent",
+          "description": "Check your email for password reset instructions"
+        }
+      }
+    },
+    "resetPassword": {
+      "title": "Set New Password",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "resetButton": "Reset Password",
+      "resettingButton": "Resetting...",
+      "passwordRequirements": {
+        "length": "Password must be at least 8 characters",
+        "uppercase": "Password must contain at least one uppercase letter",
+        "lowercase": "Password must contain at least one lowercase letter",
+        "number": "Password must contain at least one number",
+        "special": "Password must contain at least one special character"
+      },
+      "toast": {
+        "invalidLink": {
+          "title": "Invalid reset link",
+          "description": "Please use the link from your email"
+        },
+        "passwordMismatch": {
+          "title": "Passwords don't match",
+          "description": "Please ensure both passwords are identical"
+        },
+        "resetSuccess": {
+          "title": "Password reset successful",
+          "description": "You can now sign in with your new password"
+        }
+      }
+    },
+    "signUp": {
+      "roleButtons": {
+        "worker": "I'm a Worker",
+        "business": "I'm a Business"
+      },
+      "alreadyHaveAccount": "Already have an account?",
+      "error": {
+        "title": "Error",
+        "description": "Failed to create account. Please try again."
+      }
+    }
   }
 }

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 
@@ -15,6 +16,7 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,8 +25,8 @@ const ForgotPassword = () => {
       emailSchema.parse(email);
     } catch (error) {
       toast({
-        title: "Invalid email",
-        description: "Please enter a valid email address",
+        title: t('auth.forgotPassword.toast.invalidEmail.title'),
+        description: t('auth.forgotPassword.toast.invalidEmail.description'),
         variant: "destructive"
       });
       return;
@@ -34,8 +36,8 @@ const ForgotPassword = () => {
     try {
       await sendPasswordResetEmail(auth, email);
       toast({
-        title: "Reset email sent",
-        description: "Check your email for password reset instructions"
+        title: t('auth.forgotPassword.toast.resetSent.title'),
+        description: t('auth.forgotPassword.toast.resetSent.description')
       });
       navigate('/signin');
     } catch (error: any) {
@@ -50,18 +52,18 @@ const ForgotPassword = () => {
   };
 
   return (
-    <AuthLayout title="Reset Password">
+    <AuthLayout title={t('auth.forgotPassword.title')}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           type="email"
-          placeholder="Email address"
+          placeholder={t('auth.forgotPassword.emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading}
           required
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Sending..." : "Send Reset Link"}
+          {isLoading ? t('auth.forgotPassword.sendingButton') : t('auth.forgotPassword.sendButton')}
         </Button>
         <Button
           type="button"
@@ -70,7 +72,7 @@ const ForgotPassword = () => {
           onClick={() => navigate('/signin')}
           disabled={isLoading}
         >
-          Back to Sign In
+          {t('auth.forgotPassword.backToSignIn')}
         </Button>
       </form>
     </AuthLayout>

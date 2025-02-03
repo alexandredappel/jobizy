@@ -5,6 +5,62 @@
     "signOut": "Keluar",
     "email": "Email",
     "password": "Kata Sandi",
-    "forgotPassword": "Lupa Kata Sandi"
+    "forgotPassword": {
+      "title": "Reset Kata Sandi",
+      "emailLabel": "Alamat email",
+      "emailPlaceholder": "Masukkan email Anda",
+      "sendButton": "Kirim Link Reset",
+      "sendingButton": "Mengirim...",
+      "backToSignIn": "Kembali ke Masuk",
+      "toast": {
+        "invalidEmail": {
+          "title": "Email tidak valid",
+          "description": "Silakan masukkan alamat email yang valid"
+        },
+        "resetSent": {
+          "title": "Email reset terkirim",
+          "description": "Periksa email Anda untuk instruksi reset kata sandi"
+        }
+      }
+    },
+    "resetPassword": {
+      "title": "Atur Kata Sandi Baru",
+      "newPasswordLabel": "Kata sandi baru",
+      "confirmPasswordLabel": "Konfirmasi kata sandi baru",
+      "resetButton": "Reset Kata Sandi",
+      "resettingButton": "Mereset...",
+      "passwordRequirements": {
+        "length": "Kata sandi minimal 8 karakter",
+        "uppercase": "Kata sandi harus memiliki minimal satu huruf besar",
+        "lowercase": "Kata sandi harus memiliki minimal satu huruf kecil",
+        "number": "Kata sandi harus memiliki minimal satu angka",
+        "special": "Kata sandi harus memiliki minimal satu karakter khusus"
+      },
+      "toast": {
+        "invalidLink": {
+          "title": "Link reset tidak valid",
+          "description": "Silakan gunakan link dari email Anda"
+        },
+        "passwordMismatch": {
+          "title": "Kata sandi tidak cocok",
+          "description": "Pastikan kedua kata sandi sama"
+        },
+        "resetSuccess": {
+          "title": "Reset kata sandi berhasil",
+          "description": "Anda sekarang dapat masuk dengan kata sandi baru"
+        }
+      }
+    },
+    "signUp": {
+      "roleButtons": {
+        "worker": "Saya Pekerja",
+        "business": "Saya Pengusaha"
+      },
+      "alreadyHaveAccount": "Sudah punya akun?",
+      "error": {
+        "title": "Error",
+        "description": "Gagal membuat akun. Silakan coba lagi."
+      }
+    }
   }
 }
