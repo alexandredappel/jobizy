@@ -1,30 +1,44 @@
 import React, { useState } from 'react';
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProfileContainer, ProfileHeader, ProfileSection } from "@/layouts/profile";
-import { MainProfileSection } from './components/profile';
-import { SettingsModal } from './components/profile/modals/SettingsModal';
+import { 
+  MainProfileSection,
+  WorkExperienceSection,
+  EducationSection,
+  AboutMeSection,
+} from './components/profile';
+import { 
+  SettingsModal,
+  WorkExperienceModal,
+  EducationModal,
+  AboutMeModal,
+  MainProfileEditModal,
+} from './components/profile/modals';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
+import { useWorkerEducation } from "@/hooks/useWorkerEducation";
+import { useWorkerExperience } from "@/hooks/useWorkerExperience";
 import { Skeleton } from "@/components/ui/skeleton";
-import LanguageSelector from '@/components/ui/language-selector';
 import type { WorkerUser } from '@/types/firebase.types';
 
 const WorkerProfileEdit = () => {
   const { user } = useAuth();
-  const { profile, isLoading, updateProfile } = useWorkerProfile(user?.id || '');
+  const { profile, isLoading: profileLoading, updateProfile } = useWorkerProfile(user?.id || '');
+  const { experience, isLoading: expLoading } = useWorkerExperience(user?.id || '');
+  const { education, isLoading: eduLoading } = useWorkerEducation(user?.id || '');
+  
+  const [showWorkExperienceModal, setShowWorkExperienceModal] = useState(false);
+  const [showEducationModal, setShowEducationModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showMainProfileModal, setShowMainProfileModal] = useState(false);
+  const [showAboutMeModal, setShowAboutMeModal] = useState(false);
   const { toast } = useToast();
 
   const handleSaveChanges = async (values: Partial<WorkerUser>) => {
     try {
       console.log('Saving profile changes:', values);
       await updateProfile(values);
-      toast({
-        title: "Success",
-        description: "Profile updated successfully",
-      });
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
@@ -35,7 +49,7 @@ const WorkerProfileEdit = () => {
     }
   };
 
-  if (isLoading) {
+  if (profileLoading || expLoading || eduLoading) {
     return (
       <div className="container mx-auto p-4 space-y-8">
         <Skeleton className="h-8 w-8 ml-auto" />
@@ -49,8 +63,7 @@ const WorkerProfileEdit = () => {
   return (
     <div className="min-h-screen bg-[#eefceb]">
       <div className="container mx-auto p-4 space-y-8">
-        <div className="flex justify-end items-center gap-2 mb-4">
-          <LanguageSelector />
+        <div className="flex justify-end mb-4 relative">
           <Button
             variant="ghost"
             size="icon"
@@ -65,6 +78,52 @@ const WorkerProfileEdit = () => {
           profile={profile}
           onEdit={() => setShowMainProfileModal(true)}
           onSave={handleSaveChanges}
+        />
+
+        <AboutMeSection
+          aboutMe={profile?.about_me}
+          isLoading={profileLoading}
+          onEdit={() => setShowAboutMeModal(true)}
+        />
+
+        <WorkExperienceSection
+          experiences={experience}
+          isLoading={expLoading}
+          onEdit={() => setShowWorkExperienceModal(true)}
+        />
+
+        <EducationSection
+          education={education}
+          isLoading={eduLoading}
+          onEdit={() => setShowEducationModal(true)}
+        />
+
+        <MainProfileEditModal
+          open={showMainProfileModal}
+          onClose={() => setShowMainProfileModal(false)}
+          profile={profile}
+          onSave={handleSaveChanges}
+        />
+
+        <AboutMeModal
+          open={showAboutMeModal}
+          onClose={() => setShowAboutMeModal(false)}
+          aboutMe={profile?.about_me || ""}
+          userId={user?.id || ""}
+        />
+
+        <WorkExperienceModal
+          open={showWorkExperienceModal}
+          onClose={() => setShowWorkExperienceModal(false)}
+          experiences={experience}
+          userId={user?.id || ''}
+        />
+
+        <EducationModal
+          open={showEducationModal}
+          onClose={() => setShowEducationModal(false)}
+          education={education}
+          userId={user?.id || ''}
         />
 
         <SettingsModal
