@@ -19,10 +19,14 @@ const SignUp = () => {
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
 
-  // Set default language to Bahasa Indonesia
+  // Detect browser language on first load
   useEffect(() => {
-    console.log('Setting default language to Indonesian');
-    i18n.changeLanguage('id');
+    // Get browser language (will return something like 'en-US' or 'id-ID')
+    const browserLang = navigator.language.split('-')[0];
+    // Check if browser language is supported, default to 'en' if not
+    const defaultLang = ['en', 'id'].includes(browserLang) ? browserLang : 'en';
+    console.log('Setting language based on browser:', defaultLang);
+    i18n.changeLanguage(defaultLang);
   }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -35,7 +39,7 @@ const SignUp = () => {
       await setDoc(doc(db, 'users', user.uid), {
         email,
         role,
-        preferred_language: 'id', // Set Bahasa as default
+        preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
