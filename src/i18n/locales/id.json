@@ -121,6 +121,69 @@
             "update": "Perbarui kemampuan bahasa Anda"
           }
         }
+      },
+      "profile": {
+        "edit": {
+          "buttons": {
+            "edit": "Ubah",
+            "save": "Simpan Perubahan",
+            "saving": "Menyimpan..."
+          },
+          "mainProfile": {
+            "availability": {
+              "title": "Status Ketersediaan",
+              "available": "Tersedia",
+              "unavailable": "Tidak Tersedia",
+              "availableForWork": "Tersedia untuk bekerja",
+              "notAvailable": "Tidak tersedia",
+              "mobileAvailable": "Anda saat ini tersedia untuk bekerja",
+              "mobileUnavailable": "Anda saat ini tidak tersedia untuk bekerja",
+              "visibleHint": "Pengusaha dapat melihat profil dan menghubungi Anda",
+              "hiddenHint": "Profil Anda tersembunyi dari pengusaha"
+            },
+            "sections": {
+              "workSchedule": "Jadwal Kerja",
+              "languages": "Bahasa",
+              "location": "Lokasi",
+              "none": "Tidak Ada",
+              "othersCount": "+{{count}} lainnya"
+            }
+          },
+          "aboutMe": {
+            "title": "Tentang Saya",
+            "placeholder": "Ceritakan tentang diri Anda",
+            "empty": "Belum ada deskripsi.",
+            "characterCount": "{{current}}/{{max}} karakter",
+            "toast": {
+              "success": {
+                "title": "Berhasil",
+                "description": "Bagian tentang saya berhasil diperbarui"
+              },
+              "error": {
+                "title": "Error",
+                "description": "Gagal memperbarui bagian tentang saya"
+              }
+            }
+          },
+          "workExperience": {
+            "title": "Pengalaman Kerja",
+            "present": "Sekarang",
+            "company": "{{name}}",
+            "duration": "{{startDate}} - {{endDate}}"
+          },
+          "education": {
+            "title": "Pendidikan",
+            "present": "Sekarang",
+            "institution": "{{name}}",
+            "duration": "{{startDate}} - {{endDate}}"
+          },
+          "toast": {
+            "error": {
+              "title": "Error",
+              "description": "Gagal menyimpan perubahan. Silakan coba lagi."
+            }
+          }
+        }
       }
     }
   }
