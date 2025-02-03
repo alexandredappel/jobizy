@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { BusinessUser } from '@/types/firebase.types';
 import { useBusinessProfile } from '@/hooks/useBusinessProfile';
 import { Skeleton } from "@/components/ui/skeleton";
+import LanguageSelector from '@/components/ui/language-selector';
 
 const BusinessProfileEdit = () => {
   const { user } = useAuth();
@@ -47,7 +48,8 @@ const BusinessProfileEdit = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-4 space-y-8">
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end items-center gap-2 mb-4">
+          <LanguageSelector />
           <Button
             variant="ghost"
             size="icon"

@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from '@/components/ui/language-selector';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -61,6 +62,9 @@ const SignIn = () => {
 
   return (
     <AuthLayout title={t('auth.signIn')}>
+      <div className="absolute top-4 right-4">
+        <LanguageSelector />
+      </div>
       <form onSubmit={handleSignIn} className="space-y-4">
         <Input
           type="email"
