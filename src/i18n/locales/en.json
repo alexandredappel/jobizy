@@ -135,6 +135,25 @@
           "edit": "Edit",
           "empty": "No education history added yet.",
           "present": "Present"
+        },
+        "main": {
+          "noneValue": "None",
+          "othersCount": "+{{count}} others",
+          "workSchedule": "Work Schedule",
+          "languages": "Languages",
+          "location": "Location",
+          "availability": {
+            "title": "Availability Status",
+            "toggleLabel": "Toggle availability status",
+            "mobileAvailable": "You are currently available for work",
+            "mobileUnavailable": "You are currently not available for work",
+            "available": "Available for work",
+            "unavailable": "Not available",
+            "shortAvailable": "Available",
+            "shortUnavailable": "Unavailable",
+            "availableDescription": "Employers can see your profile and contact you",
+            "unavailableDescription": "Your profile is hidden from employers"
+          }
         }
       }
     }
