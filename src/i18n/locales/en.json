@@ -154,6 +154,12 @@
             "availableDescription": "Employers can see your profile and contact you",
             "unavailableDescription": "Your profile is hidden from employers"
           }
+        },
+        "workExperience": {
+          "title": "Work Experience",
+          "edit": "Edit",
+          "empty": "No work experience added yet.",
+          "present": "Present"
         }
       }
     }
