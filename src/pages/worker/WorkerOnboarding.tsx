@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ interface OnboardingData {
 }
 
 const WorkerOnboarding = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -91,8 +93,8 @@ const WorkerOnboarding = () => {
       });
 
       toast({
-        title: "Profile Created",
-        description: "Your profile is now visible to businesses in Bali!",
+        title: t('worker.onboarding.completion.toast.success.title'),
+        description: t('worker.onboarding.completion.toast.success.description'),
       });
 
       setTimeout(() => {
@@ -102,8 +104,8 @@ const WorkerOnboarding = () => {
     } catch (error) {
       console.error('Error saving profile:', error);
       toast({
-        title: "Error",
-        description: "Failed to create your profile. Please try again.",
+        title: t('worker.onboarding.completion.toast.error.title'),
+        description: t('worker.onboarding.completion.toast.error.description'),
         variant: "destructive",
       });
       setIsCompleting(false);
@@ -115,10 +117,9 @@ const WorkerOnboarding = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <CheckCircle2 className="mx-auto h-16 w-16 text-primary animate-bounce" />
-          <h1 className="text-2xl font-bold">Congratulations!</h1>
+          <h1 className="text-2xl font-bold">{t('worker.onboarding.completion.title')}</h1>
           <p className="text-muted-foreground">
-            Your profile is now visible to professionals in Bali.
-            Redirecting to your dashboard...
+            {t('worker.onboarding.completion.description')}
           </p>
         </div>
       </div>
@@ -134,13 +135,13 @@ const WorkerOnboarding = () => {
           <div className="space-y-6">
             {step === 1 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">What job are you looking for?</h2>
+                <h2 className="text-2xl font-bold">{t('worker.onboarding.steps.job.title')}</h2>
                 <Select
                   value={data.job}
                   onValueChange={(value: JobType) => setData({ ...data, job: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a job" />
+                    <SelectValue placeholder={t('worker.onboarding.steps.job.placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
                     {JOB_TYPES.map((job) => (
@@ -155,7 +156,7 @@ const WorkerOnboarding = () => {
 
             {step === 2 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">In which areas would you like to work?</h2>
+                <h2 className="text-2xl font-bold">{t('worker.onboarding.steps.workAreas.title')}</h2>
                 <ToggleGroup 
                   type="multiple"
                   value={data.location}
@@ -178,7 +179,7 @@ const WorkerOnboarding = () => {
 
             {step === 3 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">What languages do you speak?</h2>
+                <h2 className="text-2xl font-bold">{t('worker.onboarding.steps.languages.title')}</h2>
                 <ToggleGroup 
                   type="multiple"
                   value={data.languages}
@@ -201,17 +202,21 @@ const WorkerOnboarding = () => {
 
             {step === 4 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">What kind of work contract are you looking for?</h2>
+                <h2 className="text-2xl font-bold">{t('worker.onboarding.steps.contract.title')}</h2>
                 <Select
                   value={data.type_contract}
                   onValueChange={(value: ContractType) => setData({ ...data, type_contract: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select contract type" />
+                    <SelectValue placeholder={t('worker.onboarding.steps.contract.placeholder')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Full time">Full time</SelectItem>
-                    <SelectItem value="Part time">Part time</SelectItem>
+                    <SelectItem value="Full time">
+                      {t('worker.onboarding.steps.contract.types.fullTime')}
+                    </SelectItem>
+                    <SelectItem value="Part time">
+                      {t('worker.onboarding.steps.contract.types.partTime')}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -219,19 +224,19 @@ const WorkerOnboarding = () => {
 
             {step === 5 && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Tell us about yourself</h2>
+                <h2 className="text-2xl font-bold">{t('worker.onboarding.steps.personal.title')}</h2>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="fullName">Full Name</Label>
+                    <Label htmlFor="fullName">{t('worker.onboarding.steps.personal.fullName.label')}</Label>
                     <Input
                       id="fullName"
                       value={data.full_name}
                       onChange={(e) => setData({ ...data, full_name: e.target.value })}
-                      placeholder="Enter your full name"
+                      placeholder={t('worker.onboarding.steps.personal.fullName.placeholder')}
                     />
                   </div>
                   <div>
-                    <Label>Gender</Label>
+                    <Label>{t('worker.onboarding.steps.personal.gender.label')}</Label>
                     <RadioGroup
                       value={data.gender}
                       onValueChange={(value: "male" | "female") => 
@@ -240,11 +245,15 @@ const WorkerOnboarding = () => {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="male" id="male" />
-                        <Label htmlFor="male">Male</Label>
+                        <Label htmlFor="male">
+                          {t('worker.onboarding.steps.personal.gender.male')}
+                        </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="female" id="female" />
-                        <Label htmlFor="female">Female</Label>
+                        <Label htmlFor="female">
+                          {t('worker.onboarding.steps.personal.gender.female')}
+                        </Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -254,7 +263,7 @@ const WorkerOnboarding = () => {
 
             {step === 6 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">What's your phone number?</h2>
+                <h2 className="text-2xl font-bold">{t('worker.onboarding.steps.phone.title')}</h2>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <span className="text-gray-500">+62</span>
@@ -267,16 +276,16 @@ const WorkerOnboarding = () => {
                       setData({ ...data, phone_number: value });
                     }}
                     className="pl-12"
-                    placeholder="Enter your phone number"
+                    placeholder={t('worker.onboarding.steps.phone.placeholder')}
                   />
                 </div>
                 {data.phone_number && !validatePhoneNumber(data.phone_number) && (
                   <p className="text-sm text-destructive">
-                    Phone number must be between 8 and 12 digits
+                    {t('worker.onboarding.steps.phone.validation')}
                   </p>
                 )}
                 <p className="text-sm text-muted-foreground">
-                  Your phone number is required and will be used by businesses to contact you for job opportunities.
+                  {t('worker.onboarding.steps.phone.description')}
                 </p>
               </div>
             )}
@@ -293,7 +302,7 @@ const WorkerOnboarding = () => {
                 (step === 6 && !data.phone_number)
               }
             >
-              {step === 6 ? "Complete" : "Next"}
+              {step === 6 ? t('worker.onboarding.navigation.complete') : t('worker.onboarding.navigation.next')}
             </Button>
           </div>
         </CardContent>
