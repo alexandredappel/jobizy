@@ -1,4 +1,14 @@
 {
+  "common": {
+    "button": {
+      "saveChanges": "Simpan Perubahan",
+      "saving": "Menyimpan..."
+    },
+    "toast": {
+      "success": "Berhasil",
+      "error": "Error"
+    }
+  },
   "auth": {
     "signIn": "Masuk",
     "signOut": "Keluar",
@@ -124,6 +134,17 @@
       }
     },
     "profile": {
+      "modals": {
+        "aboutMe": {
+          "title": "Tentang Saya",
+          "placeholder": "Ceritakan tentang diri Anda",
+          "characterCount": "{{current}}/{{max}} karakter",
+          "toast": {
+            "success": "Bagian tentang saya berhasil diperbarui",
+            "error": "Gagal memperbarui bagian tentang saya"
+          }
+        }
+      },
       "sections": {
         "aboutMe": {
           "title": "Tentang Saya",
