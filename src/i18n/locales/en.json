@@ -1,1 +1,188 @@
-{\n  \"common\": {\n    \"button\": {\n      \"saveChanges\": \"Save Changes\",\n      \"saving\": \"Saving...\"\n    },\n    \"toast\": {\n      \"success\": \"Success\",\n      \"error\": \"Error\"\n    }\n  },\n  \"auth\": {\n    \"signIn\": \"Sign In\",\n    \"signOut\": \"Sign Out\",\n    \"email\": \"Email\",\n    \"password\": \"Password\",\n    \"signUp\": {\n      \"title\": \"Sign Up\",\n      \"submitButton\": \"Sign Up\",\n      \"roleButtons\": {\n        \"worker\": \"I'm a Worker\",\n        \"business\": \"I'm a Business\"\n      },\n      \"alreadyHaveAccount\": \"Already have an account?\",\n      \"error\": {\n        \"title\": \"Error\",\n        \"description\": \"Failed to create account. Please try again.\"\n      }\n    },\n    \"forgotPassword\": {\n      \"link\": \"Forgot Password?\",\n      \"title\": \"Reset Password\",\n      \"emailLabel\": \"Email address\",\n      \"emailPlaceholder\": \"Enter your email\",\n      \"sendButton\": \"Send Reset Link\",\n      \"sendingButton\": \"Sending...\",\n      \"backToSignIn\": \"Back to Sign In\",\n      \"toast\": {\n        \"invalidEmail\": {\n          \"title\": \"Invalid email\",\n          \"description\": \"Please enter a valid email address\"\n        },\n        \"resetSent\": {\n          \"title\": \"Reset email sent\",\n          \"description\": \"Check your email for password reset instructions\"\n        }\n      }\n    },\n    \"resetPassword\": {\n      \"title\": \"Set New Password\",\n      \"newPasswordLabel\": \"New password\",\n      \"confirmPasswordLabel\": \"Confirm new password\",\n      \"resetButton\": \"Reset Password\",\n      \"resettingButton\": \"Resetting...\",\n      \"passwordRequirements\": {\n        \"length\": \"Password must be at least 8 characters\",\n        \"uppercase\": \"Password must contain at least one uppercase letter\",\n        \"lowercase\": \"Password must contain at least one lowercase letter\",\n        \"number\": \"Password must contain at least one number\",\n        \"special\": \"Password must contain at least one special character\"\n      },\n      \"toast\": {\n        \"invalidLink\": {\n          \"title\": \"Invalid reset link\",\n          \"description\": \"Please use the link from your email\"\n        },\n        \"passwordMismatch\": {\n          \"title\": \"Passwords don't match\",\n          \"description\": \"Please ensure both passwords are identical\"\n        },\n        \"resetSuccess\": {\n          \"title\": \"Password reset successful\",\n          \"description\": \"You can now sign in with your new password\"\n        }\n      }\n    },\n    \"noAccount\": \"Don't have an account?\"\n  },\n  \"worker\": {\n    \"dashboard\": {\n      \"welcome\": {\n        \"morning\": \"good morning\",\n        \"afternoon\": \"good afternoon\",\n        \"evening\": \"good evening\",\n        \"greeting\": \"Hi {{name}}\"\n      },\n      \"availability\": {\n        \"title\": \"Availability Status\",\n        \"available\": \"You're currently available for work\",\n        \"unavailable\": \"You're currently unavailable for work\",\n        \"toast\": {\n          \"available\": {\n            \"title\": \"You're now available\",\n            \"description\": \"Businesses can now find and contact you\"\n          },\n          \"unavailable\": {\n            \"title\": \"You're now unavailable\",\n            \"description\": \"You won't appear in search results\"\n          },\n          \"error\": {\n            \"title\": \"Error\",\n            \"description\": \"Failed to update availability status\"\n          }\n        }\n      },\n      \"profile\": {\n        \"completion\": {\n          \"title\": \"Profile Completion\",\n          \"subtitle\": \"Complete Your Profile\",\n          \"button\": \"Complete Now\"\n        },\n        \"cards\": {\n          \"main\": {\n            \"title\": \"Complete Your Profile\",\n            \"empty\": \"Add a description about yourself to help businesses know you better\",\n            \"update\": \"Update your profile information\"\n          },\n          \"experience\": {\n            \"title\": \"Add Work Experience\",\n            \"empty\": \"Add your work experience to showcase your expertise\",\n            \"update\": \"Update your work experience\"\n          },\n          \"education\": {\n            \"title\": \"Add Education\",\n            \"empty\": \"Add your education background to highlight your qualifications\",\n            \"update\": \"Update your education details\"\n          },\n          \"language\": {\n            \"title\": \"Language Skills\",\n            \"empty\": \"Add the languages you speak to improve your chances\",\n            \"update\": \"Update your language skills\"\n          }\n        }\n      }\n    },\n    \"profile\": {\n      \"modals\": {\n        \"aboutMe\": {\n          \"title\": \"About Me\",\n          \"placeholder\": \"Tell us about yourself\",\n          \"characterCount\": \"{{current}}/{{max}} characters\",\n          \"toast\": {\n            \"success\": \"About me section updated successfully\",\n            \"error\": \"Failed to update about me section\"\n          }\n        },\n        \"education\": {\n          \"title\": \"Education\",\n          \"addButton\": \"Add Education\",\n          \"deleteButton\": \"Delete\",\n          \"fields\": {\n            \"institution\": {\n              \"label\": \"Institution\",\n              \"placeholder\": \"Enter institution name\"\n            },\n            \"degree\": {\n              \"label\": \"Degree\",\n              \"placeholder\": \"Enter degree\"\n            },\n            \"currentStudy\": \"Current Study\",\n            \"dates\": {\n              \"startDate\": \"Start Date\",\n              \"endDate\": \"End Date\",\n              \"selectStart\": \"Select start date\",\n              \"selectEnd\": \"Select end date\"\n            }\n          },\n          \"validation\": {\n            \"title\": \"Validation Error\",\n            \"requiredFields\": \"Please fill in all required fields\"\n          },\n          \"unsavedChanges\": {\n            \"title\": \"Unsaved Changes\",\n            \"message\": \"You have unsaved changes. Are you sure you want to close without saving?\",\n            \"cancel\": \"Cancel\",\n            \"confirm\": \"Close without saving\"\n          },\n          \"toast\": {\n            \"deleteSuccess\": {\n              \"title\": \"Education deleted\",\n              \"description\": \"Education has been removed successfully\"\n            },\n            \"deleteError\": {\n              \"title\": \"Error\",\n              \"description\": \"Failed to delete education\"\n            },\n            \"saveSuccess\": {\n              \"title\": \"Success\",\n              \"description\": \"Education updated successfully\"\n            },\n            \"saveError\": {\n              \"title\": \"Error\",\n              \"description\": \"Failed to save education\"\n            }\n          }\n        }\n      },\n      \"sections\": {\n        \"aboutMe\": {\n          \"title\": \"About Me\",\n          \"edit\": \"Edit\",\n          \"empty\": \"No description provided yet.\"\n        },\n        \"education\": {\n          \"title\": \"Education\",\n          \"edit\": \"Edit\",\n          \"empty\": \"No education history added yet.\",\n          \"present\": \"Present\"\n        },\n        \"main\": {\n          \"noneValue\": \"None\",\n          \"othersCount\": \"+{{count}} others\",\n          \"workSchedule\": \"Work Schedule\",\n          \"languages\": \"Languages\",\n          \"location\": \"Location\",\n          \"availability\": {\n            \"title\": \"Availability Status\",\n            \"toggleLabel\": \"Toggle availability status\",\n            \"mobileAvailable\": \"You are currently available for work\",\n            \"mobileUnavailable\": \"You are currently not available for work\",\n            \"available\": \"Available for work\",\n            \"unavailable\": \"Not available\",\n            \"shortAvailable\": \"Available\",\n            \"shortUnavailable\": \"Unavailable\",\n            \"availableDescription\": \"Employers can see your profile and contact you\",\n            \"unavailableDescription\": \"Your profile is hidden from employers\"\n          }\n        },\n        \"workExperience\": {\n          \"title\": \"Work Experience\",\n          \"edit\": \"Edit\",\n          \"empty\": \"No work experience added yet.\",\n          \"present\": \"Present\"\n        }\n      }\n    }\n  }\n}
+{
+  "common": {
+    "button": {
+      "saveChanges": "Save Changes",
+      "saving": "Saving..."
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error"
+    }
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "signUp": {
+      "title": "Sign Up",
+      "submitButton": "Sign Up",
+      "roleButtons": {
+        "worker": "I'm a Worker",
+        "business": "I'm a Business"
+      },
+      "alreadyHaveAccount": "Already have an account?",
+      "error": {
+        "title": "Error",
+        "description": "Failed to create account. Please try again."
+      }
+    },
+    "forgotPassword": {
+      "link": "Forgot Password?",
+      "title": "Reset Password",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "sendButton": "Send Reset Link",
+      "sendingButton": "Sending...",
+      "backToSignIn": "Back to Sign In",
+      "toast": {
+        "invalidEmail": {
+          "title": "Invalid email",
+          "description": "Please enter a valid email address"
+        },
+        "resetSent": {
+          "title": "Reset email sent",
+          "description": "Check your email for password reset instructions"
+        }
+      }
+    },
+    "resetPassword": {
+      "title": "Set New Password",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "resetButton": "Reset Password",
+      "resettingButton": "Resetting...",
+      "passwordRequirements": {
+        "length": "Password must be at least 8 characters",
+        "uppercase": "Password must contain at least one uppercase letter",
+        "lowercase": "Password must contain at least one lowercase letter",
+        "number": "Password must contain at least one number",
+        "special": "Password must contain at least one special character"
+      },
+      "toast": {
+        "invalidLink": {
+          "title": "Invalid reset link",
+          "description": "Please use the link from your email"
+        },
+        "passwordMismatch": {
+          "title": "Passwords don't match",
+          "description": "Please ensure both passwords are identical"
+        },
+        "resetSuccess": {
+          "title": "Password reset successful",
+          "description": "You can now sign in with your new password"
+        }
+      }
+    },
+    "noAccount": "Don't have an account?"
+  },
+  "worker": {
+    "dashboard": {
+      "welcome": {
+        "morning": "good morning",
+        "afternoon": "good afternoon",
+        "evening": "good evening",
+        "greeting": "Hi {{name}}"
+      },
+      "availability": {
+        "title": "Availability Status",
+        "available": "You're currently available for work",
+        "unavailable": "You're currently unavailable for work",
+        "toast": {
+          "available": {
+            "title": "You're now available",
+            "description": "Businesses can now find and contact you"
+          },
+          "unavailable": {
+            "title": "You're now unavailable",
+            "description": "You won't appear in search results"
+          },
+          "error": {
+            "title": "Error",
+            "description": "Failed to update availability status"
+          }
+        }
+      },
+      "profile": {
+        "completion": {
+          "title": "Profile Completion",
+          "subtitle": "Complete Your Profile",
+          "button": "Complete Now"
+        },
+        "cards": {
+          "main": {
+            "title": "Complete Your Profile",
+            "empty": "Add a description about yourself to help businesses know you better",
+            "update": "Update your profile information"
+          },
+          "experience": {
+            "title": "Add Work Experience",
+            "empty": "Add your work experience to showcase your expertise",
+            "update": "Update your work experience"
+          },
+          "education": {
+            "title": "Add Education",
+            "empty": "Add your education background to highlight your qualifications",
+            "update": "Update your education details"
+          },
+          "language": {
+            "title": "Language Skills",
+            "empty": "Add the languages you speak to improve your chances",
+            "update": "Update your language skills"
+          }
+        }
+      }
+    },
+    "profile": {
+      "modals": {
+        "aboutMe": {
+          "title": "About Me",
+          "placeholder": "Tell us about yourself",
+          "characterCount": "{{current}}/{{max}} characters",
+          "toast": {
+            "success": "About me section updated successfully",
+            "error": "Failed to update about me section"
+          }
+        }
+      },
+      "sections": {
+        "aboutMe": {
+          "title": "About Me",
+          "edit": "Edit",
+          "empty": "No description provided yet."
+        },
+        "education": {
+          "title": "Education",
+          "edit": "Edit",
+          "empty": "No education history added yet.",
+          "present": "Present"
+        },
+        "main": {
+          "noneValue": "None",
+          "othersCount": "+{{count}} others",
+          "workSchedule": "Work Schedule",
+          "languages": "Languages",
+          "location": "Location",
+          "availability": {
+            "title": "Availability Status",
+            "toggleLabel": "Toggle availability status",
+            "mobileAvailable": "You are currently available for work",
+            "mobileUnavailable": "You are currently not available for work",
+            "available": "Available for work",
+            "unavailable": "Not available",
+            "shortAvailable": "Available",
+            "shortUnavailable": "Unavailable",
+            "availableDescription": "Employers can see your profile and contact you",
+            "unavailableDescription": "Your profile is hidden from employers"
+          }
+        },
+        "workExperience": {
+          "title": "Work Experience",
+          "edit": "Edit",
+          "empty": "No work experience added yet.",
+          "present": "Present"
+        }
+      }
+    }
+  }
+}
