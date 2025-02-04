@@ -1,4 +1,14 @@
 {
+  "common": {
+    "button": {
+      "saveChanges": "Save Changes",
+      "saving": "Saving..."
+    },
+    "toast": {
+      "success": "Success",
+      "error": "Error"
+    }
+  },
   "auth": {
     "signIn": "Sign In",
     "signOut": "Sign Out",
@@ -124,6 +134,17 @@
       }
     },
     "profile": {
+      "modals": {
+        "aboutMe": {
+          "title": "About Me",
+          "placeholder": "Tell us about yourself",
+          "characterCount": "{{current}}/{{max}} characters",
+          "toast": {
+            "success": "About me section updated successfully",
+            "error": "Failed to update about me section"
+          }
+        }
+      },
       "sections": {
         "aboutMe": {
           "title": "About Me",
