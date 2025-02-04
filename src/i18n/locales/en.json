@@ -236,6 +236,39 @@
             "confirm": "Discard Changes"
           }
         },
+        "workExperience": {
+          "title": "Work Experience",
+          "companyName": {
+            "label": "Company Name",
+            "placeholder": "Enter company name"
+          },
+          "position": {
+            "label": "Position",
+            "placeholder": "Enter position"
+          },
+          "currentPosition": "Current Position",
+          "dates": {
+            "start": "Start Date",
+            "end": "End Date",
+            "selectStart": "Select start date",
+            "selectEnd": "Select end date"
+          },
+          "validation": {
+            "error": "Please fill in all required fields"
+          },
+          "toast": {
+            "deleteSuccess": "Work experience has been removed successfully",
+            "deleteError": "Failed to delete work experience",
+            "updateSuccess": "Work experiences updated successfully",
+            "updateError": "Failed to save work experiences"
+          },
+          "unsavedChanges": {
+            "title": "Unsaved Changes",
+            "description": "You have unsaved changes. Are you sure you want to close without saving?",
+            "cancel": "Cancel",
+            "confirm": "Close without saving"
+          }
+        },
         "settings": {
           "title": "Settings",
           "sections": {
