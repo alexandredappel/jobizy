@@ -190,8 +190,6 @@
         },
         "education": {
           "title": "Pendidikan",
-          "addButton": "Tambah Pendidikan",
-          "deleteButton": "Hapus",
           "fields": {
             "institution": {
               "label": "Institusi",
@@ -213,29 +211,62 @@
             "title": "Error Validasi",
             "requiredFields": "Harap isi semua kolom yang wajib diisi"
           },
-          "unsavedChanges": {
-            "title": "Perubahan Belum Tersimpan",
-            "message": "Ada perubahan yang belum tersimpan. Apakah Anda yakin ingin menutup tanpa menyimpan?",
-            "cancel": "Batal",
-            "confirm": "Tutup tanpa menyimpan"
-          },
           "toast": {
-            "deleteSuccess": {
-              "title": "Pendidikan dihapus",
-              "description": "Pendidikan berhasil dihapus"
-            },
-            "deleteError": {
-              "title": "Error",
-              "description": "Gagal menghapus pendidikan"
-            },
             "saveSuccess": {
               "title": "Berhasil",
-              "description": "Pendidikan berhasil diperbarui"
+              "description": "Riwayat pendidikan berhasil diperbarui"
             },
             "saveError": {
               "title": "Error",
-              "description": "Gagal menyimpan pendidikan"
+              "description": "Gagal memperbarui riwayat pendidikan"
+            },
+            "deleteSuccess": {
+              "title": "Berhasil",
+              "description": "Data pendidikan berhasil dihapus"
+            },
+            "deleteError": {
+              "title": "Error",
+              "description": "Gagal menghapus data pendidikan"
             }
+          },
+          "unsavedChanges": {
+            "title": "Perubahan Belum Tersimpan",
+            "message": "Ada perubahan yang belum tersimpan. Apakah Anda yakin ingin menutup?",
+            "cancel": "Lanjutkan Mengedit",
+            "confirm": "Buang Perubahan"
+          }
+        },
+        "workExperience": {
+          "title": "Pengalaman Kerja",
+          "companyName": {
+            "label": "Nama Perusahaan",
+            "placeholder": "Masukkan nama perusahaan"
+          },
+          "position": {
+            "label": "Posisi",
+            "placeholder": "Masukkan posisi"
+          },
+          "currentPosition": "Posisi Saat Ini",
+          "dates": {
+            "start": "Tanggal Mulai",
+            "end": "Tanggal Selesai",
+            "selectStart": "Pilih tanggal mulai",
+            "selectEnd": "Pilih tanggal selesai"
+          },
+          "validation": {
+            "error": "Harap isi semua kolom yang wajib diisi"
+          },
+          "toast": {
+            "deleteSuccess": "Pengalaman kerja berhasil dihapus",
+            "deleteError": "Gagal menghapus pengalaman kerja",
+            "updateSuccess": "Pengalaman kerja berhasil diperbarui",
+            "updateError": "Gagal menyimpan pengalaman kerja"
+          },
+          "unsavedChanges": {
+            "title": "Perubahan Belum Tersimpan",
+            "description": "Ada perubahan yang belum tersimpan. Apakah Anda yakin ingin menutup tanpa menyimpan?",
+            "cancel": "Batal",
+            "confirm": "Tutup tanpa menyimpan"
           }
         },
         "settings": {
