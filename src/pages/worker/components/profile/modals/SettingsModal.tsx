@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Sheet,
   SheetContent,
@@ -43,6 +44,7 @@ interface SettingsModalProps {
 export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [email, setEmail] = useState(profile?.email || '');
   const [phone, setPhone] = useState(profile?.phone_number || '');
   const [gender, setGender] = useState<'male' | 'female'>(profile?.gender || 'male');
@@ -52,17 +54,12 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
   const [isLoading, setIsLoading] = useState(false);
 
   const validatePhoneNumber = (number: string) => {
-    // Remove the prefix if it exists and any leading zeros
     const cleanNumber = number.replace('+62', '').replace(/^0+/, '');
-    
-    // Check if the remaining number is between 8 and 12 digits
     return cleanNumber.length >= 8 && cleanNumber.length <= 12;
   };
 
   const formatPhoneNumber = (number: string) => {
-    // Remove any existing +62 prefix and leading zeros
-    let cleaned = number.replace('+62', '').replace(/^0+/, '');
-    return cleaned;
+    return number.replace('+62', '').replace(/^0+/, '');
   };
 
   const handleEmailUpdate = async () => {
@@ -74,14 +71,14 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
         updated_at: new Date()
       });
       toast({
-        title: "Success",
-        description: "Email updated successfully",
+        title: t('common.toast.success'),
+        description: t('worker.profile.modals.settings.toast.email.success'),
       });
     } catch (error: any) {
       console.error('Error updating email:', error);
       toast({
-        title: "Error",
-        description: error.message || "Failed to update email",
+        title: t('common.toast.error'),
+        description: error.message || t('worker.profile.modals.settings.toast.email.error'),
         variant: "destructive",
       });
     } finally {
@@ -93,8 +90,8 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     if (!profile?.id) return;
     if (!validatePhoneNumber(phone)) {
       toast({
-        title: "Error",
-        description: "Phone number must be between 8 and 12 digits",
+        title: t('common.toast.error'),
+        description: t('worker.profile.modals.settings.sections.phone.validation'),
         variant: "destructive",
       });
       return;
@@ -107,13 +104,13 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
         updated_at: new Date()
       });
       toast({
-        title: "Success",
-        description: "Phone number updated successfully",
+        title: t('common.toast.success'),
+        description: t('worker.profile.modals.settings.toast.phone.success'),
       });
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message,
+        title: t('common.toast.error'),
+        description: error.message || t('worker.profile.modals.settings.toast.phone.error'),
         variant: "destructive",
       });
     } finally {
@@ -131,14 +128,14 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
       });
       setGender(value);
       toast({
-        title: "Success",
-        description: "Gender updated successfully",
+        title: t('common.toast.success'),
+        description: t('worker.profile.modals.settings.toast.gender.success'),
       });
     } catch (error: any) {
       console.error('Error updating gender:', error);
       toast({
-        title: "Error",
-        description: error.message || "Failed to update gender",
+        title: t('common.toast.error'),
+        description: error.message || t('worker.profile.modals.settings.toast.gender.error'),
         variant: "destructive",
       });
     } finally {
@@ -150,116 +147,115 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Settings</SheetTitle>
+          <SheetTitle>{t('worker.profile.modals.settings.title')}</SheetTitle>
         </SheetHeader>
         
         <div className="py-6 space-y-6">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <h3 className="font-medium">Email</h3>
+              <h3 className="font-medium">{t('worker.profile.modals.settings.sections.email.title')}</h3>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t('worker.profile.modals.settings.sections.email.label')}</Label>
               <div className="flex gap-2">
                 <Input
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('worker.profile.modals.settings.sections.email.placeholder')}
                   disabled={isLoading}
                 />
                 <Button onClick={handleEmailUpdate} disabled={isLoading}>
-                  Save
+                  {t('worker.profile.modals.settings.buttons.save')}
                 </Button>
               </div>
             </div>
           </div>
 
-        <Separator />
+          <Separator />
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4" />
-            <h3 className="font-medium">Phone</h3>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <span className="text-gray-500">+62</span>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              <h3 className="font-medium">{t('worker.profile.modals.settings.sections.phone.title')}</h3>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">{t('worker.profile.modals.settings.sections.phone.label')}</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span className="text-gray-500">+62</span>
+                  </div>
+                  <Input
+                    id="phone"
+                    value={phone}
+                    onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
+                    className="pl-12"
+                    placeholder={t('worker.profile.modals.settings.sections.phone.placeholder')}
+                    disabled={isLoading}
+                  />
                 </div>
-                <Input
-                  id="phone"
-                  value={phone}
-                  onChange={(e) => setPhone(formatPhoneNumber(e.target.value))}
-                  className="pl-12"
-                  placeholder="Enter your phone number"
-                  disabled={isLoading}
-                />
+                <Button onClick={handlePhoneUpdate} disabled={isLoading}>
+                  {t('worker.profile.modals.settings.buttons.save')}
+                </Button>
               </div>
-              <Button onClick={handlePhoneUpdate} disabled={isLoading}>
-                Save
-              </Button>
+              {phone && !validatePhoneNumber(phone) && (
+                <p className="text-sm text-destructive">
+                  {t('worker.profile.modals.settings.sections.phone.validation')}
+                </p>
+              )}
             </div>
-            {phone && !validatePhoneNumber(phone) && (
-              <p className="text-sm text-destructive">
-                Phone number must be between 8 and 12 digits
-              </p>
-            )}
           </div>
-        </div>
 
-        <Separator />
+          <Separator />
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <UserCircle className="h-4 w-4" />
-            <h3 className="font-medium">Gender</h3>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <UserCircle className="h-4 w-4" />
+              <h3 className="font-medium">{t('worker.profile.modals.settings.sections.gender.title')}</h3>
+            </div>
+            <RadioGroup value={gender} onValueChange={handleGenderUpdate}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="male" id="male" />
+                <Label htmlFor="male">{t('worker.profile.modals.settings.sections.gender.options.male')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="female" id="female" />
+                <Label htmlFor="female">{t('worker.profile.modals.settings.sections.gender.options.female')}</Label>
+              </div>
+            </RadioGroup>
           </div>
-          <RadioGroup value={gender} onValueChange={handleGenderUpdate}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="male" id="male" />
-              <Label htmlFor="male">Male</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="female" id="female" />
-              <Label htmlFor="female">Female</Label>
-            </div>
-          </RadioGroup>
-        </div>
 
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Globe2 className="h-4 w-4" />
-              <h3 className="font-medium">Language</h3>
+              <h3 className="font-medium">{t('worker.profile.modals.settings.sections.language.title')}</h3>
             </div>
             <Select value={language} onValueChange={(value: 'English' | 'Bahasa') => setLanguage(value)}>
               <SelectTrigger>
-                <SelectValue placeholder="Select language" />
+                <SelectValue placeholder={t('worker.profile.modals.settings.sections.language.placeholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="English">English</SelectItem>
-                <SelectItem value="Bahasa">Bahasa</SelectItem>
+                <SelectItem value="English">{t('worker.profile.modals.settings.sections.language.options.english')}</SelectItem>
+                <SelectItem value="Bahasa">{t('worker.profile.modals.settings.sections.language.options.bahasa')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <Separator />
 
-          {/* Password Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Lock className="h-4 w-4" />
-              <h3 className="font-medium">Password</h3>
+              <h3 className="font-medium">{t('worker.profile.modals.settings.sections.password.title')}</h3>
             </div>
             <Button 
               variant="outline" 
               className="w-full"
               onClick={() => navigate('/reset-password')}
             >
-              Change Password
+              {t('worker.profile.modals.settings.sections.password.changeButton')}
             </Button>
           </div>
 
@@ -268,11 +264,13 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
-              <h3 className="font-medium">Notifications</h3>
+              <h3 className="font-medium">{t('worker.profile.modals.settings.sections.notifications.title')}</h3>
             </div>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label htmlFor="push-notifications">Push Notifications</Label>
+                <Label htmlFor="push-notifications">
+                  {t('worker.profile.modals.settings.sections.notifications.push')}
+                </Label>
                 <Switch
                   id="push-notifications"
                   checked={pushNotifications}
@@ -280,7 +278,9 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
                 />
               </div>
               <div className="flex items-center justify-between">
-                <Label htmlFor="email-notifications">Email Notifications</Label>
+                <Label htmlFor="email-notifications">
+                  {t('worker.profile.modals.settings.sections.notifications.email')}
+                </Label>
                 <Switch
                   id="email-notifications"
                   checked={emailNotifications}
@@ -294,13 +294,12 @@ export const SettingsModal = ({ open, onClose, profile }: SettingsModalProps) =>
 
           <Button variant="outline" className="w-full" onClick={() => auth.signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+            {t('worker.profile.modals.settings.buttons.signOut')}
           </Button>
 
-          {/* Delete Account Section */}
           <Button variant="destructive" className="w-full">
             <Trash2 className="mr-2 h-4 w-4" />
-            Delete Account
+            {t('worker.profile.modals.settings.buttons.deleteAccount')}
           </Button>
         </div>
       </SheetContent>
