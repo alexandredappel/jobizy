@@ -15,13 +15,19 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { JobType, WorkArea, Language } from "@/types/firebase.types";
-import { JOB_TYPES, LANGUAGES } from "@/utils/constants";
 import { CheckCircle2 } from "lucide-react";
+
+const JOB_TYPES: JobType[] = [
+  'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
+  'Gardener', 'Pool guy', 'Bartender', 'Seller'
+];
 
 const WORK_AREAS: WorkArea[] = [
   'Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 
   'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'
 ];
+
+const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
 type ContractType = 'Full time' | 'Part time';
 
@@ -44,7 +50,7 @@ const WorkerOnboarding = () => {
   const [step, setStep] = useState(1);
   const [isCompleting, setIsCompleting] = useState(false);
   const [data, setData] = useState<OnboardingData>({
-    job: 'WAITER',
+    job: 'Waiter',
     location: [],
     languages: [],
     type_contract: 'Full time',
@@ -186,7 +192,7 @@ const WorkerOnboarding = () => {
                     <ToggleGroupItem
                       key={language}
                       value={language}
-                      aria-label={language}
+                      aria-label={translateLanguage(language)}
                       className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                     >
                       {translateLanguage(language)}
