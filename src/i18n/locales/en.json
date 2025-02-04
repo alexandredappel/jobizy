@@ -367,6 +367,64 @@
           "present": "Present"
         }
       }
+    },
+    "onboarding": {
+      "steps": {
+        "job": {
+          "title": "What job are you looking for?",
+          "placeholder": "Select a job"
+        },
+        "workAreas": {
+          "title": "In which areas would you like to work?"
+        },
+        "languages": {
+          "title": "What languages do you speak?"
+        },
+        "contract": {
+          "title": "What kind of work contract are you looking for?",
+          "placeholder": "Select contract type",
+          "types": {
+            "fullTime": "Full time",
+            "partTime": "Part time"
+          }
+        },
+        "personal": {
+          "title": "Tell us about yourself",
+          "fullName": {
+            "label": "Full Name",
+            "placeholder": "Enter your full name"
+          },
+          "gender": {
+            "label": "Gender",
+            "male": "Male",
+            "female": "Female"
+          }
+        },
+        "phone": {
+          "title": "What's your phone number?",
+          "placeholder": "Enter your phone number",
+          "validation": "Phone number must be between 8 and 12 digits",
+          "description": "Your phone number is required and will be used by businesses to contact you for job opportunities."
+        }
+      },
+      "navigation": {
+        "next": "Next",
+        "complete": "Complete"
+      },
+      "completion": {
+        "title": "Congratulations!",
+        "description": "Your profile is now visible to professionals in Bali. Redirecting to your dashboard...",
+        "toast": {
+          "success": {
+            "title": "Profile Created",
+            "description": "Your profile is now visible to businesses in Bali!"
+          },
+          "error": {
+            "title": "Error",
+            "description": "Failed to create your profile. Please try again."
+          }
+        }
+      }
     }
   }
 }
