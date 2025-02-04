@@ -207,65 +207,6 @@
               "selectEnd": "Select end date"
             }
           },
-          "settings": {
-  "title": "Settings",
-  "sections": {
-    "email": {
-      "title": "Email",
-      "label": "Email Address",
-      "placeholder": "Enter your email"
-    },
-    "phone": {
-      "title": "Phone",
-      "label": "Phone Number",
-      "placeholder": "Enter your phone number",
-      "validation": "Phone number must be between 8 and 12 digits"
-    },
-    "gender": {
-      "title": "Gender",
-      "options": {
-        "male": "Male",
-        "female": "Female"
-      }
-    },
-    "language": {
-      "title": "Language",
-      "placeholder": "Select language",
-      "options": {
-        "english": "English",
-        "bahasa": "Bahasa"
-      }
-    },
-    "password": {
-      "title": "Password",
-      "changeButton": "Change Password"
-    },
-    "notifications": {
-      "title": "Notifications",
-      "push": "Push Notifications",
-      "email": "Email Notifications"
-    }
-  },
-  "buttons": {
-    "save": "Save",
-    "signOut": "Sign Out",
-    "deleteAccount": "Delete Account"
-  },
-  "toast": {
-    "email": {
-      "success": "Email updated successfully",
-      "error": "Failed to update email"
-    },
-    "phone": {
-      "success": "Phone number updated successfully",
-      "error": "Failed to update phone number"
-    },
-    "gender": {
-      "success": "Gender updated successfully",
-      "error": "Failed to update gender"
-    }
-  }
-},
           "validation": {
             "title": "Validation Error",
             "requiredFields": "Please fill in all required fields"
@@ -293,6 +234,65 @@
             "message": "You have unsaved changes. Are you sure you want to close?",
             "cancel": "Continue Editing",
             "confirm": "Discard Changes"
+          }
+        },
+        "settings": {
+          "title": "Settings",
+          "sections": {
+            "email": {
+              "title": "Email",
+              "label": "Email Address",
+              "placeholder": "Enter your email"
+            },
+            "phone": {
+              "title": "Phone",
+              "label": "Phone Number",
+              "placeholder": "Enter your phone number",
+              "validation": "Phone number must be between 8 and 12 digits"
+            },
+            "gender": {
+              "title": "Gender",
+              "options": {
+                "male": "Male",
+                "female": "Female"
+              }
+            },
+            "language": {
+              "title": "Language",
+              "placeholder": "Select language",
+              "options": {
+                "english": "English",
+                "bahasa": "Bahasa"
+              }
+            },
+            "password": {
+              "title": "Password",
+              "changeButton": "Change Password"
+            },
+            "notifications": {
+              "title": "Notifications",
+              "push": "Push Notifications",
+              "email": "Email Notifications"
+            }
+          },
+          "buttons": {
+            "save": "Save",
+            "signOut": "Sign Out",
+            "deleteAccount": "Delete Account"
+          },
+          "toast": {
+            "email": {
+              "success": "Email updated successfully",
+              "error": "Failed to update email"
+            },
+            "phone": {
+              "success": "Phone number updated successfully",
+              "error": "Failed to update phone number"
+            },
+            "gender": {
+              "success": "Gender updated successfully",
+              "error": "Failed to update gender"
+            }
           }
         }
       },
