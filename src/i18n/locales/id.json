@@ -239,6 +239,73 @@
           }
         }
       },
+      {
+  "worker": {
+    "profile": {
+      "modals": {
+        "settings": {
+          "title": "Pengaturan",
+          "sections": {
+            "email": {
+              "title": "Email",
+              "label": "Alamat Email",
+              "placeholder": "Masukkan email Anda"
+            },
+            "phone": {
+              "title": "Telepon",
+              "label": "Nomor Telepon",
+              "placeholder": "Masukkan nomor telepon Anda",
+              "validation": "Nomor telepon harus antara 8 dan 12 digit"
+            },
+            "gender": {
+              "title": "Jenis Kelamin",
+              "options": {
+                "male": "Laki-laki",
+                "female": "Perempuan"
+              }
+            },
+            "language": {
+              "title": "Bahasa",
+              "placeholder": "Pilih bahasa",
+              "options": {
+                "english": "Bahasa Inggris",
+                "bahasa": "Bahasa Indonesia"
+              }
+            },
+            "password": {
+              "title": "Kata Sandi",
+              "changeButton": "Ubah Kata Sandi"
+            },
+            "notifications": {
+              "title": "Notifikasi",
+              "push": "Notifikasi Push",
+              "email": "Notifikasi Email"
+            }
+          },
+          "buttons": {
+            "save": "Simpan",
+            "signOut": "Keluar",
+            "deleteAccount": "Hapus Akun"
+          },
+          "toast": {
+            "email": {
+              "success": "Email berhasil diperbarui",
+              "error": "Gagal memperbarui email"
+            },
+            "phone": {
+              "success": "Nomor telepon berhasil diperbarui",
+              "error": "Gagal memperbarui nomor telepon"
+            },
+            "gender": {
+              "success": "Jenis kelamin berhasil diperbarui",
+              "error": "Gagal memperbarui jenis kelamin"
+            }
+          }
+        }
+      }
+    }
+  }
+}
       "sections": {
         "aboutMe": {
           "title": "Tentang Saya",
