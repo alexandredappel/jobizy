@@ -367,6 +367,64 @@
           "present": "Sekarang"
         }
       }
+    },
+    "onboarding": {
+      "steps": {
+        "job": {
+          "title": "Pekerjaan apa yang Anda cari?",
+          "placeholder": "Pilih pekerjaan"
+        },
+        "workAreas": {
+          "title": "Di area mana Anda ingin bekerja?"
+        },
+        "languages": {
+          "title": "Bahasa apa yang Anda kuasai?"
+        },
+        "contract": {
+          "title": "Kontrak kerja seperti apa yang Anda cari?",
+          "placeholder": "Pilih jenis kontrak",
+          "types": {
+            "fullTime": "Full time",
+            "partTime": "Part time"
+          }
+        },
+        "personal": {
+          "title": "Ceritakan tentang diri Anda",
+          "fullName": {
+            "label": "Nama Lengkap",
+            "placeholder": "Masukkan nama lengkap Anda"
+          },
+          "gender": {
+            "label": "Jenis Kelamin",
+            "male": "Laki-laki",
+            "female": "Perempuan"
+          }
+        },
+        "phone": {
+          "title": "Berapa nomor telepon Anda?",
+          "placeholder": "Masukkan nomor telepon Anda",
+          "validation": "Nomor telepon harus antara 8 dan 12 digit",
+          "description": "Nomor telepon Anda diperlukan dan akan digunakan oleh bisnis untuk menghubungi Anda untuk peluang kerja."
+        }
+      },
+      "navigation": {
+        "next": "Selanjutnya",
+        "complete": "Selesai"
+      },
+      "completion": {
+        "title": "Selamat!",
+        "description": "Profil Anda sekarang terlihat oleh profesional di Bali. Mengalihkan ke dashboard Anda...",
+        "toast": {
+          "success": {
+            "title": "Profil Dibuat",
+            "description": "Profil Anda sekarang terlihat oleh bisnis di Bali!"
+          },
+          "error": {
+            "title": "Error",
+            "description": "Gagal membuat profil Anda. Silakan coba lagi."
+          }
+        }
+      }
     }
   }
 }
