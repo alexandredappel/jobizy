@@ -18,8 +18,8 @@ import { JobType, WorkArea, Language } from "@/types/firebase.types";
 import { CheckCircle2 } from "lucide-react";
 
 const JOB_TYPES: JobType[] = [
-  'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
-  'Gardener', 'Pool guy', 'Bartender', 'Seller'
+  'WAITER', 'COOK', 'CASHIER', 'MANAGER', 'HOUSEKEEPER',
+  'GARDENER', 'POOL_GUY', 'BARTENDER', 'SELLER'
 ];
 
 const WORK_AREAS: WorkArea[] = [
@@ -27,7 +27,7 @@ const WORK_AREAS: WorkArea[] = [
   'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'
 ];
 
-const LANGUAGES: Language[] = ['English', 'Bahasa'];
+const LANGUAGES: Language[] = ['ENGLISH', 'BAHASA'];
 
 type ContractType = 'Full time' | 'Part time';
 
