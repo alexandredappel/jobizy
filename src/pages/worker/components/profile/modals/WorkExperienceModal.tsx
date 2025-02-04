@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { doc, deleteDoc, collection, writeBatch, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useTranslation } from 'react-i18next';
 
 interface WorkExperienceListModalProps {
   open: boolean;
@@ -48,6 +49,7 @@ const WorkExperienceListModal = ({
   experiences,
   userId,
 }: WorkExperienceListModalProps) => {
+  const { t } = useTranslation();
   const [localExperiences, setLocalExperiences] = useState<ExperienceForm[]>(() =>
     experiences.map(exp => ({
       id: exp.id,
@@ -89,14 +91,14 @@ const WorkExperienceListModal = ({
       try {
         await deleteDoc(doc(db, 'work_experiences', experience.id));
         toast({
-          title: "Experience deleted",
-          description: "Work experience has been removed successfully"
+          title: t('common.toast.success'),
+          description: t('worker.profile.modals.workExperience.toast.deleteSuccess')
         });
       } catch (error) {
         console.error('Error deleting experience:', error);
         toast({
-          title: "Error",
-          description: "Failed to delete work experience",
+          title: t('common.toast.error'),
+          description: t('worker.profile.modals.workExperience.toast.deleteError'),
           variant: "destructive"
         });
         return;
@@ -124,8 +126,8 @@ const WorkExperienceListModal = ({
       for (const exp of localExperiences) {
         if (!exp.companyName || !exp.position || !exp.startDate) {
           toast({
-            title: "Validation Error",
-            description: "Please fill in all required fields",
+            title: t('common.toast.error'),
+            description: t('worker.profile.modals.workExperience.validation.error'),
             variant: "destructive"
           });
           setIsLoading(false);
@@ -167,16 +169,16 @@ const WorkExperienceListModal = ({
       console.log('Batch commit successful');
 
       toast({
-        title: "Success",
-        description: "Work experiences updated successfully"
+        title: t('common.toast.success'),
+        description: t('worker.profile.modals.workExperience.toast.updateSuccess')
       });
       setHasUnsavedChanges(false);
       onClose();
     } catch (error) {
       console.error('Error saving experiences:', error);
       toast({
-        title: "Error",
-        description: "Failed to save work experiences",
+        title: t('common.toast.error'),
+        description: t('worker.profile.modals.workExperience.toast.updateError'),
         variant: "destructive"
       });
     } finally {
@@ -189,7 +191,9 @@ const WorkExperienceListModal = ({
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="flex flex-col h-[90vh] w-[95vw] md:h-[70vh] md:w-[50vw] max-w-[95vw] p-0 gap-0 sm:px-6 overflow-hidden">
           <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
-            <h2 className="text-2xl font-bold text-center mb-8">Work Experience</h2>
+            <h2 className="text-2xl font-bold text-center mb-8">
+              {t('worker.profile.modals.workExperience.title')}
+            </h2>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-20">
@@ -209,20 +213,20 @@ const WorkExperienceListModal = ({
                   </Button>
                   
                   <div className="space-y-2">
-                    <Label>Company Name</Label>
+                    <Label>{t('worker.profile.modals.workExperience.companyName.label')}</Label>
                     <Input
                       value={exp.companyName}
                       onChange={(e) => handleUpdateField(index, 'companyName', e.target.value)}
-                      placeholder="Enter company name"
+                      placeholder={t('worker.profile.modals.workExperience.companyName.placeholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Position</Label>
+                    <Label>{t('worker.profile.modals.workExperience.position.label')}</Label>
                     <Input
                       value={exp.position}
                       onChange={(e) => handleUpdateField(index, 'position', e.target.value)}
-                      placeholder="Enter position"
+                      placeholder={t('worker.profile.modals.workExperience.position.placeholder')}
                     />
                   </div>
 
@@ -236,17 +240,17 @@ const WorkExperienceListModal = ({
                         }
                       }}
                     />
-                    <Label>Current Position</Label>
+                    <Label>{t('worker.profile.modals.workExperience.currentPosition')}</Label>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex justify-between gap-4">
                       <div className="flex-1">
-                        <Label>Start Date</Label>
+                        <Label>{t('worker.profile.modals.workExperience.dates.start')}</Label>
                       </div>
                       {!exp.isCurrentPosition && (
                         <div className="flex-1">
-                          <Label>End Date</Label>
+                          <Label>{t('worker.profile.modals.workExperience.dates.end')}</Label>
                         </div>
                       )}
                     </div>
@@ -258,7 +262,7 @@ const WorkExperienceListModal = ({
                           disabled={(date) =>
                             date > new Date() || (exp.endDate && date > exp.endDate)
                           }
-                          label="Select start date"
+                          label={t('worker.profile.modals.workExperience.dates.selectStart')}
                         />
                       </div>
                       {!exp.isCurrentPosition && (
@@ -269,7 +273,7 @@ const WorkExperienceListModal = ({
                             disabled={(date) =>
                               date > new Date() || date < exp.startDate
                             }
-                            label="Select end date"
+                            label={t('worker.profile.modals.workExperience.dates.selectEnd')}
                           />
                         </div>
                       )}
@@ -295,7 +299,7 @@ const WorkExperienceListModal = ({
                 onClick={handleSaveChanges}
                 disabled={isLoading}
               >
-                {isLoading ? "Saving..." : "Save Changes"}
+                {isLoading ? t('common.button.saving') : t('common.button.saveChanges')}
               </Button>
             </div>
           </div>
@@ -305,13 +309,17 @@ const WorkExperienceListModal = ({
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('worker.profile.modals.workExperience.unsavedChanges.title')}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to close without saving?
+              {t('worker.profile.modals.workExperience.unsavedChanges.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>
+              {t('worker.profile.modals.workExperience.unsavedChanges.cancel')}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 setShowConfirmDialog(false);
@@ -319,7 +327,7 @@ const WorkExperienceListModal = ({
                 onClose();
               }}
             >
-              Close without saving
+              {t('worker.profile.modals.workExperience.unsavedChanges.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
