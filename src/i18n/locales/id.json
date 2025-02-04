@@ -237,12 +237,7 @@
               "description": "Gagal menyimpan pendidikan"
             }
           }
-        }
-      },
-      {
-  "worker": {
-    "profile": {
-      "modals": {
+        },
         "settings": {
           "title": "Pengaturan",
           "sections": {
