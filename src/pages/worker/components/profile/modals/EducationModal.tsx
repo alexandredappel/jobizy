@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { doc, deleteDoc, collection, addDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useTranslation } from 'react-i18next';
 
 interface EducationModalProps {
   open: boolean;
@@ -47,6 +48,7 @@ const EducationModal = ({
   education,
   userId,
 }: EducationModalProps) => {
+  const { t } = useTranslation();
   const [localEducation, setLocalEducation] = useState<EducationForm[]>(() =>
     education.map(edu => ({
       id: edu.id,
@@ -88,14 +90,14 @@ const EducationModal = ({
       try {
         await deleteDoc(doc(db, 'education', education.id));
         toast({
-          title: "Education deleted",
-          description: "Education has been removed successfully"
+          title: t('worker.profile.modals.education.toast.deleteSuccess.title'),
+          description: t('worker.profile.modals.education.toast.deleteSuccess.description')
         });
       } catch (error) {
         console.error('Error deleting education:', error);
         toast({
-          title: "Error",
-          description: "Failed to delete education",
+          title: t('worker.profile.modals.education.toast.deleteError.title'),
+          description: t('worker.profile.modals.education.toast.deleteError.description'),
           variant: "destructive"
         });
         return;
@@ -122,8 +124,8 @@ const EducationModal = ({
       for (const edu of localEducation) {
         if (!edu.institution || !edu.degree || !edu.startDate) {
           toast({
-            title: "Validation Error",
-            description: "Please fill in all required fields",
+            title: t('worker.profile.modals.education.validation.title'),
+            description: t('worker.profile.modals.education.validation.requiredFields'),
             variant: "destructive"
           });
           setIsLoading(false);
@@ -153,16 +155,16 @@ const EducationModal = ({
       }
 
       toast({
-        title: "Success",
-        description: "Education updated successfully"
+        title: t('worker.profile.modals.education.toast.saveSuccess.title'),
+        description: t('worker.profile.modals.education.toast.saveSuccess.description')
       });
       setHasUnsavedChanges(false);
       onClose();
     } catch (error) {
       console.error('Error saving education:', error);
       toast({
-        title: "Error",
-        description: "Failed to save education",
+        title: t('worker.profile.modals.education.toast.saveError.title'),
+        description: t('worker.profile.modals.education.toast.saveError.description'),
         variant: "destructive"
       });
     } finally {
@@ -175,7 +177,7 @@ const EducationModal = ({
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="flex flex-col h-[90vh] w-[95vw] md:h-[70vh] md:w-[50vw] max-w-[95vw] p-0 gap-0 sm:px-6 overflow-hidden">
           <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
-            <h2 className="text-2xl font-bold text-center mb-8">Education</h2>
+            <h2 className="text-2xl font-bold text-center mb-8">{t('worker.profile.modals.education.title')}</h2>
           </DialogHeader>
 
           <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-20">
@@ -195,20 +197,20 @@ const EducationModal = ({
                   </Button>
                   
                   <div className="space-y-2">
-                    <Label>Institution</Label>
+                    <Label>{t('worker.profile.modals.education.fields.institution.label')}</Label>
                     <Input
                       value={edu.institution}
                       onChange={(e) => handleUpdateField(index, 'institution', e.target.value)}
-                      placeholder="Enter institution name"
+                      placeholder={t('worker.profile.modals.education.fields.institution.placeholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Degree</Label>
+                    <Label>{t('worker.profile.modals.education.fields.degree.label')}</Label>
                     <Input
                       value={edu.degree}
                       onChange={(e) => handleUpdateField(index, 'degree', e.target.value)}
-                      placeholder="Enter degree"
+                      placeholder={t('worker.profile.modals.education.fields.degree.placeholder')}
                     />
                   </div>
 
@@ -222,17 +224,17 @@ const EducationModal = ({
                         }
                       }}
                     />
-                    <Label>Current Study</Label>
+                    <Label>{t('worker.profile.modals.education.fields.currentStudy')}</Label>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex justify-between gap-4">
                       <div className="flex-1">
-                        <Label>Start Date</Label>
+                        <Label>{t('worker.profile.modals.education.fields.dates.startDate')}</Label>
                       </div>
                       {!edu.isCurrentStudy && (
                         <div className="flex-1">
-                          <Label>End Date</Label>
+                          <Label>{t('worker.profile.modals.education.fields.dates.endDate')}</Label>
                         </div>
                       )}
                     </div>
@@ -244,7 +246,7 @@ const EducationModal = ({
                           disabled={(date) =>
                             date > new Date() || (edu.endDate && date > edu.endDate)
                           }
-                          label="Select start date"
+                          label={t('worker.profile.modals.education.fields.dates.selectStart')}
                         />
                       </div>
                       {!edu.isCurrentStudy && (
@@ -255,7 +257,7 @@ const EducationModal = ({
                             disabled={(date) =>
                               date > new Date() || date < edu.startDate
                             }
-                            label="Select end date"
+                            label={t('worker.profile.modals.education.fields.dates.selectEnd')}
                           />
                         </div>
                       )}
@@ -281,7 +283,7 @@ const EducationModal = ({
                 onClick={handleSaveChanges}
                 disabled={isLoading}
               >
-                {isLoading ? "Saving..." : "Save Changes"}
+                {isLoading ? t('common.button.saving') : t('common.button.saveChanges')}
               </Button>
             </div>
           </div>
@@ -291,13 +293,13 @@ const EducationModal = ({
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogTitle>{t('worker.profile.modals.education.unsavedChanges.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to close without saving?
+              {t('worker.profile.modals.education.unsavedChanges.message')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('worker.profile.modals.education.unsavedChanges.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 setShowConfirmDialog(false);
@@ -305,7 +307,7 @@ const EducationModal = ({
                 onClose();
               }}
             >
-              Close without saving
+              {t('worker.profile.modals.education.unsavedChanges.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
