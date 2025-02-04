@@ -5,11 +5,134 @@
       "saving": "Saving..."
     },
     "toast": {
-      "success": "Success", 
+      "success": "Success",
       "error": "Error"
     }
   },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "signUp": {
+      "title": "Sign Up",
+      "submitButton": "Sign Up",
+      "roleButtons": {
+        "worker": "I'm a Worker",
+        "business": "I'm a Business"
+      },
+      "alreadyHaveAccount": "Already have an account?",
+      "error": {
+        "title": "Error",
+        "description": "Failed to create account. Please try again."
+      }
+    },
+    "forgotPassword": {
+      "link": "Forgot Password?",
+      "title": "Reset Password",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "Enter your email",
+      "sendButton": "Send Reset Link",
+      "sendingButton": "Sending...",
+      "backToSignIn": "Back to Sign In",
+      "toast": {
+        "invalidEmail": {
+          "title": "Invalid email",
+          "description": "Please enter a valid email address"
+        },
+        "resetSent": {
+          "title": "Reset email sent",
+          "description": "Check your email for password reset instructions"
+        }
+      }
+    },
+    "resetPassword": {
+      "title": "Set New Password",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "resetButton": "Reset Password",
+      "resettingButton": "Resetting...",
+      "passwordRequirements": {
+        "length": "Password must be at least 8 characters",
+        "uppercase": "Password must contain at least one uppercase letter",
+        "lowercase": "Password must contain at least one lowercase letter",
+        "number": "Password must contain at least one number",
+        "special": "Password must contain at least one special character"
+      },
+      "toast": {
+        "invalidLink": {
+          "title": "Invalid reset link",
+          "description": "Please use the link from your email"
+        },
+        "passwordMismatch": {
+          "title": "Passwords don't match",
+          "description": "Please ensure both passwords are identical"
+        },
+        "resetSuccess": {
+          "title": "Password reset successful",
+          "description": "You can now sign in with your new password"
+        }
+      }
+    },
+    "noAccount": "Don't have an account?"
+  },
   "worker": {
+    "dashboard": {
+      "welcome": {
+        "morning": "good morning",
+        "afternoon": "good afternoon",
+        "evening": "good evening",
+        "greeting": "Hi {{name}}"
+      },
+      "availability": {
+        "title": "Availability Status",
+        "available": "You're currently available for work",
+        "unavailable": "You're currently unavailable for work",
+        "toast": {
+          "available": {
+            "title": "You're now available",
+            "description": "Businesses can now find and contact you"
+          },
+          "unavailable": {
+            "title": "You're now unavailable",
+            "description": "You won't appear in search results"
+          },
+          "error": {
+            "title": "Error",
+            "description": "Failed to update availability status"
+          }
+        }
+      },
+      "profile": {
+        "completion": {
+          "title": "Profile Completion",
+          "subtitle": "Complete Your Profile",
+          "button": "Complete Now"
+        },
+        "cards": {
+          "main": {
+            "title": "Complete Your Profile",
+            "empty": "Add a description about yourself to help businesses know you better",
+            "update": "Update your profile information"
+          },
+          "experience": {
+            "title": "Add Work Experience",
+            "empty": "Add your work experience to showcase your expertise",
+            "update": "Update your work experience"
+          },
+          "education": {
+            "title": "Add Education",
+            "empty": "Add your education background to highlight your qualifications",
+            "update": "Update your education details"
+          },
+          "language": {
+            "title": "Language Skills",
+            "empty": "Add the languages you speak to improve your chances",
+            "update": "Update your language skills"
+          }
+        }
+      }
+    },
     "profile": {
       "modals": {
         "aboutMe": {
@@ -20,54 +143,44 @@
             "success": "About me section updated successfully",
             "error": "Failed to update about me section"
           }
+        }
+      },
+      "sections": {
+        "aboutMe": {
+          "title": "About Me",
+          "edit": "Edit",
+          "empty": "No description provided yet."
         },
         "education": {
           "title": "Education",
-          "fields": {
-            "institution": {
-              "label": "Institution",
-              "placeholder": "Enter institution name"
-            },
-            "degree": {
-              "label": "Degree",
-              "placeholder": "Enter degree"
-            },
-            "currentStudy": "Current Study",
-            "dates": {
-              "startDate": "Start Date",
-              "endDate": "End Date", 
-              "selectStart": "Select start date",
-              "selectEnd": "Select end date"
-            }
-          },
-          "validation": {
-            "title": "Validation Error",
-            "requiredFields": "Please fill in all required fields"
-          },
-          "unsavedChanges": {
-            "title": "Unsaved Changes",
-            "message": "You have unsaved changes. Are you sure you want to close without saving?",
-            "cancel": "Cancel",
-            "confirm": "Close without saving"
-          },
-          "toast": {
-            "deleteSuccess": {
-              "title": "Education deleted",
-              "description": "Education has been removed successfully"
-            },
-            "deleteError": {
-              "title": "Error",
-              "description": "Failed to delete education"
-            },
-            "saveSuccess": {
-              "title": "Success", 
-              "description": "Education updated successfully"
-            },
-            "saveError": {
-              "title": "Error",
-              "description": "Failed to save education"
-            }
+          "edit": "Edit",
+          "empty": "No education history added yet.",
+          "present": "Present"
+        },
+        "main": {
+          "noneValue": "None",
+          "othersCount": "+{{count}} others",
+          "workSchedule": "Work Schedule",
+          "languages": "Languages",
+          "location": "Location",
+          "availability": {
+            "title": "Availability Status",
+            "toggleLabel": "Toggle availability status",
+            "mobileAvailable": "You are currently available for work",
+            "mobileUnavailable": "You are currently not available for work",
+            "available": "Available for work",
+            "unavailable": "Not available",
+            "shortAvailable": "Available",
+            "shortUnavailable": "Unavailable",
+            "availableDescription": "Employers can see your profile and contact you",
+            "unavailableDescription": "Your profile is hidden from employers"
           }
+        },
+        "workExperience": {
+          "title": "Work Experience",
+          "edit": "Edit",
+          "empty": "No work experience added yet.",
+          "present": "Present"
         }
       }
     }
