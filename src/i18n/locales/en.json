@@ -207,37 +207,7 @@
               "selectEnd": "Select end date"
             }
           },
-          "validation": {
-            "title": "Validation Error",
-            "requiredFields": "Please fill in all required fields"
-          },
-          "toast": {
-            "saveSuccess": {
-              "title": "Success",
-              "description": "Education history updated successfully"
-            },
-            "saveError": {
-              "title": "Error",
-              "description": "Failed to update education history"
-            },
-            "deleteSuccess": {
-              "title": "Success",
-              "description": "Education entry deleted successfully"
-            },
-            "deleteError": {
-              "title": "Error",
-              "description": "Failed to delete education entry"
-            }
-          },
-          "unsavedChanges": {
-            "title": "Unsaved Changes",
-            "message": "You have unsaved changes. Are you sure you want to close?",
-            "cancel": "Continue Editing",
-            "confirm": "Discard Changes"
-          }
-        }
-      },
-      "settings": {
+          "settings": {
   "title": "Settings",
   "sections": {
     "email": {
@@ -296,6 +266,36 @@
     }
   }
 },
+          "validation": {
+            "title": "Validation Error",
+            "requiredFields": "Please fill in all required fields"
+          },
+          "toast": {
+            "saveSuccess": {
+              "title": "Success",
+              "description": "Education history updated successfully"
+            },
+            "saveError": {
+              "title": "Error",
+              "description": "Failed to update education history"
+            },
+            "deleteSuccess": {
+              "title": "Success",
+              "description": "Education entry deleted successfully"
+            },
+            "deleteError": {
+              "title": "Error",
+              "description": "Failed to delete education entry"
+            }
+          },
+          "unsavedChanges": {
+            "title": "Unsaved Changes",
+            "message": "You have unsaved changes. Are you sure you want to close?",
+            "cancel": "Continue Editing",
+            "confirm": "Discard Changes"
+          }
+        }
+      },
       "sections": {
         "aboutMe": {
           "title": "About Me",
