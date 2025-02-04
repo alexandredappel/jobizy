@@ -135,6 +135,50 @@
     },
     "profile": {
       "modals": {
+        "mainProfile": {
+          "title": "Edit Profile",
+          "fields": {
+            "profilePicture": {
+              "upload": "Upload Picture"
+            },
+            "job": {
+              "label": "Job Position",
+              "placeholder": "Select a job position"
+            },
+            "workSchedule": {
+              "label": "Work Schedule",
+              "placeholder": "Select work schedule"
+            },
+            "languages": {
+              "label": "Languages"
+            },
+            "workAreas": {
+              "label": "Work Areas"
+            }
+          },
+          "toast": {
+            "image": {
+              "success": {
+                "title": "Success",
+                "description": "Your profile picture has been updated successfully"
+              },
+              "error": {
+                "title": "Error",
+                "description": "Failed to upload image. Please try again."
+              }
+            },
+            "profile": {
+              "success": {
+                "title": "Success",
+                "description": "Your profile has been updated successfully"
+              },
+              "error": {
+                "title": "Error",
+                "description": "Failed to update profile. Please try again."
+              }
+            }
+          }
+        },
         "aboutMe": {
           "title": "About Me",
           "placeholder": "Tell us about yourself",
