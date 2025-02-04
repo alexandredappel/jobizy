@@ -30,6 +30,7 @@ import { useStorage } from "@/hooks/useStorage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from 'react-i18next';
 import type { WorkerUser, JobType, Language, WorkArea } from '@/types/firebase.types';
 
 const JOB_TYPES: JobType[] = ['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'];
@@ -53,6 +54,7 @@ interface MainProfileEditModalProps {
 }
 
 const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEditModalProps) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { uploadFile, getUrl } = useStorage();
   const [isLoading, setIsLoading] = React.useState(false);
@@ -81,18 +83,18 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
       form.setValue('profile_picture_url', url);
       
       toast({
-        title: "Image uploaded",
-        description: "Your profile picture has been updated successfully.",
+        title: t('worker.profile.modals.mainProfile.toast.image.success.title'),
+        description: t('worker.profile.modals.mainProfile.toast.image.success.description'),
       });
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
-        title: "Error",
-        description: "Failed to upload image. Please try again.",
+        title: t('worker.profile.modals.mainProfile.toast.image.error.title'),
+        description: t('worker.profile.modals.mainProfile.toast.image.error.description'),
         variant: "destructive",
       });
     }
-  }, [profile.id, uploadFile, getUrl, form, toast]);
+  }, [profile.id, uploadFile, getUrl, form, toast, t]);
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
@@ -117,15 +119,15 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
       
       await onSave(updateData);
       toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
+        title: t('worker.profile.modals.mainProfile.toast.profile.success.title'),
+        description: t('worker.profile.modals.mainProfile.toast.profile.success.description'),
       });
       onClose();
     } catch (error) {
       console.error("Error updating profile:", error);
       toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
+        title: t('worker.profile.modals.mainProfile.toast.profile.error.title'),
+        description: t('worker.profile.modals.mainProfile.toast.profile.error.description'),
         variant: "destructive",
       });
     } finally {
@@ -137,7 +139,9 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="flex flex-col w-[95vw] md:w-[50vw] max-w-[95vw] max-h-[90vh] p-0 gap-0 sm:px-6">
         <DialogHeader className="px-4 sm:px-6 pt-6 mb-8 flex-shrink-0">
-          <DialogTitle className="text-2xl font-bold text-center">Edit Profile</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-center">
+            {t('worker.profile.modals.mainProfile.title')}
+          </DialogTitle>
         </DialogHeader>
         
         <Form {...form}>
@@ -165,7 +169,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                     onClick={() => document.getElementById('picture-upload')?.click()}
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    Upload Picture
+                    {t('worker.profile.modals.mainProfile.fields.profilePicture.upload')}
                   </Button>
                 </div>
               </div>
@@ -175,11 +179,11 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                 name="job"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Job Position</FormLabel>
+                    <FormLabel>{t('worker.profile.modals.mainProfile.fields.job.label')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a job position" />
+                          <SelectValue placeholder={t('worker.profile.modals.mainProfile.fields.job.placeholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -200,11 +204,11 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                 name="type_contract"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Work Schedule</FormLabel>
+                    <FormLabel>{t('worker.profile.modals.mainProfile.fields.workSchedule.label')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select work schedule" />
+                          <SelectValue placeholder={t('worker.profile.modals.mainProfile.fields.workSchedule.placeholder')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -225,7 +229,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                 name="languages"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Languages</FormLabel>
+                    <FormLabel>{t('worker.profile.modals.mainProfile.fields.languages.label')}</FormLabel>
                     <FormControl>
                       <ToggleGroup 
                         type="multiple"
@@ -255,7 +259,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Work Areas</FormLabel>
+                    <FormLabel>{t('worker.profile.modals.mainProfile.fields.workAreas.label')}</FormLabel>
                     <FormControl>
                       <ToggleGroup 
                         type="multiple"
@@ -289,7 +293,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
               onClick={form.handleSubmit(handleSubmit)}
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : "Save Changes"}
+              {isLoading ? t('common.button.saving') : t('common.button.saveChanges')}
             </Button>
           </div>
         </div>
