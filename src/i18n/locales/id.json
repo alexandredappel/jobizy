@@ -143,6 +143,56 @@
             "success": "Bagian tentang saya berhasil diperbarui",
             "error": "Gagal memperbarui bagian tentang saya"
           }
+        },
+        "education": {
+          "title": "Pendidikan",
+          "addButton": "Tambah Pendidikan",
+          "deleteButton": "Hapus",
+          "fields": {
+            "institution": {
+              "label": "Institusi",
+              "placeholder": "Masukkan nama institusi"
+            },
+            "degree": {
+              "label": "Gelar",
+              "placeholder": "Masukkan gelar"
+            },
+            "currentStudy": "Sedang Belajar",
+            "dates": {
+              "startDate": "Tanggal Mulai",
+              "endDate": "Tanggal Selesai",
+              "selectStart": "Pilih tanggal mulai",
+              "selectEnd": "Pilih tanggal selesai"
+            }
+          },
+          "validation": {
+            "title": "Error Validasi",
+            "requiredFields": "Harap isi semua kolom yang wajib diisi"
+          },
+          "unsavedChanges": {
+            "title": "Perubahan Belum Tersimpan",
+            "message": "Ada perubahan yang belum tersimpan. Apakah Anda yakin ingin menutup tanpa menyimpan?",
+            "cancel": "Batal",
+            "confirm": "Tutup tanpa menyimpan"
+          },
+          "toast": {
+            "deleteSuccess": {
+              "title": "Pendidikan dihapus",
+              "description": "Pendidikan berhasil dihapus"
+            },
+            "deleteError": {
+              "title": "Error",
+              "description": "Gagal menghapus pendidikan"
+            },
+            "saveSuccess": {
+              "title": "Berhasil",
+              "description": "Pendidikan berhasil diperbarui"
+            },
+            "saveError": {
+              "title": "Error",
+              "description": "Gagal menyimpan pendidikan"
+            }
+          }
         }
       },
       "sections": {
