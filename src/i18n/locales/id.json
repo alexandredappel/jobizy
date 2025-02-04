@@ -135,6 +135,50 @@
     },
     "profile": {
       "modals": {
+        "mainProfile": {
+          "title": "Edit Profil",
+          "fields": {
+            "profilePicture": {
+              "upload": "Unggah Foto"
+            },
+            "job": {
+              "label": "Posisi Pekerjaan",
+              "placeholder": "Pilih posisi pekerjaan"
+            },
+            "workSchedule": {
+              "label": "Jadwal Kerja",
+              "placeholder": "Pilih jadwal kerja"
+            },
+            "languages": {
+              "label": "Bahasa"
+            },
+            "workAreas": {
+              "label": "Area Kerja"
+            }
+          },
+          "toast": {
+            "image": {
+              "success": {
+                "title": "Berhasil",
+                "description": "Foto profil Anda berhasil diperbarui"
+              },
+              "error": {
+                "title": "Error",
+                "description": "Gagal mengunggah foto. Silakan coba lagi."
+              }
+            },
+            "profile": {
+              "success": {
+                "title": "Berhasil",
+                "description": "Profil Anda berhasil diperbarui"
+              },
+              "error": {
+                "title": "Error",
+                "description": "Gagal memperbarui profil. Silakan coba lagi."
+              }
+            }
+          }
+        },
         "aboutMe": {
           "title": "Tentang Saya",
           "placeholder": "Ceritakan tentang diri Anda",
