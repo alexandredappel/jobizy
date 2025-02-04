@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslatedConstants } from "@/hooks/useTranslatedConstants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -14,19 +15,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { JobType, WorkArea, Language } from "@/types/firebase.types";
+import { JOB_TYPES, LANGUAGES } from "@/utils/constants";
 import { CheckCircle2 } from "lucide-react";
-
-const JOB_TYPES: JobType[] = [
-  'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
-  'Gardener', 'Pool guy', 'Bartender', 'Seller'
-];
 
 const WORK_AREAS: WorkArea[] = [
   'Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 
   'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'
 ];
-
-const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
 type ContractType = 'Full time' | 'Part time';
 
@@ -45,10 +40,11 @@ const WorkerOnboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { translateJob, translateLanguage } = useTranslatedConstants();
   const [step, setStep] = useState(1);
   const [isCompleting, setIsCompleting] = useState(false);
   const [data, setData] = useState<OnboardingData>({
-    job: 'Waiter',
+    job: 'WAITER',
     location: [],
     languages: [],
     type_contract: 'Full time',
@@ -146,7 +142,7 @@ const WorkerOnboarding = () => {
                   <SelectContent>
                     {JOB_TYPES.map((job) => (
                       <SelectItem key={job} value={job}>
-                        {job}
+                        {translateJob(job)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -193,7 +189,7 @@ const WorkerOnboarding = () => {
                       aria-label={language}
                       className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                     >
-                      {language}
+                      {translateLanguage(language)}
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
