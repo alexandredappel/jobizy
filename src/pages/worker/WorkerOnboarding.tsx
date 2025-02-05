@@ -18,7 +18,7 @@ import { CheckCircle2 } from "lucide-react";
 
 const JOB_TYPES: JobType[] = [
   'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
-  'Gardener', 'Pool guy', 'Bartender', 'Seller'
+  'Gardener', 'Pool technician', 'Bartender', 'Seller'
 ];
 
 const WORK_AREAS: WorkArea[] = [
@@ -141,7 +141,9 @@ const WorkerOnboarding = () => {
                   onValueChange={(value: JobType) => setData({ ...data, job: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('worker.onboarding.steps.job.placeholder')} />
+                    <SelectValue>
+                      {data.job ? t(`jobs.${data.job.toUpperCase().replace(' ', '_')}`) : t('worker.onboarding.steps.job.placeholder')}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {JOB_TYPES.map((job) => (
@@ -190,7 +192,6 @@ const WorkerOnboarding = () => {
                     <ToggleGroupItem
                       key={language}
                       value={language}
-                      aria-label={t(`languages.${language.toUpperCase()}`)}
                       className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                     >
                       {t(`languages.${language.toUpperCase()}`)}
