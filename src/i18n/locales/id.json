@@ -426,5 +426,20 @@
         }
       }
     }
+  },
+  "jobs": {
+    "WAITER": "Pelayan",
+    "COOK": "Koki",
+    "CASHIER": "Kasir",
+    "MANAGER": "Manajer",
+    "HOUSEKEEPER": "Petugas Kebersihan",
+    "GARDENER": "Tukang Kebun",
+    "POOL_TECHNICIAN": "Teknisi Kolam",
+    "BARTENDER": "Bartender",
+    "SELLER": "Penjual"
+  },
+  "languages": {
+    "ENGLISH": "Bahasa Inggris",
+    "BAHASA": "Bahasa Indonesia"
   }
 }
