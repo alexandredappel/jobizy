@@ -189,7 +189,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                       <SelectContent>
                         {JOB_TYPES.map((job) => (
                           <SelectItem key={job} value={job}>
-                            {job}
+                            {t(`jobs.${job.toUpperCase()}`)}
                           </SelectItem>
                         ))}
                       </SelectContent>
