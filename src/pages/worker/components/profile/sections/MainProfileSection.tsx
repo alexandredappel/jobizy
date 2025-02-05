@@ -22,7 +22,7 @@ const JOB_ICONS: Record<string, React.ElementType> = {
   'Manager': User2,
   'Housekeeper': Home,
   'Gardener': Flower2,
-  'Pool guy': Droplets,
+  'Pool technician': Droplets,
   'Bartender': Wine,
   'Seller': ShoppingBag,
 };
@@ -51,11 +51,25 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
     await onSave({ availability_status: checked });
   };
 
-  const renderBadges = (values: string[]) => {
+  const renderBadges = (values: string[], type: 'contract' | 'languages' | 'location') => {
     if (!values?.length) return [t('worker.profile.sections.main.noneValue')];
-    if (values.length <= 2) return values.map(value => t(`languages.${value.toUpperCase()}`));
+    
+    const transformValue = (value: string) => {
+      switch (type) {
+        case 'languages':
+          return t(`languages.${value.toUpperCase()}`);
+        case 'contract':
+          return t(`contracts.${value.toUpperCase()}`);
+        case 'location':
+          return value;
+        default:
+          return value;
+      }
+    };
+
+    if (values.length <= 2) return values.map(transformValue);
     return [
-      ...values.slice(0, 2).map(value => t(`languages.${value.toUpperCase()}`)),
+      ...values.slice(0, 2).map(transformValue),
       t('worker.profile.sections.main.othersCount', { count: values.length - 2 })
     ];
   };
@@ -64,17 +78,20 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
     {
       label: t('worker.profile.sections.main.workSchedule'),
       icon: Clock,
-      values: [profile.type_contract]
+      values: [profile.type_contract],
+      type: 'contract' as const
     },
     {
       label: t('worker.profile.sections.main.languages'),
       icon: Globe,
-      values: profile.languages || []
+      values: profile.languages || [],
+      type: 'languages' as const
     },
     {
       label: t('worker.profile.sections.main.location'),
       icon: MapPin,
-      values: profile.location || []
+      values: profile.location || [],
+      type: 'location' as const
     }
   ];
 
@@ -194,7 +211,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                     <Icon className="h-6 w-6 mb-2" />
                     <span className="mb-3">{section.label}</span>
                     <div className="flex flex-wrap gap-2 justify-center">
-                      {renderBadges(section.values).map((value, index) => (
+                      {renderBadges(section.values, section.type).map((value, index) => (
                         <Badge 
                           key={index}
                           className="text-sm bg-white text-primary px-4 py-2 rounded-lg"
