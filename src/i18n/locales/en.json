@@ -434,7 +434,7 @@
     "MANAGER": "Manager",
     "HOUSEKEEPER": "Housekeeper",
     "GARDENER": "Gardener",
-    "POOL_GUY": "Pool Technician",
+    "POOL_TECHNICIAN": "Pool Technician",
     "BARTENDER": "Bartender",
     "SELLER": "Seller"
   },
