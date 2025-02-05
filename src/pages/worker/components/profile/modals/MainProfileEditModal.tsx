@@ -33,13 +33,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from 'react-i18next';
 import type { WorkerUser, JobType, Language, WorkArea } from '@/types/firebase.types';
 
-const JOB_TYPES: JobType[] = ['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'];
+const JOB_TYPES: JobType[] = ['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool technician', 'Bartender', 'Seller'];
 const LANGUAGES: Language[] = ['English', 'Bahasa'];
 const WORK_AREAS: WorkArea[] = ['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'];
 const CONTRACT_TYPES = ['Full time', 'Part time'] as const;
 
 const formSchema = z.object({
-  job: z.enum(['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool guy', 'Bartender', 'Seller'] as const),
+  job: z.enum(['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool technician', 'Bartender', 'Seller'] as const),
   type_contract: z.enum(['Full time', 'Part time'] as const),
   languages: z.array(z.enum(['English', 'Bahasa'] as const)).default([]),
   location: z.array(z.enum(['Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'] as const)).default([]),
