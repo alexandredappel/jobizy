@@ -150,8 +150,6 @@ const WorkerOnboarding = () => {
                       </SelectItem>
                     ))}
                   </SelectContent>
-                    ))}
-                  </SelectContent>
                 </Select>
               </div>
             )}
