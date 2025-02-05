@@ -426,5 +426,20 @@
         }
       }
     }
+  },
+  "jobs": {
+    "WAITER": "Waiter",
+    "COOK": "Cook",
+    "CASHIER": "Cashier",
+    "MANAGER": "Manager",
+    "HOUSEKEEPER": "Housekeeper",
+    "GARDENER": "Gardener",
+    "POOL_TECHNICIAN": "Pool Technician",
+    "BARTENDER": "Bartender",
+    "SELLER": "Seller"
+  },
+  "languages": {
+    "ENGLISH": "English",
+    "BAHASA": "Indonesian"
   }
 }
