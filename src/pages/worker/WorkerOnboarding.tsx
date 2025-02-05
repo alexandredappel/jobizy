@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useTranslatedConstants } from "@/hooks/useTranslatedConstants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -18,8 +17,8 @@ import { JobType, WorkArea, Language } from "@/types/firebase.types";
 import { CheckCircle2 } from "lucide-react";
 
 const JOB_TYPES: JobType[] = [
-  'WAITER', 'COOK', 'CASHIER', 'MANAGER', 'HOUSEKEEPER',
-  'GARDENER', 'POOL_GUY', 'BARTENDER', 'SELLER'
+  'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
+  'Gardener', 'Pool guy', 'Bartender', 'Seller'
 ];
 
 const WORK_AREAS: WorkArea[] = [
@@ -27,7 +26,7 @@ const WORK_AREAS: WorkArea[] = [
   'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'
 ];
 
-const LANGUAGES: Language[] = ['ENGLISH', 'BAHASA'];
+const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
 type ContractType = 'Full time' | 'Part time';
 
@@ -46,7 +45,6 @@ const WorkerOnboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  const { translateJob, translateLanguage } = useTranslatedConstants();
   const [step, setStep] = useState(1);
   const [isCompleting, setIsCompleting] = useState(false);
   const [data, setData] = useState<OnboardingData>({
@@ -148,7 +146,7 @@ const WorkerOnboarding = () => {
                   <SelectContent>
                     {JOB_TYPES.map((job) => (
                       <SelectItem key={job} value={job}>
-                        {translateJob(job)}
+                        {job}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -192,10 +190,10 @@ const WorkerOnboarding = () => {
                     <ToggleGroupItem
                       key={language}
                       value={language}
-                      aria-label={translateLanguage(language)}
+                      aria-label={language}
                       className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                     >
-                      {translateLanguage(language)}
+                      {language}
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
