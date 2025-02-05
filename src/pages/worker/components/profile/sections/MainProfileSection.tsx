@@ -53,8 +53,11 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
 
   const renderBadges = (values: string[]) => {
     if (!values?.length) return [t('worker.profile.sections.main.noneValue')];
-    if (values.length <= 2) return values;
-    return [...values.slice(0, 2), t('worker.profile.sections.main.othersCount', { count: values.length - 2 })];
+    if (values.length <= 2) return values.map(value => t(`languages.${value.toUpperCase()}`));
+    return [
+      ...values.slice(0, 2).map(value => t(`languages.${value.toUpperCase()}`)),
+      t('worker.profile.sections.main.othersCount', { count: values.length - 2 })
+    ];
   };
 
   const badgeSections = [
@@ -180,7 +183,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
             
             <Badge className="mt-2 px-6 py-3 flex items-center gap-2 bg-secondary/10 text-secondary hover:bg-secondary/20 text-lg">
               {profile.job && JOB_ICONS[profile.job] && React.createElement(JOB_ICONS[profile.job], { className: "h-5 w-5" })}
-              {profile.job}
+              {profile.job && t(`jobs.${profile.job.toUpperCase().replace(' ', '_')}`)}
             </Badge>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full p-6">
