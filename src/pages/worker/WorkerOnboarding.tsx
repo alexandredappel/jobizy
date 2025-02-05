@@ -146,8 +146,10 @@ const WorkerOnboarding = () => {
                   <SelectContent>
                     {JOB_TYPES.map((job) => (
                       <SelectItem key={job} value={job}>
-                        {job}
+                        {t(`jobs.${job.toUpperCase().replace(' ', '_')}`)}
                       </SelectItem>
+                    ))}
+                  </SelectContent>
                     ))}
                   </SelectContent>
                 </Select>
@@ -190,10 +192,10 @@ const WorkerOnboarding = () => {
                     <ToggleGroupItem
                       key={language}
                       value={language}
-                      aria-label={language}
+                      aria-label={t(`languages.${language.toUpperCase()}`)}
                       className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                     >
-                      {language}
+                      {t(`languages.${language.toUpperCase()}`)}
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
