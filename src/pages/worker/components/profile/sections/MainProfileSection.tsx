@@ -54,22 +54,19 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
   const renderBadges = (values: string[], type: 'contract' | 'languages' | 'location') => {
     if (!values?.length) return [t('worker.profile.sections.main.noneValue')];
     
-    const transformValue = (value: string) => {
-      switch (type) {
-        case 'languages':
-          return t(`languages.${value.toUpperCase()}`);
-        case 'contract':
-          return t(`contracts.${value.toUpperCase()}`);
-        case 'location':
-          return value;
-        default:
-          return value;
-      }
-    };
-
-    if (values.length <= 2) return values.map(transformValue);
+    // Ne traduire que les langues
+    if (type === 'languages') {
+      if (values.length <= 2) return values.map(value => t(`languages.${value.toUpperCase()}`));
+      return [
+        ...values.slice(0, 2).map(value => t(`languages.${value.toUpperCase()}`)),
+        t('worker.profile.sections.main.othersCount', { count: values.length - 2 })
+      ];
+    }
+    
+    // Pour les autres types (contract et location), afficher tel quel
+    if (values.length <= 2) return values;
     return [
-      ...values.slice(0, 2).map(transformValue),
+      ...values.slice(0, 2),
       t('worker.profile.sections.main.othersCount', { count: values.length - 2 })
     ];
   };
