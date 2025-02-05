@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
+export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool technician' | 'Bartender' | 'Seller';
 
 export type BusinessType = 'Restaurant' | 'Hotel' | 'Property Management' | 'Guest House' | 'Club';
 
