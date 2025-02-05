@@ -244,7 +244,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
                             aria-label={language}
                             className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
                           >
-                            {language}
+                            {t(`languages.${language.toUpperCase()}`)}
                           </ToggleGroupItem>
                         ))}
                       </ToggleGroup>
