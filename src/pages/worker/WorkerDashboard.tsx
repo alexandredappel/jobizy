@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useWorkerProfile } from "@/hooks/useWorkerProfile";
@@ -48,20 +49,42 @@ const WorkerDashboard = () => {
   };
 
   const calculateProfileCompletion = () => {
-    if (!profile) return 0;
-    
-    const requirements = [
-      !!profile.about_me,
-      experience.length > 0,
-      education.length > 0,
-      profile.languages?.length > 0,
-      !!profile.job,
-      profile.location?.length > 0,
-      !!profile.profile_picture_url,
-    ];
+    if (!profile) return 50; // Base completion of 50%
 
-    const completed = requirements.filter(Boolean).length;
-    return Math.round((completed / requirements.length) * 100);
+    let completion = 50; // Start with base completion
+
+    // Photo de profil (20%)
+    if (profile.profile_picture_url) {
+      completion += 20;
+    }
+
+    // Expérience professionnelle (10%)
+    if (experience.length > 0) {
+      completion += 10;
+    }
+
+    // Formation (10%)
+    if (education.length > 0) {
+      completion += 10;
+    }
+
+    // À propos (10%)
+    if (profile.about_me) {
+      completion += 10;
+    }
+
+    // Langues (5%)
+    if (profile.languages?.length > 0) {
+      completion += 5;
+    }
+
+    // Zones de travail (5%)
+    if (profile.location?.length > 0) {
+      completion += 5;
+    }
+
+    // Ensure completion doesn't exceed 100%
+    return Math.min(100, completion);
   };
 
   if (profileLoading || expLoading || eduLoading || !profile) {
