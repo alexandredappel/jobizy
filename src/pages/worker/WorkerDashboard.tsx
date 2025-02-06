@@ -52,8 +52,8 @@ const WorkerDashboard = () => {
     
     const requirements = [
       !!profile.about_me,
-      profile.work_history?.length > 0,
-      profile.education?.length > 0,
+      experience.length > 0,
+      education.length > 0,
       profile.languages?.length > 0,
       !!profile.job,
       profile.location?.length > 0,
@@ -93,6 +93,8 @@ const WorkerDashboard = () => {
         onEditExperience={() => setShowExperienceModal(true)}
         onEditEducation={() => setShowEducationModal(true)}
         onEditAboutMe={() => setShowAboutMeModal(true)}
+        experience={experience}
+        education={education}
       />
 
       <MainProfileEditModal

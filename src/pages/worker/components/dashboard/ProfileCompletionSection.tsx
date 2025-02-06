@@ -7,7 +7,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
 import { Briefcase, GraduationCap, Camera, MessageCircle } from "lucide-react";
-import { WorkerUser } from "@/types/firebase.types";
+import { WorkerUser, Education, WorkExperience } from "@/types/firebase.types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProfileCompletionSectionProps {
@@ -17,6 +17,8 @@ interface ProfileCompletionSectionProps {
   onEditExperience: () => void;
   onEditEducation: () => void;
   onEditAboutMe: () => void;
+  experience: WorkExperience[];
+  education: Education[];
 }
 
 const ProfileCompletionSection = ({
@@ -26,6 +28,8 @@ const ProfileCompletionSection = ({
   onEditExperience,
   onEditEducation,
   onEditAboutMe,
+  experience,
+  education,
 }: ProfileCompletionSectionProps) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
@@ -51,21 +55,21 @@ const ProfileCompletionSection = ({
     },
     {
       title: t('worker.dashboard.profile.cards.experience.title'),
-      description: profile.work_history?.length === 0
+      description: experience.length === 0
         ? t('worker.dashboard.profile.cards.experience.empty')
         : t('worker.dashboard.profile.cards.experience.update'),
       icon: Briefcase,
       onClick: onEditExperience,
-      isComplete: profile.work_history?.length > 0,
+      isComplete: experience.length > 0,
     },
     {
       title: t('worker.dashboard.profile.cards.education.title'),
-      description: profile.education?.length === 0
+      description: education.length === 0
         ? t('worker.dashboard.profile.cards.education.empty')
         : t('worker.dashboard.profile.cards.education.update'),
       icon: GraduationCap,
       onClick: onEditEducation,
-      isComplete: profile.education?.length > 0,
+      isComplete: education.length > 0,
     },
   ];
 
