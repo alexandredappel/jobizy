@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
@@ -77,10 +76,15 @@ const ProfileCompletionCard = ({
             })}
           </p>
         ) : (
-          <p className={cn(
-            "text-muted-foreground",
-            isComplete && "text-primary-foreground/80"
-          )}>{description}</p>
+          <div className="space-y-2">
+            <p className={cn(
+              "text-muted-foreground",
+              isComplete && "text-primary-foreground/80"
+            )}>{description}</p>
+            <p className="text-primary text-sm">
+              {t(`worker.dashboard.profile.cards.${fieldType}.incentive`)}
+            </p>
+          </div>
         )}
       </div>
       <Button 
