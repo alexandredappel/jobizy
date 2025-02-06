@@ -89,7 +89,7 @@ const ProfileCompletionCard = ({
       </div>
       <Button 
         onClick={onClick} 
-        variant={isComplete ? "secondary" : "default"}
+        variant={isComplete ? "secondary"}
         className="mt-4"
       >
         {isComplete 
