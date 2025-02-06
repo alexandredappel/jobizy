@@ -109,7 +109,12 @@
           "title": "Profile Completion",
           "subtitle": "Complete Your Profile",
           "button": "Complete",
-          "update": "Update"
+          "update": "Update",
+          "next": "Next step to complete your profile:",
+          "all": "Complete these additional steps:",
+          "complete": "Profile completed!",
+          "complete.description": "Your profile is now fully optimized for recruiters!",
+          "remaining": "{{percentage}}% left to complete"
         },
         "cards": {
           "completed": "Great job! You already added your {{field}} to your profile",

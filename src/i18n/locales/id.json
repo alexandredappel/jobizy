@@ -109,7 +109,12 @@
           "title": "Kelengkapan Profil",
           "subtitle": "Lengkapi Profil Anda",
           "button": "Lengkapi",
-          "update": "Perbarui"
+          "update": "Perbarui",
+          "next": "Langkah selanjutnya untuk melengkapi profil:",
+          "all": "Lengkapi langkah tambahan ini:",
+          "complete": "Profil lengkap!",
+          "complete.description": "Profil Anda sekarang sepenuhnya dioptimalkan untuk perekrut!",
+          "remaining": "{{percentage}}% lagi untuk selesai"
         },
         "cards": {
           "completed": "Bagus! Anda sudah menambahkan {{field}} ke profil Anda",
