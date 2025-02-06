@@ -1,8 +1,10 @@
+
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { GB, ID } from 'country-flag-icons/react/3x2';
 
 const LanguageSelector = () => {
   const { i18n } = useTranslation();
@@ -30,9 +32,13 @@ const LanguageSelector = () => {
       variant="link"
       size="sm"
       onClick={toggleLanguage}
-      className="text-primary hover:text-primary/80"
+      className="text-primary hover:text-primary/80 p-0"
     >
-      {i18n.language === 'en' ? 'ID' : 'EN'}
+      {i18n.language === 'en' ? (
+        <ID className="w-6 h-4" title="Switch to Indonesian" />
+      ) : (
+        <GB className="w-6 h-4" title="Switch to English" />
+      )}
     </Button>
   );
 };
