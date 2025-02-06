@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/carousel";
 import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
-import { UserCircle, Briefcase, GraduationCap, Languages } from "lucide-react";
+import { UserCircle, Briefcase, GraduationCap } from "lucide-react";
 import { WorkerUser } from "@/types/firebase.types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -55,15 +55,6 @@ const ProfileCompletionSection = ({
       icon: GraduationCap,
       onClick: onEditEducation,
       isComplete: profile.education?.length > 0,
-    },
-    {
-      title: t('worker.dashboard.profile.cards.language.title'),
-      description: profile.languages?.length === 0
-        ? t('worker.dashboard.profile.cards.language.empty')
-        : t('worker.dashboard.profile.cards.language.update'),
-      icon: Languages,
-      onClick: onEditProfile,
-      isComplete: profile.languages?.length > 0,
     },
   ];
 
