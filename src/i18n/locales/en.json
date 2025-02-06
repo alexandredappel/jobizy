@@ -107,9 +107,17 @@
         "completion": {
           "title": "Profile Completion",
           "subtitle": "Complete Your Profile",
-          "button": "Complete Now"
+          "button": "Complete",
+          "update": "Update"
         },
         "cards": {
+          "completed": "Great job! You already added your {{field}} to your profile",
+          "fields": {
+            "picture": "profile picture",
+            "about": "description",
+            "experience": "work experience",
+            "education": "education"
+          },
           "picture": {
             "title": "Profile Picture",
             "empty": "Add a profile picture to make your profile more professional",

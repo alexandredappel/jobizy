@@ -107,9 +107,17 @@
         "completion": {
           "title": "Kelengkapan Profil",
           "subtitle": "Lengkapi Profil Anda",
-          "button": "Lengkapi Sekarang"
+          "button": "Lengkapi",
+          "update": "Perbarui"
         },
         "cards": {
+          "completed": "Bagus! Anda sudah menambahkan {{field}} ke profil Anda",
+          "fields": {
+            "picture": "foto profil",
+            "about": "deskripsi",
+            "experience": "pengalaman kerja",
+            "education": "pendidikan"
+          },
           "picture": {
             "title": "Foto Profil",
             "empty": "Tambahkan foto profil untuk membuat profil Anda lebih profesional",
