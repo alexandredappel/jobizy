@@ -81,7 +81,7 @@ const ProfileCompletionCard = ({
               "text-muted-foreground",
               isComplete && "text-primary-foreground/80"
             )}>{description}</p>
-            <p className="text-primary text-sm">
+            <p className="text-primary text-foreground">
               {t(`worker.dashboard.profile.cards.${fieldType}.incentive`)}
             </p>
           </div>
