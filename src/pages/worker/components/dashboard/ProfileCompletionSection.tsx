@@ -122,9 +122,6 @@ const ProfileCompletionSection = ({
               <h3 className="text-lg font-medium mb-4">
                 {t('worker.dashboard.profile.completion.next')}
               </h3>
-              <ProfileCompletionCard {...nextStep} />
-              {nextStep.incentive && (
-              )}
             </div>
           ) : null}
         </div>
@@ -159,9 +156,6 @@ const ProfileCompletionSection = ({
               >
                 <ProfileCompletionCard {...card} />
                 {!card.isComplete && card.incentive && (
-                  <p className="mt-3 text-sm text-accent">
-                    {card.incentive}
-                  </p>
                 )}
               </div>
             ))}
