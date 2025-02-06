@@ -2,28 +2,67 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { cn } from "@/lib/utils";
 
 interface ProfileCompletionCardProps {
   title: string;
   description: string;
   icon: LucideIcon;
   onClick: () => void;
+  isComplete: boolean;
 }
 
-const ProfileCompletionCard = ({ title, description, icon: Icon, onClick }: ProfileCompletionCardProps) => {
+const ProfileCompletionCard = ({ 
+  title, 
+  description, 
+  icon: Icon, 
+  onClick, 
+  isComplete 
+}: ProfileCompletionCardProps) => {
   const { t } = useTranslation();
 
   return (
-    <Card className="p-6 h-full flex flex-col justify-between">
+    <Card className={cn(
+      "p-6 h-full flex flex-col justify-between transition-colors duration-300",
+      isComplete && "bg-primary text-primary-foreground"
+    )}>
       <div className="space-y-4">
-        <div className="h-12 w-12 rounded-[24px] bg-primary/10 flex items-center justify-center">
-          <Icon className="h-6 w-6 text-primary" />
+        <div className={cn(
+          "h-12 w-12 rounded-[24px] flex items-center justify-center",
+          isComplete ? "bg-primary-foreground/10" : "bg-primary/10"
+        )}>
+          <Icon className={cn(
+            "h-6 w-6",
+            isComplete ? "text-primary-foreground" : "text-primary"
+          )} />
         </div>
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-muted-foreground">{description}</p>
+        <h3 className={cn(
+          "text-lg font-semibold",
+          isComplete && "text-primary-foreground"
+        )}>{title}</h3>
+        
+        {isComplete ? (
+          <p className="text-primary-foreground/90">
+            {t('worker.dashboard.profile.cards.completed', {
+              field: t(`worker.dashboard.profile.cards.fields.${title.toLowerCase()}`)
+            })}
+          </p>
+        ) : (
+          <p className={cn(
+            "text-muted-foreground",
+            isComplete && "text-primary-foreground/80"
+          )}>{description}</p>
+        )}
       </div>
-      <Button onClick={onClick} className="mt-4">
-        {t('worker.dashboard.profile.completion.button')}
+      <Button 
+        onClick={onClick} 
+        variant={isComplete ? "secondary" : "default"}
+        className="mt-4"
+      >
+        {isComplete 
+          ? t('worker.dashboard.profile.completion.update')
+          : t('worker.dashboard.profile.completion.button')
+        }
       </Button>
     </Card>
   );
