@@ -1,14 +1,15 @@
 import { useTranslation } from 'react-i18next';
+import { WorkerUser, Education, WorkExperience } from "@/types/firebase.types";
+import { Card } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
 import { Briefcase, GraduationCap, Camera, MessageCircle } from "lucide-react";
-import { WorkerUser, Education, WorkExperience } from "@/types/firebase.types";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CircularProgress } from "@/components/ui/circularprogress";
 
 interface ProfileCompletionSectionProps {
   profile: WorkerUser;
@@ -73,18 +74,46 @@ const ProfileCompletionSection = ({
     },
   ];
 
+  const nextStep = completionCards.find(card => !card.isComplete);
+
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">{t('worker.dashboard.profile.completion.title')}</h2>
-          <span className="text-lg font-medium">{completionPercentage}%</span>
+    <div className="space-y-8">
+      {/* Section de progression */}
+      <Card className="p-6">
+        <div className={`flex ${isMobile ? 'flex-col space-y-6' : 'space-x-6'}`}>
+          {/* Colonne de gauche - Cercle de progression */}
+          <div className={`flex items-center justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
+            <CircularProgress value={completionPercentage} />
+          </div>
+
+          {/* Colonne de droite - Carte de la prochaine étape */}
+          <div className={`flex flex-col justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
+            {completionPercentage === 100 ? (
+              <div className="text-center space-y-2">
+                <h3 className="text-xl font-semibold text-green-600">
+                  {t('worker.dashboard.profile.completion.complete')}
+                </h3>
+                <p className="text-muted-foreground">
+                  {t('worker.dashboard.profile.completion.complete.description')}
+                </p>
+              </div>
+            ) : nextStep ? (
+              <div>
+                <h3 className="text-lg font-medium mb-4">
+                  {t('worker.dashboard.profile.completion.next')}
+                </h3>
+                <ProfileCompletionCard {...nextStep} />
+              </div>
+            ) : null}
+          </div>
         </div>
-        <Progress value={completionPercentage} className="h-2" />
-      </div>
-      
+      </Card>
+
+      {/* Section de toutes les cards */}
       <div>
-        <h3 className="text-lg font-medium mb-4">{t('worker.dashboard.profile.completion.subtitle')}</h3>
+        <h3 className="text-lg font-medium mb-4">
+          {t('worker.dashboard.profile.completion.all')}
+        </h3>
         
         {isMobile ? (
           <Carousel
