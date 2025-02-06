@@ -1,4 +1,3 @@
-
 {
   "common": {
     "button": {
@@ -8,6 +7,15 @@
     "toast": {
       "success": "Success",
       "error": "Error"
+    },
+    "navigation": {
+      "dashboard": "Dashboard",
+      "search": "Search",
+      "profile": "Profile",
+      "logout": "Logout",
+      "logoutConfirm": "Are you sure you want to logout?",
+      "logoutDescription": "You will need to sign in again to access your account.",
+      "cancel": "Cancel"
     }
   },
   "auth": {

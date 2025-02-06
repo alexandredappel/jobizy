@@ -1,7 +1,9 @@
+
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +39,7 @@ export const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const authService = new AuthService();
 
   // Hide navigation on auth pages and worker onboarding
@@ -54,13 +57,13 @@ export const Navigation = () => {
     try {
       await authService.signOut();
       toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
+        title: t('common.toast.success'),
+        description: t('auth.signOut.success'),
       });
       navigate('/signin');
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('common.toast.error'),
         description: error.message,
         variant: "destructive",
       });
@@ -94,32 +97,32 @@ export const Navigation = () => {
                 <NavigationLink 
                   to={getDashboardLink()} 
                   icon={<Home className="w-4 h-4" />}
-                  label="Dashboard"
+                  label={t('common.navigation.dashboard')}
                 />
                 
                 {user.role === 'business' && (
                   <NavigationLink 
                     to="/business/search" 
                     icon={<Search className="w-4 h-4" />}
-                    label="Search"
+                    label={t('common.navigation.search')}
                   />
                 )}
                 
                 <NavigationLink 
                   to={getProfileLink()} 
                   icon={<UserIcon className="w-4 h-4" />}
-                  label="Profile"
+                  label={t('common.navigation.profile')}
                 />
               </>
             ) : (
               <>
                 <NavigationLink 
                   to="/signin" 
-                  label="Sign In"
+                  label={t('auth.signIn')}
                 />
                 <NavigationLink 
                   to="/signup" 
-                  label="Sign Up"
+                  label={t('auth.signUp.title')}
                 />
               </>
             )}
@@ -135,19 +138,19 @@ export const Navigation = () => {
                     className="text-secondary hover:text-primary flex items-center gap-2 justify-start p-0 w-full"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
+                    <span>{t('common.navigation.logout')}</span>
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                    <AlertDialogTitle>{t('common.navigation.logoutConfirm')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      You will need to sign in again to access your account.
+                      {t('common.navigation.logoutDescription')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout}>Logout</AlertDialogAction>
+                    <AlertDialogCancel>{t('common.navigation.cancel')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleLogout}>{t('common.navigation.logout')}</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -192,14 +195,14 @@ export const Navigation = () => {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                    <AlertDialogTitle>{t('common.navigation.logoutConfirm')}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      You will need to sign in again to access your account.
+                      {t('common.navigation.logoutDescription')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout}>Logout</AlertDialogAction>
+                    <AlertDialogCancel>{t('common.navigation.cancel')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleLogout}>{t('common.navigation.logout')}</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -208,11 +211,11 @@ export const Navigation = () => {
             <>
               <NavigationLink 
                 to="/signin" 
-                label="Sign In"
+                label={t('auth.signIn')}
               />
               <NavigationLink 
                 to="/signup" 
-                label="Sign Up"
+                label={t('auth.signUp.title')}
               />
             </>
           )}

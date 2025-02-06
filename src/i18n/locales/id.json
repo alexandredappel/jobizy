@@ -1,4 +1,3 @@
-
 {
   "common": {
     "button": {
@@ -8,6 +7,15 @@
     "toast": {
       "success": "Berhasil",
       "error": "Error"
+    },
+    "navigation": {
+      "dashboard": "Dasbor",
+      "search": "Cari",
+      "profile": "Profil",
+      "logout": "Keluar",
+      "logoutConfirm": "Apakah Anda yakin ingin keluar?",
+      "logoutDescription": "Anda perlu masuk kembali untuk mengakses akun Anda.",
+      "cancel": "Batal"
     }
   },
   "auth": {
