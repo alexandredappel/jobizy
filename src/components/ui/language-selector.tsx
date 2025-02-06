@@ -35,9 +35,9 @@ const LanguageSelector = () => {
       className="text-primary hover:text-primary/80 p-0"
     >
       {i18n.language === 'en' ? (
-        <ID className="w-6 h-4" title="Switch to Indonesian" />
+        <ID className="w-8 h-6" title="Switch to Indonesian" />
       ) : (
-        <GB className="w-6 h-4" title="Switch to English" />
+        <GB className="w-8 h-6" title="Switch to English" />
       )}
     </Button>
   );
