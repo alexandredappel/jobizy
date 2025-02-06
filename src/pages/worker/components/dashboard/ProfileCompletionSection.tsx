@@ -91,7 +91,7 @@ const ProfileCompletionSection = ({
             <CircularProgress 
               value={completionPercentage} 
               strokeWidth={12}
-              className="[&_circle:last-child]:stroke-accent [&_span]:text-accent"
+              className="[&_circle:first-child]:stroke-[#5FC435] [&_circle:last-child]:stroke-secondary [&_span]:text-[#5FC435]"
             />
             {remainingPercentage > 0 && (
               <p className="text-center text-sm text-muted-foreground mt-2">
