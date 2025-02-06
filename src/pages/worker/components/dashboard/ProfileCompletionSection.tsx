@@ -1,4 +1,3 @@
-
 import { useTranslation } from 'react-i18next';
 import { WorkerUser, Education, WorkExperience } from "@/types/firebase.types";
 import { Card } from "@/components/ui/card";
@@ -96,7 +95,7 @@ const ProfileCompletionSection = ({
             <CircularProgress 
               value={completionPercentage} 
               strokeWidth={12}
-              className="[&_circle:secondary]:stroke-accent [&_circle:last-child]:stroke-secondary [&_span]:text-[#5FC435]"
+              className="[&_circle:first-child]:stroke-accent [&_circle:last-child]:stroke-primary [&_span]:text-primary"
             />
             {remainingPercentage > 0 && (
               <p className="text-center text-sm text-muted-foreground mt-2">
