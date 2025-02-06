@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
@@ -12,6 +13,7 @@ interface ProfileCompletionCardProps {
   icon: LucideIcon;
   onClick: () => void;
   isComplete: boolean;
+  fieldType: 'picture' | 'about' | 'experience' | 'education';
 }
 
 const ProfileCompletionCard = ({ 
@@ -19,7 +21,8 @@ const ProfileCompletionCard = ({
   description, 
   icon: Icon, 
   onClick, 
-  isComplete 
+  isComplete,
+  fieldType
 }: ProfileCompletionCardProps) => {
   const { t } = useTranslation();
   const [showConfetti, setShowConfetti] = useState(false);
@@ -31,21 +34,6 @@ const ProfileCompletionCard = ({
       return () => clearTimeout(timer);
     }
   }, [isComplete]);
-
-  const getFieldKey = (title: string) => {
-    switch (title.toLowerCase()) {
-      case 'profile picture':
-        return 'picture';
-      case 'about me':
-        return 'about';
-      case 'add work experience':
-        return 'experience';
-      case 'add education':
-        return 'education';
-      default:
-        return title.toLowerCase();
-    }
-  };
 
   return (
     <Card className={cn(
@@ -85,7 +73,7 @@ const ProfileCompletionCard = ({
         {isComplete ? (
           <p className="text-primary-foreground/90">
             {t('worker.dashboard.profile.cards.completed', {
-              field: t(`worker.dashboard.profile.cards.fields.${getFieldKey(title)}`)
+              field: t(`worker.dashboard.profile.cards.${fieldType}.title`).toLowerCase()
             })}
           </p>
         ) : (

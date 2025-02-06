@@ -1,3 +1,4 @@
+
 import { useTranslation } from 'react-i18next';
 import { WorkerUser, Education, WorkExperience } from "@/types/firebase.types";
 import { Card } from "@/components/ui/card";
@@ -45,6 +46,7 @@ const ProfileCompletionSection = ({
       onClick: onEditProfile,
       isComplete: !!profile.profile_picture_url,
       incentive: t('worker.dashboard.profile.cards.picture.incentive'),
+      fieldType: 'picture' as const,
     },
     {
       title: t('worker.dashboard.profile.cards.about.title'),
@@ -55,6 +57,7 @@ const ProfileCompletionSection = ({
       onClick: onEditAboutMe,
       isComplete: !!profile.about_me,
       incentive: t('worker.dashboard.profile.cards.about.incentive'),
+      fieldType: 'about' as const,
     },
     {
       title: t('worker.dashboard.profile.cards.experience.title'),
@@ -65,6 +68,7 @@ const ProfileCompletionSection = ({
       onClick: onEditExperience,
       isComplete: experience.length > 0,
       incentive: t('worker.dashboard.profile.cards.experience.incentive'),
+      fieldType: 'experience' as const,
     },
     {
       title: t('worker.dashboard.profile.cards.education.title'),
@@ -75,6 +79,7 @@ const ProfileCompletionSection = ({
       onClick: onEditEducation,
       isComplete: education.length > 0,
       incentive: t('worker.dashboard.profile.cards.education.incentive'),
+      fieldType: 'education' as const,
     },
   ];
 
