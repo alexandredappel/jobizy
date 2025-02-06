@@ -49,9 +49,9 @@ const WorkerDashboard = () => {
   };
 
   const calculateProfileCompletion = () => {
-    if (!profile) return 50; // Base completion of 50%
+    if (!profile) return 0;
 
-    let completion = 50; // Start with base completion
+    let completion = 0;
 
     // Photo de profil (20%)
     if (profile.profile_picture_url) {
@@ -73,14 +73,19 @@ const WorkerDashboard = () => {
       completion += 10;
     }
 
-    // Langues (5%)
+    // Langues (10%)
     if (profile.languages?.length > 0) {
-      completion += 5;
+      completion += 10;
     }
 
-    // Zones de travail (5%)
+    // Zones de travail (10%)
     if (profile.location?.length > 0) {
-      completion += 5;
+      completion += 10;
+    }
+
+    // Numéro de téléphone (30%)
+    if (profile.phone_number) {
+      completion += 30;
     }
 
     // Ensure completion doesn't exceed 100%
