@@ -10,6 +10,7 @@ import ProfileCompletionSection from "./components/dashboard/ProfileCompletionSe
 import MainProfileEditModal from "./components/profile/modals/MainProfileEditModal";
 import WorkExperienceModal from "./components/profile/modals/WorkExperienceModal";
 import EducationModal from "./components/profile/modals/EducationModal";
+import AboutMeModal from "./components/profile/modals/AboutMeModal";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const WorkerDashboard = () => {
@@ -21,6 +22,7 @@ const WorkerDashboard = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showExperienceModal, setShowExperienceModal] = useState(false);
   const [showEducationModal, setShowEducationModal] = useState(false);
+  const [showAboutMeModal, setShowAboutMeModal] = useState(false);
 
   const handleToggleAvailability = async (value: boolean) => {
     try {
@@ -86,6 +88,7 @@ const WorkerDashboard = () => {
         onEditProfile={() => setShowProfileModal(true)}
         onEditExperience={() => setShowExperienceModal(true)}
         onEditEducation={() => setShowEducationModal(true)}
+        onEditAboutMe={() => setShowAboutMeModal(true)}
       />
 
       <MainProfileEditModal
@@ -106,6 +109,13 @@ const WorkerDashboard = () => {
         open={showEducationModal}
         onClose={() => setShowEducationModal(false)}
         education={profile.education || []}
+        userId={profile.id}
+      />
+
+      <AboutMeModal
+        open={showAboutMeModal}
+        onClose={() => setShowAboutMeModal(false)}
+        aboutMe={profile.about_me || ''}
         userId={profile.id}
       />
     </>
