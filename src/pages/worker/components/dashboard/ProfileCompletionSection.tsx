@@ -1,3 +1,4 @@
+
 import { useTranslation } from 'react-i18next';
 import { WorkerUser, Education, WorkExperience } from "@/types/firebase.types";
 import { Card } from "@/components/ui/card";
@@ -139,8 +140,6 @@ const ProfileCompletionSection = ({
                 <CarouselItem key={index} className="pl-4 basis-[85%]">
                   <div className={`transition-all duration-500 ${card.isComplete ? 'animate-fade-in' : ''}`}>
                     <ProfileCompletionCard {...card} />
-                    {!card.isComplete && card.incentive && (
-                    )}
                   </div>
                 </CarouselItem>
               ))}
@@ -154,8 +153,6 @@ const ProfileCompletionSection = ({
                 className={`transition-all duration-500 ${card.isComplete ? 'animate-fade-in' : ''}`}
               >
                 <ProfileCompletionCard {...card} />
-                {!card.isComplete && card.incentive && (
-                )}
               </div>
             ))}
           </div>
