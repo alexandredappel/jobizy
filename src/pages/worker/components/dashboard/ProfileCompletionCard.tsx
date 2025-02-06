@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from 'react';
+import Confetti from 'react-confetti';
 
 interface ProfileCompletionCardProps {
   title: string;
@@ -20,33 +22,51 @@ const ProfileCompletionCard = ({
   isComplete 
 }: ProfileCompletionCardProps) => {
   const { t } = useTranslation();
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (isComplete) {
+      setShowConfetti(true);
+      const timer = setTimeout(() => setShowConfetti(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isComplete]);
 
   const getFieldKey = (title: string) => {
-    // Handle both English and Indonesian titles
-    switch (title) {
-      case 'Profile Picture':
-      case 'Foto Profil':
+    switch (title.toLowerCase()) {
+      case 'profile picture':
         return 'picture';
-      case 'About Me':
-      case 'Tentang Saya':
+      case 'about me':
         return 'about';
-      case 'Add Work Experience':
-      case 'Tambah Pengalaman Kerja':
+      case 'add work experience':
         return 'experience';
-      case 'Add Education':
-      case 'Tambah Pendidikan':
+      case 'add education':
         return 'education';
       default:
-        console.warn('Unhandled title in getFieldKey:', title);
-        return 'default';
+        return title.toLowerCase();
     }
   };
 
   return (
     <Card className={cn(
-      "p-6 h-full flex flex-col justify-between transition-colors duration-300",
+      "p-6 h-full flex flex-col justify-between transition-colors duration-300 relative overflow-hidden",
       isComplete && "bg-primary text-primary-foreground"
     )}>
+      {showConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={100}
+          gravity={0.3}
+          colors={[
+            '#439915', // primary
+            '#5EC435', // secondary
+            '#D2FF28', // accent
+            '#FFFFFF', // white
+          ]}
+        />
+      )}
       <div className="space-y-4">
         <div className={cn(
           "h-12 w-12 rounded-[24px] flex items-center justify-center",
