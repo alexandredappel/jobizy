@@ -21,6 +21,21 @@ const ProfileCompletionCard = ({
 }: ProfileCompletionCardProps) => {
   const { t } = useTranslation();
 
+  const getFieldKey = (title: string) => {
+    switch (title.toLowerCase()) {
+      case 'profile picture':
+        return 'picture';
+      case 'about me':
+        return 'about';
+      case 'add work experience':
+        return 'experience';
+      case 'add education':
+        return 'education';
+      default:
+        return title.toLowerCase();
+    }
+  };
+
   return (
     <Card className={cn(
       "p-6 h-full flex flex-col justify-between transition-colors duration-300",
@@ -44,7 +59,7 @@ const ProfileCompletionCard = ({
         {isComplete ? (
           <p className="text-primary-foreground/90">
             {t('worker.dashboard.profile.cards.completed', {
-              field: t(`worker.dashboard.profile.cards.fields.${title.toLowerCase()}`)
+              field: t(`worker.dashboard.profile.cards.fields.${getFieldKey(title)}`)
             })}
           </p>
         ) : (
