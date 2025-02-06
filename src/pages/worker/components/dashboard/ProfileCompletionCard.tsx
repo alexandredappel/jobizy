@@ -22,17 +22,23 @@ const ProfileCompletionCard = ({
   const { t } = useTranslation();
 
   const getFieldKey = (title: string) => {
-    switch (title.toLowerCase()) {
-      case 'profile picture':
+    // Handle both English and Indonesian titles
+    switch (title) {
+      case 'Profile Picture':
+      case 'Foto Profil':
         return 'picture';
-      case 'about me':
+      case 'About Me':
+      case 'Tentang Saya':
         return 'about';
-      case 'add work experience':
+      case 'Add Work Experience':
+      case 'Tambah Pengalaman Kerja':
         return 'experience';
-      case 'add education':
+      case 'Add Education':
+      case 'Tambah Pendidikan':
         return 'education';
       default:
-        return title.toLowerCase();
+        console.warn('Unhandled title in getFieldKey:', title);
+        return 'default';
     }
   };
 
