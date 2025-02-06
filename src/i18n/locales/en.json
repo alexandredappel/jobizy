@@ -1,3 +1,4 @@
+
 {
   "common": {
     "button": {
@@ -121,12 +122,14 @@
           "picture": {
             "title": "Profile Picture",
             "empty": "Add a profile picture to make your profile more professional",
-            "update": "Update your profile picture"
+            "update": "Update your profile picture",
+            "incentive": "Profiles with photos get contacted 3x more often"
           },
           "about": {
             "title": "About Me",
             "empty": "Add a description about yourself to help businesses know you better",
-            "update": "Update your description"
+            "update": "Update your description",
+            "incentive": "Express your personality to stand out from others"
           },
           "main": {
             "title": "Complete Your Profile",
@@ -136,12 +139,14 @@
           "experience": {
             "title": "Add Work Experience",
             "empty": "Add your work experience to showcase your expertise",
-            "update": "Update your work experience"
+            "update": "Update your work experience",
+            "incentive": "Show your journey to build trust with recruiters"
           },
           "education": {
             "title": "Add Education",
             "empty": "Add your education background to highlight your qualifications",
-            "update": "Update your education details"
+            "update": "Update your education details",
+            "incentive": "Displaying your education shows your learning ability"
           },
           "language": {
             "title": "Language Skills",

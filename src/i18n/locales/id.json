@@ -1,3 +1,4 @@
+
 {
   "common": {
     "button": {
@@ -121,12 +122,14 @@
           "picture": {
             "title": "Foto Profil",
             "empty": "Tambahkan foto profil untuk membuat profil Anda lebih profesional",
-            "update": "Perbarui foto profil Anda"
+            "update": "Perbarui foto profil Anda",
+            "incentive": "Profil dengan foto dihubungi 3x lebih sering"
           },
           "about": {
             "title": "Tentang Saya",
             "empty": "Tambahkan deskripsi tentang diri Anda untuk membantu bisnis mengenal Anda lebih baik",
-            "update": "Perbarui deskripsi Anda"
+            "update": "Perbarui deskripsi Anda",
+            "incentive": "Tunjukkan kepribadian Anda untuk tampil berbeda dari yang lain"
           },
           "main": {
             "title": "Lengkapi Profil Anda",
@@ -136,12 +139,14 @@
           "experience": {
             "title": "Tambah Pengalaman Kerja",
             "empty": "Tambahkan pengalaman kerja Anda untuk menunjukkan keahlian Anda",
-            "update": "Perbarui pengalaman kerja Anda"
+            "update": "Perbarui pengalaman kerja Anda",
+            "incentive": "Tunjukkan perjalanan karir Anda untuk membangun kepercayaan perekrut"
           },
           "education": {
             "title": "Tambah Pendidikan",
             "empty": "Tambahkan latar belakang pendidikan Anda untuk menyoroti kualifikasi Anda",
-            "update": "Perbarui detail pendidikan Anda"
+            "update": "Perbarui detail pendidikan Anda",
+            "incentive": "Menampilkan pendidikan Anda menunjukkan kemampuan belajar"
           },
           "language": {
             "title": "Kemampuan Bahasa",
