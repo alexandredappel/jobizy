@@ -110,6 +110,16 @@
           "button": "Complete Now"
         },
         "cards": {
+          "picture": {
+            "title": "Profile Picture",
+            "empty": "Add a profile picture to make your profile more professional",
+            "update": "Update your profile picture"
+          },
+          "about": {
+            "title": "About Me",
+            "empty": "Add a description about yourself to help businesses know you better",
+            "update": "Update your description"
+          },
           "main": {
             "title": "Complete Your Profile",
             "empty": "Add a description about yourself to help businesses know you better",

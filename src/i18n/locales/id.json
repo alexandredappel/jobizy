@@ -110,6 +110,16 @@
           "button": "Lengkapi Sekarang"
         },
         "cards": {
+          "picture": {
+            "title": "Foto Profil",
+            "empty": "Tambahkan foto profil untuk membuat profil Anda lebih profesional",
+            "update": "Perbarui foto profil Anda"
+          },
+          "about": {
+            "title": "Tentang Saya",
+            "empty": "Tambahkan deskripsi tentang diri Anda untuk membantu bisnis mengenal Anda lebih baik",
+            "update": "Perbarui deskripsi Anda"
+          },
           "main": {
             "title": "Lengkapi Profil Anda",
             "empty": "Tambahkan deskripsi tentang diri Anda untuk membantu bisnis mengenal Anda lebih baik",

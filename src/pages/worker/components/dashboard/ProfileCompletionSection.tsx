@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/carousel";
 import { Progress } from "@/components/ui/progress";
 import ProfileCompletionCard from "./ProfileCompletionCard";
-import { Briefcase, GraduationCap } from "lucide-react";
+import { Briefcase, GraduationCap, Camera, MessageCircle } from "lucide-react";
 import { WorkerUser } from "@/types/firebase.types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -16,6 +16,7 @@ interface ProfileCompletionSectionProps {
   onEditProfile: () => void;
   onEditExperience: () => void;
   onEditEducation: () => void;
+  onEditAboutMe: () => void;
 }
 
 const ProfileCompletionSection = ({
@@ -24,11 +25,30 @@ const ProfileCompletionSection = ({
   onEditProfile,
   onEditExperience,
   onEditEducation,
+  onEditAboutMe,
 }: ProfileCompletionSectionProps) => {
   const isMobile = useIsMobile();
   const { t } = useTranslation();
 
   const completionCards = [
+    {
+      title: t('worker.dashboard.profile.cards.picture.title'),
+      description: !profile.profile_picture_url
+        ? t('worker.dashboard.profile.cards.picture.empty')
+        : t('worker.dashboard.profile.cards.picture.update'),
+      icon: Camera,
+      onClick: onEditProfile,
+      isComplete: !!profile.profile_picture_url,
+    },
+    {
+      title: t('worker.dashboard.profile.cards.about.title'),
+      description: !profile.about_me
+        ? t('worker.dashboard.profile.cards.about.empty')
+        : t('worker.dashboard.profile.cards.about.update'),
+      icon: MessageCircle,
+      onClick: onEditAboutMe,
+      isComplete: !!profile.about_me,
+    },
     {
       title: t('worker.dashboard.profile.cards.experience.title'),
       description: profile.work_history?.length === 0
@@ -78,7 +98,7 @@ const ProfileCompletionSection = ({
             </CarouselContent>
           </Carousel>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
             {completionCards.map((card, index) => (
               <ProfileCompletionCard key={index} {...card} />
             ))}
