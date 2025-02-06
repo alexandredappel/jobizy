@@ -124,9 +124,6 @@ const ProfileCompletionSection = ({
               </h3>
               <ProfileCompletionCard {...nextStep} />
               {nextStep.incentive && (
-                <p className="mt-3 text-sm text-accent">
-                  {nextStep.incentive}
-                </p>
               )}
             </div>
           ) : null}
@@ -147,9 +144,6 @@ const ProfileCompletionSection = ({
                   <div className={`transition-all duration-500 ${card.isComplete ? 'animate-fade-in' : ''}`}>
                     <ProfileCompletionCard {...card} />
                     {!card.isComplete && card.incentive && (
-                      <p className="mt-3 text-sm text-accent">
-                        {card.incentive}
-                      </p>
                     )}
                   </div>
                 </CarouselItem>
