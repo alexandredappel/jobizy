@@ -118,10 +118,11 @@ const ProfileCompletionSection = ({
               </p>
             </div>
           ) : nextStep ? (
-            <div className="animate-fade-in">
-              <h3 className="text-lg font-medium mb-4">
+            <div className="animate-fade-in space-y-4">
+              <h3 className="text-lg font-medium">
                 {t('worker.dashboard.profile.completion.next')}
               </h3>
+              <ProfileCompletionCard {...nextStep} />
             </div>
           ) : null}
         </div>
