@@ -44,6 +44,7 @@ const ProfileCompletionSection = ({
       icon: Camera,
       onClick: onEditProfile,
       isComplete: !!profile.profile_picture_url,
+      incentive: t('worker.dashboard.profile.cards.picture.incentive'),
     },
     {
       title: t('worker.dashboard.profile.cards.about.title'),
@@ -53,6 +54,7 @@ const ProfileCompletionSection = ({
       icon: MessageCircle,
       onClick: onEditAboutMe,
       isComplete: !!profile.about_me,
+      incentive: t('worker.dashboard.profile.cards.about.incentive'),
     },
     {
       title: t('worker.dashboard.profile.cards.experience.title'),
@@ -62,6 +64,7 @@ const ProfileCompletionSection = ({
       icon: Briefcase,
       onClick: onEditExperience,
       isComplete: experience.length > 0,
+      incentive: t('worker.dashboard.profile.cards.experience.incentive'),
     },
     {
       title: t('worker.dashboard.profile.cards.education.title'),
@@ -71,45 +74,59 @@ const ProfileCompletionSection = ({
       icon: GraduationCap,
       onClick: onEditEducation,
       isComplete: education.length > 0,
+      incentive: t('worker.dashboard.profile.cards.education.incentive'),
     },
   ];
 
   const nextStep = completionCards.find(card => !card.isComplete);
+  const remainingPercentage = 100 - completionPercentage;
 
   return (
-    <div className="space-y-8">
+    <Card className="p-6 space-y-8">
       {/* Section de progression */}
-      <Card className="p-6">
-        <div className={`flex ${isMobile ? 'flex-col space-y-6' : 'space-x-6'}`}>
-          {/* Colonne de gauche - Cercle de progression */}
-          <div className={`flex items-center justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
-            <div className={`transition-all duration-500 ${completionPercentage === 100 ? 'scale-110' : ''}`}>
-              <CircularProgress value={completionPercentage} />
-            </div>
-          </div>
-
-          {/* Colonne de droite - Carte de la prochaine étape */}
-          <div className={`flex flex-col justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
-            {completionPercentage === 100 ? (
-              <div className="text-center space-y-2 animate-fade-in">
-                <h3 className="text-xl font-semibold text-green-600">
-                  {t('worker.dashboard.profile.completion.complete')}
-                </h3>
-                <p className="text-muted-foreground">
-                  {t('worker.dashboard.profile.completion.complete.description')}
-                </p>
-              </div>
-            ) : nextStep ? (
-              <div className="animate-fade-in">
-                <h3 className="text-lg font-medium mb-4">
-                  {t('worker.dashboard.profile.completion.next')}
-                </h3>
-                <ProfileCompletionCard {...nextStep} />
-              </div>
-            ) : null}
+      <div className={`flex ${isMobile ? 'flex-col space-y-6' : 'space-x-6'}`}>
+        {/* Colonne de gauche - Cercle de progression */}
+        <div className={`flex items-center justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
+          <div className={`transition-all duration-500 ${completionPercentage === 100 ? 'scale-110' : ''}`}>
+            <CircularProgress 
+              value={completionPercentage} 
+              strokeWidth={12}
+              className="[&_circle:last-child]:stroke-accent [&_span]:text-accent"
+            />
+            {remainingPercentage > 0 && (
+              <p className="text-center text-sm text-muted-foreground mt-2">
+                {t('worker.dashboard.profile.completion.remaining', { percentage: remainingPercentage })}
+              </p>
+            )}
           </div>
         </div>
-      </Card>
+
+        {/* Colonne de droite - Carte de la prochaine étape */}
+        <div className={`flex flex-col justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
+          {completionPercentage === 100 ? (
+            <div className="text-center space-y-2 animate-fade-in">
+              <h3 className="text-xl font-semibold text-green-600">
+                {t('worker.dashboard.profile.completion.complete')}
+              </h3>
+              <p className="text-muted-foreground">
+                {t('worker.dashboard.profile.completion.complete.description')}
+              </p>
+            </div>
+          ) : nextStep ? (
+            <div className="animate-fade-in">
+              <h3 className="text-lg font-medium mb-4">
+                {t('worker.dashboard.profile.completion.next')}
+              </h3>
+              <ProfileCompletionCard {...nextStep} />
+              {nextStep.incentive && (
+                <p className="mt-3 text-sm text-accent">
+                  {nextStep.incentive}
+                </p>
+              )}
+            </div>
+          ) : null}
+        </div>
+      </div>
 
       {/* Section de toutes les cards */}
       <div>
@@ -118,17 +135,17 @@ const ProfileCompletionSection = ({
         </h3>
         
         {isMobile ? (
-          <Carousel
-            opts={{
-              align: "start",
-              dragFree: true,
-            }}
-          >
+          <Carousel opts={{ align: "start", dragFree: true }}>
             <CarouselContent className="-ml-4">
               {completionCards.map((card, index) => (
                 <CarouselItem key={index} className="pl-4 basis-[85%]">
                   <div className={`transition-all duration-500 ${card.isComplete ? 'animate-fade-in' : ''}`}>
                     <ProfileCompletionCard {...card} />
+                    {!card.isComplete && card.incentive && (
+                      <p className="mt-3 text-sm text-accent">
+                        {card.incentive}
+                      </p>
+                    )}
                   </div>
                 </CarouselItem>
               ))}
@@ -142,12 +159,17 @@ const ProfileCompletionSection = ({
                 className={`transition-all duration-500 ${card.isComplete ? 'animate-fade-in' : ''}`}
               >
                 <ProfileCompletionCard {...card} />
+                {!card.isComplete && card.incentive && (
+                  <p className="mt-3 text-sm text-accent">
+                    {card.incentive}
+                  </p>
+                )}
               </div>
             ))}
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 };
 
