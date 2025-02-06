@@ -83,13 +83,15 @@ const ProfileCompletionSection = ({
         <div className={`flex ${isMobile ? 'flex-col space-y-6' : 'space-x-6'}`}>
           {/* Colonne de gauche - Cercle de progression */}
           <div className={`flex items-center justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
-            <CircularProgress value={completionPercentage} />
+            <div className={`transition-all duration-500 ${completionPercentage === 100 ? 'scale-110' : ''}`}>
+              <CircularProgress value={completionPercentage} />
+            </div>
           </div>
 
           {/* Colonne de droite - Carte de la prochaine étape */}
           <div className={`flex flex-col justify-center ${isMobile ? 'w-full' : 'w-1/2'}`}>
             {completionPercentage === 100 ? (
-              <div className="text-center space-y-2">
+              <div className="text-center space-y-2 animate-fade-in">
                 <h3 className="text-xl font-semibold text-green-600">
                   {t('worker.dashboard.profile.completion.complete')}
                 </h3>
@@ -98,7 +100,7 @@ const ProfileCompletionSection = ({
                 </p>
               </div>
             ) : nextStep ? (
-              <div>
+              <div className="animate-fade-in">
                 <h3 className="text-lg font-medium mb-4">
                   {t('worker.dashboard.profile.completion.next')}
                 </h3>
@@ -125,7 +127,9 @@ const ProfileCompletionSection = ({
             <CarouselContent className="-ml-4">
               {completionCards.map((card, index) => (
                 <CarouselItem key={index} className="pl-4 basis-[85%]">
-                  <ProfileCompletionCard {...card} />
+                  <div className={`transition-all duration-500 ${card.isComplete ? 'animate-fade-in' : ''}`}>
+                    <ProfileCompletionCard {...card} />
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
@@ -133,7 +137,12 @@ const ProfileCompletionSection = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
             {completionCards.map((card, index) => (
-              <ProfileCompletionCard key={index} {...card} />
+              <div 
+                key={index}
+                className={`transition-all duration-500 ${card.isComplete ? 'animate-fade-in' : ''}`}
+              >
+                <ProfileCompletionCard {...card} />
+              </div>
             ))}
           </div>
         )}
