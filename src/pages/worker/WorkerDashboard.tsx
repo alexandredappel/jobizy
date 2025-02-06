@@ -12,10 +12,14 @@ import WorkExperienceModal from "./components/profile/modals/WorkExperienceModal
 import EducationModal from "./components/profile/modals/EducationModal";
 import AboutMeModal from "./components/profile/modals/AboutMeModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useWorkerEducation } from "@/hooks/useWorkerEducation";
+import { useWorkerExperience } from "@/hooks/useWorkerExperience";
 
 const WorkerDashboard = () => {
   const { user } = useAuth();
-  const { profile, isLoading, updateProfile } = useWorkerProfile(user?.id || '');
+  const { profile, isLoading: profileLoading, updateProfile } = useWorkerProfile(user?.id || '');
+  const { experience, isLoading: expLoading } = useWorkerExperience(user?.id || '');
+  const { education, isLoading: eduLoading } = useWorkerEducation(user?.id || '');
   const { toast } = useToast();
   const { t } = useTranslation();
   
@@ -60,7 +64,7 @@ const WorkerDashboard = () => {
     return Math.round((completed / requirements.length) * 100);
   };
 
-  if (isLoading || !profile) {
+  if (profileLoading || expLoading || eduLoading || !profile) {
     return createDashboardLayout(
       <div className="space-y-8">
         <Skeleton className="h-12 w-2/3" />
@@ -101,14 +105,14 @@ const WorkerDashboard = () => {
       <WorkExperienceModal
         open={showExperienceModal}
         onClose={() => setShowExperienceModal(false)}
-        experiences={profile.work_history || []}
+        experiences={experience}
         userId={profile.id}
       />
 
       <EducationModal
         open={showEducationModal}
         onClose={() => setShowEducationModal(false)}
-        education={profile.education || []}
+        education={education}
         userId={profile.id}
       />
 
