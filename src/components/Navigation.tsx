@@ -160,7 +160,7 @@ export const Navigation = () => {
       </nav>
 
       {/* Mobile menu - horizontal bottom */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-md py-4 px-6">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white shadow-md py-4 px-6 z-50">
         <div className="flex justify-around items-center">
           {user ? (
             <>
