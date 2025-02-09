@@ -1,7 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { BriefcaseBusiness, User } from "lucide-react";
 
 const Home = () => {
   return (
@@ -31,131 +31,63 @@ const Home = () => {
             The quick and easy way to connect with hospitality businesses
           </p>
           
-          {/* Search Box */}
-          <div className="bg-white p-2 rounded-full shadow-lg flex gap-2 max-w-xl mx-auto">
-            <div className="flex-1 flex items-center gap-3 pl-6">
-              <Search className="w-5 h-5 text-primary/50" />
-              <input 
-                type="text"
-                placeholder="Search job positions..."
-                className="w-full bg-transparent outline-none text-primary"
-              />
+          <Button className="rounded-full px-8 text-lg">
+            Sign Up Now
+          </Button>
+        </div>
+      </section>
+
+      {/* Two Column Section */}
+      <section className="bg-white py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Business Column */}
+            <div className="text-center p-8 bg-[#F2FCE2] rounded-3xl">
+              <BriefcaseBusiness className="w-16 h-16 mx-auto mb-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary mb-8">
+                The talent you need, when you need it
+              </h2>
+              <ul className="space-y-4 text-left">
+                {[
+                  "Advanced candidate search",
+                  "Direct contact with available workers",
+                  "Emergency replacement solution",
+                  "Precise filters (location, languages, experience)"
+                ].map((point) => (
+                  <li key={point} className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                    <span className="text-lg text-secondary/80">{point}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button className="mt-8 rounded-full">
+                Hire Talent
+              </Button>
             </div>
-            <Button className="rounded-full px-8">
-              Get Started
-            </Button>
-          </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-16 text-primary">
-            Our Services
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-12">
-            {[
-              {
-                title: "Direct Messaging",
-                price: "$0/day",
-                description: "Connect directly with potential employers",
-                color: "bg-pink-100",
-              },
-              {
-                title: "Profile Management",
-                price: "$0/day",
-                description: "Create and manage your professional profile",
-                color: "bg-blue-100",
-              },
-              {
-                title: "Job Alerts",
-                price: "$0/day",
-                description: "Get notified about new opportunities",
-                color: "bg-green-100",
-              }
-            ].map((service) => (
-              <div 
-                key={service.title}
-                className={`rounded-3xl ${service.color} p-8 text-center hover:scale-105 transition-transform duration-300`}
-              >
-                <h3 className="text-2xl font-bold mb-4 text-primary">
-                  {service.title}
-                </h3>
-                <p className="text-lg font-semibold text-secondary mb-2">
-                  {service.price}
-                </p>
-                <p className="text-secondary/80">
-                  {service.description}
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-6 rounded-full"
-                >
-                  Learn More
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-12">
-            {[
-              {
-                title: "Free Profile Creation",
-                description: "Create your professional profile and start connecting with businesses in minutes"
-              },
-              {
-                title: "Exceptional Support",
-                description: "Our team is here to help you every step of the way with 24/7 support"
-              },
-              {
-                title: "Modern Platform",
-                description: "Use our easy-to-use platform to manage your job search efficiently"
-              }
-            ].map((benefit) => (
-              <div key={benefit.title} className="text-center">
-                <h3 className="text-xl font-bold mb-4 text-primary">
-                  {benefit.title}
-                </h3>
-                <p className="text-secondary/80">
-                  {benefit.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center mb-16 text-primary">
-            People Love Jobizy
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div 
-                key={i}
-                className="bg-[#FFF8E7] p-8 rounded-3xl"
-              >
-                <div className="flex gap-1 mb-4">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} className="text-yellow-400">★</span>
-                  ))}
-                </div>
-                <p className="text-secondary/80 mb-4">
-                  "Great platform! Found my dream job in Bali within days. The process was smooth and the support team was very helpful."
-                </p>
-                <p className="font-semibold text-primary">- Happy User</p>
-              </div>
-            ))}
+            {/* Worker Column */}
+            <div className="text-center p-8 bg-[#FEF7CD] rounded-3xl">
+              <User className="w-16 h-16 mx-auto mb-6 text-primary" />
+              <h2 className="text-3xl font-bold text-primary mb-8">
+                Find your next hospitality job in Bali
+              </h2>
+              <ul className="space-y-4 text-left">
+                {[
+                  "Showcase your skills",
+                  "Control your availability",
+                  "Direct employer contact",
+                  "Island-wide opportunities"
+                ].map((point) => (
+                  <li key={point} className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-primary rounded-full"></span>
+                    <span className="text-lg text-secondary/80">{point}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button className="mt-8 rounded-full">
+                Find Jobs
+              </Button>
+            </div>
           </div>
         </div>
       </section>
