@@ -79,17 +79,20 @@ const Home = () => {
           <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
             For Every Type of Business
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory">
             {[
-              { type: 'Restaurant', icon: Coffee },
-              { type: 'Hotel', icon: Building2 },
-              { type: 'Property Management', icon: Building },
-              { type: 'Guest House', icon: HomeIcon },
-              { type: 'Club', icon: GlassWater }
-            ].map(({ type, icon: Icon }) => (
-              <div key={type} className="flex flex-col items-center p-6 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300">
-                <Icon className="w-12 h-12 text-[#439915] mb-4" />
-                <h3 className="text-lg font-semibold text-[#1A1F2C]">{type}</h3>
+              { type: 'Restaurant', icon: Coffee, description: 'From casual dining to fine restaurants' },
+              { type: 'Hotel', icon: Building2, description: 'Luxury and boutique hotels' },
+              { type: 'Property Management', icon: Building, description: 'Villa and property services' },
+              { type: 'Guest House', icon: HomeIcon, description: 'Cozy and welcoming stays' },
+              { type: 'Club', icon: GlassWater, description: 'Nightlife and entertainment venues' }
+            ].map(({ type, icon: Icon, description }) => (
+              <div key={type} className="flex-none w-full md:w-1/3 snap-center">
+                <div className="flex flex-col items-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300 h-full">
+                  <Icon className="w-16 h-16 text-[#439915] mb-6" />
+                  <h3 className="text-2xl font-semibold text-[#1A1F2C] mb-4">{type}</h3>
+                  <p className="text-[#8E9196] text-center">{description}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -102,20 +105,23 @@ const Home = () => {
           <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
             Available Positions
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory">
             {[
-              { type: 'Waiter', icon: Coffee },
-              { type: 'Cook', icon: ChefHat },
-              { type: 'Cashier', icon: BadgeEuro },
-              { type: 'Manager', icon: UsersRound },
-              { type: 'Housekeeper', icon: HomeIcon },
-              { type: 'Gardener', icon: Hammer },
-              { type: 'Bartender', icon: Beer },
-              { type: 'Seller', icon: ShoppingCart }
-            ].map(({ type, icon: Icon }) => (
-              <div key={type} className="flex flex-col items-center p-6 bg-white rounded-xl hover:shadow-lg transition-all duration-300">
-                <Icon className="w-12 h-12 text-[#439915] mb-4" />
-                <h3 className="text-lg font-semibold text-[#1A1F2C]">{type}</h3>
+              { type: 'Waiter', icon: Coffee, description: 'Front of house service professionals' },
+              { type: 'Cook', icon: ChefHat, description: 'Kitchen and culinary experts' },
+              { type: 'Cashier', icon: BadgeEuro, description: 'Payment and transaction handling' },
+              { type: 'Manager', icon: UsersRound, description: 'Team leadership and operations' },
+              { type: 'Housekeeper', icon: HomeIcon, description: 'Cleaning and maintenance' },
+              { type: 'Gardener', icon: Hammer, description: 'Landscape and garden care' },
+              { type: 'Bartender', icon: Beer, description: 'Beverage service specialists' },
+              { type: 'Seller', icon: ShoppingCart, description: 'Retail and sales professionals' }
+            ].map(({ type, icon: Icon, description }) => (
+              <div key={type} className="flex-none w-full md:w-1/3 snap-center">
+                <div className="flex flex-col items-center p-8 bg-white rounded-xl hover:shadow-lg transition-all duration-300 h-full">
+                  <Icon className="w-16 h-16 text-[#439915] mb-6" />
+                  <h3 className="text-2xl font-semibold text-[#1A1F2C] mb-4">{type}</h3>
+                  <p className="text-[#8E9196] text-center">{description}</p>
+                </div>
               </div>
             ))}
           </div>
