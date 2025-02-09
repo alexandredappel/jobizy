@@ -124,7 +124,7 @@ const Home = () => {
               </h2>
               <ul className="space-y-4 text-left">
                 {[
-                  "Showcase your skills",
+                  "Bonjour Thomas",
                   "Control your availability",
                   "Direct employer contact",
                   "Island-wide opportunities"
