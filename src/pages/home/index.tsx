@@ -41,7 +41,7 @@ const Home = () => {
           </div>
           <div className="relative hidden md:block">
             <img 
-              src="https://firebasestorage.googleapis.com/v0/b/jobizy-8a101.appspot.com/o/UX%2FBartender.svg?alt=media&token=65142b2e-b111-4185-aaad-c2b20dd1328d"
+              src="https://firebasestorage.googleapis.com/v0/b/jobizy-8a101.appspot.com/o/UX%2FBartender.png?alt=media"
               alt="Bartender illustration"
               className="w-full h-auto min-h-[400px] object-contain animate-fade-in"
               onError={(e) => {
