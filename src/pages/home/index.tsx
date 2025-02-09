@@ -1,6 +1,25 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BriefcaseBusiness, User, Restaurant, Hotel, Building, Home, Wine, ChefHat, Coffee, BadgeEuro, UsersRound, Hammer, Cocktail, ShoppingCart } from "lucide-react";
+import { 
+  BriefcaseBusiness, 
+  User, 
+  Building2, 
+  Building, 
+  HomeIcon, 
+  GlassWater, 
+  ChefHat, 
+  Coffee, 
+  BadgeEuro, 
+  UsersRound, 
+  Hammer, 
+  Beer, 
+  ShoppingCart,
+  Sparkles,
+  LayoutGrid,
+  Signal,
+  Shield
+} from "lucide-react";
 
 const Home = () => {
   return (
@@ -53,11 +72,11 @@ const Home = () => {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
             {[
-              { type: 'Restaurant', icon: Restaurant },
-              { type: 'Hotel', icon: Hotel },
+              { type: 'Restaurant', icon: Coffee },
+              { type: 'Hotel', icon: Building2 },
               { type: 'Property Management', icon: Building },
-              { type: 'Guest House', icon: Home },
-              { type: 'Club', icon: Wine }
+              { type: 'Guest House', icon: HomeIcon },
+              { type: 'Club', icon: GlassWater }
             ].map(({ type, icon: Icon }) => (
               <div key={type} className="flex flex-col items-center p-6 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300">
                 <Icon className="w-12 h-12 text-[#439915] mb-4" />
@@ -80,9 +99,9 @@ const Home = () => {
               { type: 'Cook', icon: ChefHat },
               { type: 'Cashier', icon: BadgeEuro },
               { type: 'Manager', icon: UsersRound },
-              { type: 'Housekeeper', icon: Home },
+              { type: 'Housekeeper', icon: HomeIcon },
               { type: 'Gardener', icon: Hammer },
-              { type: 'Bartender', icon: Cocktail },
+              { type: 'Bartender', icon: Beer },
               { type: 'Seller', icon: ShoppingCart }
             ].map(({ type, icon: Icon }) => (
               <div key={type} className="flex flex-col items-center p-6 bg-white rounded-xl hover:shadow-lg transition-all duration-300">
@@ -152,25 +171,25 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
-              <Zap className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
+              <Sparkles className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Find in a few clicks</h3>
               <p className="text-[#8E9196]">Quick and efficient matching</p>
             </div>
 
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
-              <Layout className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
+              <LayoutGrid className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Intuitive interface</h3>
               <p className="text-[#8E9196]">Easy to use platform</p>
             </div>
 
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
-              <Wifi className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
+              <Signal className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Available offline</h3>
               <p className="text-[#8E9196]">Work even without internet</p>
             </div>
 
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
-              <ShieldCheck className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
+              <Shield className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Verified profiles</h3>
               <p className="text-[#8E9196]">Trusted community</p>
             </div>
