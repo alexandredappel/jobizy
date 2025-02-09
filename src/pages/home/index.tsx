@@ -27,17 +27,26 @@ const Home = () => {
 
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-6 pt-12 pb-24 relative">
-        <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-6xl md:text-7xl font-bold text-primary mb-6 animate-fade-in">
-            Find Your Next Job in Bali
-          </h1>
-          <p className="text-xl md:text-2xl text-secondary/80 mb-12">
-            The quick and easy way to connect with hospitality businesses
-          </p>
-          
-          <Button className="rounded-full px-8 text-lg hover:scale-105 transition-transform">
-            Sign Up Now
-          </Button>
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div className="text-center md:text-left">
+            <h1 className="text-6xl md:text-7xl font-bold text-primary mb-6 animate-fade-in">
+              Find Your Next Job in Bali
+            </h1>
+            <p className="text-xl md:text-2xl text-secondary/80 mb-12">
+              The quick and easy way to connect with hospitality businesses
+            </p>
+            
+            <Button className="rounded-full px-8 text-lg hover:scale-105 transition-transform">
+              Sign Up Now
+            </Button>
+          </div>
+          <div className="hidden md:block">
+            <img 
+              src="https://firebasestorage.googleapis.com/v0/b/jobizy-8a101.appspot.com/o/UX%2FBartender.svg?alt=media&token=65142b2e-b111-4185-aaad-c2b20dd1328d"
+              alt="Bartender illustration"
+              className="w-full h-auto max-w-md mx-auto animate-fade-in"
+            />
+          </div>
         </div>
       </section>
 
