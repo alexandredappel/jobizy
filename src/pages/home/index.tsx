@@ -73,31 +73,11 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Action Card - Using existing card style */}
+          {/* Action Button */}
           <div className="max-w-2xl mx-auto">
-            <div className="card">
-              <div className="grid grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">I am a</label>
-                  <select className="input w-full p-3">
-                    <option>Worker</option>
-                    <option>Business</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Looking for</label>
-                  <select className="input w-full p-3">
-                    <option>Restaurant Jobs</option>
-                    <option>Hotel Jobs</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-              </div>
-              
-              <Button className="w-full py-6 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90">
-                Get Started
-              </Button>
-            </div>
+            <Button className="w-full py-6 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90">
+              Sign Up Now
+            </Button>
           </div>
         </div>
       </main>
@@ -176,4 +156,3 @@ const Home = () => {
 };
 
 export default Home;
-
