@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 
 export const RotatingText = ({ words }: { words: string[] }) => {
   const [index, setIndex] = useState(0);
-  const [previousIndex, setPreviousIndex] = useState(0);
   const [width, setWidth] = useState<number>(0);
   const measureRef = useRef<HTMLSpanElement>(null);
   
@@ -18,15 +17,15 @@ export const RotatingText = ({ words }: { words: string[] }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPreviousIndex(index);
       setIndex((current) => (current + 1) % words.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [words.length, index]);
+  }, [words.length]);
 
   const getTransform = (i: number) => {
-    if (i === index) return 'translateY(0%)';
+    if (i === index) return 'translateY(0)';
+    if (i === ((index - 1 + words.length) % words.length)) return 'translateY(-100%)';
     return 'translateY(100%)';
   };
 
