@@ -14,14 +14,14 @@ import { BusinessType, WorkArea, JobType, Language } from "@/types/firebase.type
 import { CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const BUSINESS_TYPES: BusinessType[] = ['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'];
+const BUSINESS_TYPES: BusinessType[] = ['restaurant', 'hotel', 'property_management', 'guest_house', 'club'];
 const WORK_AREAS: WorkArea[] = [
   'Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 
   'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'
 ];
 const JOB_TYPES: JobType[] = [
   'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
-  'Gardener', 'Pool guy', 'Bartender', 'Seller'
+  'Gardener', 'Pool Guy', 'Bartender', 'Seller'
 ];
 const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
@@ -40,7 +40,7 @@ const BusinessOnboarding = () => {
   const [step, setStep] = useState(1);
   const [isCompleting, setIsCompleting] = useState(false);
   const [data, setData] = useState<OnboardingData>({
-    business_type: 'Restaurant',
+    business_type: 'restaurant',
     location: 'Seminyak',
     job_type: 'Waiter',
     languages: [],
