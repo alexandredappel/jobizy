@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -38,13 +37,10 @@ const Home = () => {
     <div className="min-h-screen bg-[#eefceb]">
       {/* Header - Using existing style */}
       <header className="absolute top-0 left-0 right-0 p-6">
-        <nav className="max-w-7xl mx-auto flex justify-between items-center">
+        <nav className="max-w-7xl mx-auto">
           <Link to="/" className="text-3xl font-bold text-primary">
             Jobizy
           </Link>
-          <Button variant="ghost" className="text-primary">
-            Menu
-          </Button>
         </nav>
       </header>
 
