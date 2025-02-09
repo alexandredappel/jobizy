@@ -1,3 +1,38 @@
+
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { 
+  Building2, 
+  Users, 
+  Zap, 
+  Monitor, 
+  WifiOff, 
+  ShieldCheck 
+} from "lucide-react";
+
+const features = [
+  {
+    icon: <Zap className="w-8 h-8 text-primary" />,
+    title: "Find in a few clicks",
+    description: "Quick and efficient matching"
+  },
+  {
+    icon: <Monitor className="w-8 h-8 text-primary" />,
+    title: "Intuitive interface",
+    description: "Easy to use platform"
+  },
+  {
+    icon: <WifiOff className="w-8 h-8 text-primary" />,
+    title: "Available offline",
+    description: "Work even without internet"
+  },
+  {
+    icon: <ShieldCheck className="w-8 h-8 text-primary" />,
+    title: "Verified profiles",
+    description: "Trusted community"
+  }
+];
+
 const Home = () => {
   return (
     <div className="min-h-screen bg-[#eefceb]">
@@ -27,14 +62,14 @@ const Home = () => {
           {/* Main Content */}
           <div className="text-center mb-12">
             <h1 className="text-6xl md:text-8xl font-bold text-primary mb-6">
-              Find your next
+              Your 24/7
               <br />
-              <span className="text-secondary">job in Bali</span>
+              <span className="text-secondary">HR Solution in Bali</span>
             </h1>
             <p className="text-2xl md:text-4xl text-secondary/80">
-              The quick and easy way to connect
+              Connect directly with talents
               <br />
-              workers and businesses.
+              or employers in Bali
             </p>
           </div>
 
@@ -67,10 +102,49 @@ const Home = () => {
         </div>
       </main>
 
+      {/* Value Proposition Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* For Businesses */}
+            <div className="card p-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
+                <Building2 className="w-8 h-8 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold mb-4 text-primary">
+                The talent you need, when you need it
+              </h2>
+              <ul className="space-y-3 text-muted-foreground">
+                <li>✓ Advanced candidate search</li>
+                <li>✓ Direct contact with available workers</li>
+                <li>✓ Emergency replacement solution</li>
+                <li>✓ Precise filters (location, languages, experience)</li>
+              </ul>
+            </div>
+
+            {/* For Workers */}
+            <div className="card p-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary/10 mb-6">
+                <Users className="w-8 h-8 text-secondary" />
+              </div>
+              <h2 className="text-2xl font-bold mb-4 text-secondary">
+                Find your next hospitality job in Bali
+              </h2>
+              <ul className="space-y-3 text-muted-foreground">
+                <li>✓ Showcase your skills</li>
+                <li>✓ Control your availability</li>
+                <li>✓ Direct employer contact</li>
+                <li>✓ Island-wide opportunities</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
             {features.map(feature => (
               <div key={feature.title} className="card text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 mb-6">
@@ -101,18 +175,5 @@ const Home = () => {
   );
 };
 
-// Animation classes to add in index.css
-@layer utilities {
-  .blur-xl {
-    filter: blur(24px);
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-  }
-  
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-}
+export default Home;
+
