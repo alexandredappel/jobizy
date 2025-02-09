@@ -1,132 +1,116 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { 
-  Building, 
-  User, 
-  Search, 
-  MousePointer, 
-  Clock, 
+  Building2, 
+  Users, 
+  Zap, 
+  Monitor, 
+  WifiOff, 
   ShieldCheck 
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+} from "lucide-react";
+
+const features = [
+  {
+    icon: <Zap className="w-8 h-8 text-primary" />,
+    title: "Find in a few clicks",
+    description: "Quick and efficient matching"
+  },
+  {
+    icon: <Monitor className="w-8 h-8 text-primary" />,
+    title: "Intuitive interface",
+    description: "Easy to use platform"
+  },
+  {
+    icon: <WifiOff className="w-8 h-8 text-primary" />,
+    title: "Available offline",
+    description: "Work even without internet"
+  },
+  {
+    icon: <ShieldCheck className="w-8 h-8 text-primary" />,
+    title: "Verified profiles",
+    description: "Trusted community"
+  }
+];
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header avec effet glassmorphism */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">
+    <div className="min-h-screen bg-[#eefceb]">
+      {/* Header - Using existing style */}
+      <header className="absolute top-0 left-0 right-0 p-6">
+        <nav className="max-w-7xl mx-auto">
+          <Link to="/" className="text-3xl font-bold text-primary">
             Jobizy
           </Link>
-        </div>
+        </nav>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
-        {/* Fond décoratif */}
-        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5" />
-        
-        <div className="container mx-auto px-4 py-12 md:py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8 animate-slide-up">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-                Your <span className="text-primary">HR Solution</span>
-                <br />in Bali
-              </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground">
-                Connect directly with talents or employers in Bali
-              </p>
-              <div className="pt-4">
-                <Link to="/signup">
-                  <Button size="lg" className="text-lg px-10 py-7 rounded-full bg-primary text-white shadow-lg hover:shadow-xl transition-all">
-                    Get Started Now
-                  </Button>
-                </Link>
-              </div>
-            </div>
+      {/* Hero Section - Adapted to brand colors */}
+      <main className="relative pt-32 pb-20">
+        {/* Decorative Elements using brand colors */}
+        <div className="absolute top-20 right-10">
+          <div className="w-32 h-32 bg-secondary/20 rounded-full blur-xl" />
+        </div>
+        <div className="absolute bottom-10 left-10">
+          <div className="w-40 h-24 bg-primary/20 rounded-t-full blur-xl" />
+        </div>
 
-            {/* Section d'inscription/recherche */}
-            <div className="bg-white rounded-3xl shadow-xl p-8 backdrop-blur-sm animate-float">
-              <h2 className="text-2xl font-bold mb-6">Find your match</h2>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium">I am a</label>
-                  <select className="w-full p-3 rounded-xl border">
-                    <option>Worker</option>
-                    <option>Business</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium">Looking for</label>
-                  <select className="w-full p-3 rounded-xl border">
-                    <option>Restaurant Jobs</option>
-                    <option>Hotel Jobs</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <Button className="w-full py-6 text-lg font-bold bg-primary text-white">
-                  Search Now
-                </Button>
-              </div>
-            </div>
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Main Content */}
+          <div className="text-center mb-12">
+            <h1 className="text-6xl md:text-8xl font-bold text-primary mb-6">
+              Your 24/7
+              <br />
+              <span className="text-secondary">HR Solution in Bali</span>
+            </h1>
+            <p className="text-2xl md:text-4xl text-secondary/80">
+              Connect directly with talents
+              <br />
+              or employers in Bali
+            </p>
+          </div>
+
+          {/* Action Button */}
+          <div className="max-w-2xl mx-auto">
+            <Button className="w-full py-6 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90">
+              Sign Up Now
+            </Button>
           </div>
         </div>
-      </section>
+      </main>
 
       {/* Value Proposition Section */}
-      <section className="py-16 bg-secondary/5">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12">
             {/* For Businesses */}
-            <div className="space-y-6 p-8 bg-white rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
-              <div className="inline-block p-4 bg-secondary/10 rounded-2xl">
-                <Building className="w-8 h-8 text-secondary" />
+            <div className="card p-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
+                <Building2 className="w-8 h-8 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold">The talent you need, when you need it</h2>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
-                  Advanced candidate search
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
-                  Direct contact with available workers
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
-                  Emergency replacement solution
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-secondary rounded-full" />
-                  Precise filters (location, languages, experience)
-                </li>
+              <h2 className="text-2xl font-bold mb-4 text-primary">
+                The talent you need, when you need it
+              </h2>
+              <ul className="space-y-3 text-muted-foreground">
+                <li>✓ Advanced candidate search</li>
+                <li>✓ Direct contact with available workers</li>
+                <li>✓ Emergency replacement solution</li>
+                <li>✓ Precise filters (location, languages, experience)</li>
               </ul>
             </div>
 
             {/* For Workers */}
-            <div className="space-y-6 p-8 bg-white rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
-              <div className="inline-block p-4 bg-primary/10 rounded-2xl">
-                <User className="w-8 h-8 text-primary" />
+            <div className="card p-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary/10 mb-6">
+                <Users className="w-8 h-8 text-secondary" />
               </div>
-              <h2 className="text-2xl font-bold">Find your next hospitality job in Bali</h2>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Showcase your skills
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Control your availability
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Direct employer contact
-                </li>
-                <li className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Island-wide opportunities
-                </li>
+              <h2 className="text-2xl font-bold mb-4 text-secondary">
+                Find your next hospitality job in Bali
+              </h2>
+              <ul className="space-y-3 text-muted-foreground">
+                <li>✓ Showcase your skills</li>
+                <li>✓ Control your availability</li>
+                <li>✓ Direct employer contact</li>
+                <li>✓ Island-wide opportunities</li>
               </ul>
             </div>
           </div>
@@ -134,44 +118,22 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Speed */}
-            <div className="group space-y-4 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all">
-              <div className="inline-block p-3 bg-accent/10 rounded-xl group-hover:scale-110 transition-transform">
-                <Search className="w-6 h-6 text-accent" />
+      <section className="bg-white py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {features.map(feature => (
+              <div key={feature.title} className="card text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 mb-6">
+                  {feature.icon}
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-primary">
+                  {feature.title}
+                </h3>
+                <p className="text-muted-foreground">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-xl font-bold">Quick Search</h3>
-              <p className="text-muted-foreground">Find the perfect match in minutes</p>
-            </div>
-
-            {/* Simplicity */}
-            <div className="group space-y-4 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all">
-              <div className="inline-block p-3 bg-accent/10 rounded-xl group-hover:scale-110 transition-transform">
-                <MousePointer className="w-6 h-6 text-accent" />
-              </div>
-              <h3 className="text-xl font-bold">Easy to Use</h3>
-              <p className="text-muted-foreground">Intuitive interface for everyone</p>
-            </div>
-
-            {/* Availability */}
-            <div className="group space-y-4 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all">
-              <div className="inline-block p-3 bg-accent/10 rounded-xl group-hover:scale-110 transition-transform">
-                <Clock className="w-6 h-6 text-accent" />
-              </div>
-              <h3 className="text-xl font-bold">Real-time Status</h3>
-              <p className="text-muted-foreground">Know who's available now</p>
-            </div>
-
-            {/* Trust */}
-            <div className="group space-y-4 p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all">
-              <div className="inline-block p-3 bg-accent/10 rounded-xl group-hover:scale-110 transition-transform">
-                <ShieldCheck className="w-6 h-6 text-accent" />
-              </div>
-              <h3 className="text-xl font-bold">Verified Profiles</h3>
-              <p className="text-muted-foreground">Trusted community members</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -180,7 +142,7 @@ const Home = () => {
       <div className="fixed bottom-6 right-6 z-50">
         <Button 
           size="lg" 
-          className="bg-primary text-white hover:bg-primary/90 shadow-lg px-8"
+          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg"
         >
           Sign Up Now
         </Button>
