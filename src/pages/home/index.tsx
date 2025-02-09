@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { RotatingText } from "@/components/ui/rotating-text";
@@ -20,35 +21,13 @@ import {
   Signal,
   Shield
 } from "lucide-react";
-import { useEffect, useState } from "react";
 
 const Home = () => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#eefceb] to-white relative overflow-hidden">
-      {/* Decorative Elements with Parallax */}
-      <div 
-        className="absolute top-20 left-20 w-64 h-64 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"
-        style={{
-          transform: `translateY(${scrollY * 0.2}px)`
-        }}
-      />
-      <div 
-        className="absolute top-40 right-20 w-72 h-72 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-300"
-        style={{
-          transform: `translateY(${scrollY * 0.3}px)`
-        }}
-      />
+      {/* Decorative Elements */}
+      <div className="absolute top-20 left-20 w-64 h-64 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" />
+      <div className="absolute top-40 right-20 w-72 h-72 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-300" />
       
       {/* Header */}
       <header className="p-6 relative">
@@ -91,7 +70,7 @@ const Home = () => {
       </section>
 
       {/* Business Types Section */}
-      <section className="py-24 bg-gradient-to-b from-[#eefceb] to-[#f7fcf6]">
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
             For Every Type of Business
@@ -104,7 +83,7 @@ const Home = () => {
               { type: 'Guest House', icon: HomeIcon },
               { type: 'Club', icon: GlassWater }
             ].map(({ type, icon: Icon }) => (
-              <div key={type} className="flex flex-col items-center p-6 bg-gradient-to-br from-[#eefceb] to-[#f7fcf6] rounded-xl hover:shadow-lg transition-all duration-300">
+              <div key={type} className="flex flex-col items-center p-6 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300">
                 <Icon className="w-12 h-12 text-[#439915] mb-4" />
                 <h3 className="text-lg font-semibold text-[#1A1F2C]">{type}</h3>
               </div>
@@ -130,7 +109,7 @@ const Home = () => {
               { type: 'Bartender', icon: Beer },
               { type: 'Seller', icon: ShoppingCart }
             ].map(({ type, icon: Icon }) => (
-              <div key={type} className="flex flex-col items-center p-6 bg-gradient-to-br from-[#eefceb] to-[#f7fcf6] rounded-xl hover:shadow-lg transition-all duration-300">
+              <div key={type} className="flex flex-col items-center p-6 bg-white rounded-xl hover:shadow-lg transition-all duration-300">
                 <Icon className="w-12 h-12 text-[#439915] mb-4" />
                 <h3 className="text-lg font-semibold text-[#1A1F2C]">{type}</h3>
               </div>
@@ -140,7 +119,7 @@ const Home = () => {
       </section>
 
       {/* Two Column Section */}
-      <section className="py-24 relative bg-gradient-to-b from-[#eefceb] to-[#f7fcf6]">
+      <section className="py-24 relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12">
             <div className="text-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-3xl hover:shadow-xl transition-all duration-300">
@@ -193,7 +172,7 @@ const Home = () => {
       </section>
 
       {/* Key Features Section */}
-      <section className="py-24 relative bg-gradient-to-b from-[#eefceb] to-[#f7fcf6]">
+      <section className="bg-white py-24 relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
@@ -240,19 +219,9 @@ const Home = () => {
         </div>
       </footer>
 
-      {/* Additional Decorative Elements with Parallax */}
-      <div 
-        className="absolute bottom-20 left-40 w-48 h-48 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-700"
-        style={{
-          transform: `translateY(${scrollY * -0.2}px)`
-        }}
-      />
-      <div 
-        className="absolute bottom-40 right-20 w-56 h-56 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500"
-        style={{
-          transform: `translateY(${scrollY * -0.3}px)`
-        }}
-      />
+      {/* Additional Decorative Elements */}
+      <div className="absolute bottom-20 left-40 w-48 h-48 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-700" />
+      <div className="absolute bottom-40 right-20 w-56 h-56 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500" />
     </div>
   );
 };
