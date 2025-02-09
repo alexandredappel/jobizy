@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BriefcaseBusiness, User, Zap, Layout, Wifi, ShieldCheck } from "lucide-react";
@@ -40,11 +39,15 @@ const Home = () => {
               Sign Up Now
             </Button>
           </div>
-          <div className="hidden md:block">
+          <div className="relative hidden md:block">
             <img 
               src="https://firebasestorage.googleapis.com/v0/b/jobizy-8a101.appspot.com/o/UX%2FBartender.svg?alt=media&token=65142b2e-b111-4185-aaad-c2b20dd1328d"
               alt="Bartender illustration"
-              className="w-full h-auto max-w-md mx-auto animate-fade-in"
+              className="w-full h-auto min-h-[400px] object-contain animate-fade-in"
+              onError={(e) => {
+                console.error('Image failed to load:', e);
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </div>
         </div>
