@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { RotatingText } from "@/components/ui/rotating-text";
@@ -21,13 +20,37 @@ import {
   Signal,
   Shield
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Home = () => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#eefceb] to-white relative overflow-hidden">
-      {/* Decorative Elements */}
-      <div className="absolute top-20 left-20 w-64 h-64 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" />
-      <div className="absolute top-40 right-20 w-72 h-72 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-300" />
+      {/* Decorative Elements with Parallax */}
+      <div 
+        className="absolute top-20 left-20 w-64 h-64 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"
+        style={{
+          transform: `translateY(${scrollY * 0.2}px)`,
+          transition: 'transform 0.1s linear'
+        }}
+      />
+      <div 
+        className="absolute top-40 right-20 w-72 h-72 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-300"
+        style={{
+          transform: `translateY(${scrollY * 0.3}px)`,
+          transition: 'transform 0.1s linear'
+        }}
+      />
       
       {/* Header */}
       <header className="p-6 relative">
@@ -219,9 +242,21 @@ const Home = () => {
         </div>
       </footer>
 
-      {/* Additional Decorative Elements */}
-      <div className="absolute bottom-20 left-40 w-48 h-48 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-700" />
-      <div className="absolute bottom-40 right-20 w-56 h-56 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500" />
+      {/* Additional Decorative Elements with Parallax */}
+      <div 
+        className="absolute bottom-20 left-40 w-48 h-48 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-700"
+        style={{
+          transform: `translateY(${scrollY * -0.2}px)`,
+          transition: 'transform 0.1s linear'
+        }}
+      />
+      <div 
+        className="absolute bottom-40 right-20 w-56 h-56 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500"
+        style={{
+          transform: `translateY(${scrollY * -0.3}px)`,
+          transition: 'transform 0.1s linear'
+        }}
+      />
     </div>
   );
 };
