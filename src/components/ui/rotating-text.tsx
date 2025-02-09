@@ -17,12 +17,11 @@ export const RotatingText = ({ words }: { words: string[] }) => {
       {words.map((word, i) => (
         <span
           key={word}
-          className={`text-[#439915] font-bold transition-transform duration-500 ${
-            i === index ? "translate-y-0" : "-translate-y-full"
-          }`}
+          className={`text-[#439915] font-bold absolute transition-transform duration-500`}
           style={{
             transform: `translateY(${(i - index) * 100}%)`,
-            transition: "transform 0.5s ease"
+            opacity: i === index ? 1 : 0,
+            transition: "transform 0.5s ease, opacity 0.5s ease"
           }}
         >
           {word}
