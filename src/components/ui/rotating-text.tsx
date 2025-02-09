@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 export const RotatingText = ({ words }: { words: string[] }) => {
@@ -13,20 +12,21 @@ export const RotatingText = ({ words }: { words: string[] }) => {
   }, [words.length]);
 
   return (
-    <span className="inline-flex flex-col h-[1.2em] overflow-hidden">
-      {words.map((word, i) => (
-        <span
-          key={word}
-          className={`text-[#439915] font-bold absolute transition-transform duration-500`}
-          style={{
-            transform: `translateY(${(i - index) * 100}%)`,
-            opacity: i === index ? 1 : 0,
-            transition: "transform 0.5s ease, opacity 0.5s ease"
-          }}
-        >
-          {word}
-        </span>
-      ))}
+    <span className="inline-block relative">
+      <span className="relative h-[1.5em] block overflow-hidden">
+        {words.map((word, i) => (
+          <span
+            key={word}
+            className="text-[#439915] font-bold absolute inset-0 flex items-center justify-center transition-all duration-500"
+            style={{
+              transform: `translateY(${(i - index) * 100}%)`,
+              opacity: i === index ? 1 : 0,
+            }}
+          >
+            {word}
+          </span>
+        ))}
+      </span>
     </span>
   );
 };
