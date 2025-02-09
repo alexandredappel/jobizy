@@ -21,7 +21,7 @@ const WORK_AREAS: WorkArea[] = [
 ];
 const JOB_TYPES: JobType[] = [
   'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
-  'Gardener', 'Bartender', 'Seller'
+  'Gardener', 'Pool Maintenance', 'Bartender', 'Seller'
 ];
 const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
