@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -35,17 +36,8 @@ const features = [
 const Home = () => {
   return (
     <div className="min-h-screen bg-[#eefceb]">
-      {/* Header - Using existing style */}
-      <header className="absolute top-0 left-0 right-0 p-6">
-        <nav className="max-w-7xl mx-auto">
-          <Link to="/" className="text-3xl font-bold text-primary">
-            Jobizy
-          </Link>
-        </nav>
-      </header>
-
       {/* Hero Section - Adapted to brand colors */}
-      <main className="relative pt-32 pb-20">
+      <main className="relative pt-20 pb-20">
         {/* Decorative Elements using brand colors */}
         <div className="absolute top-20 right-10">
           <div className="w-32 h-32 bg-secondary/20 rounded-full blur-xl" />
@@ -152,3 +144,4 @@ const Home = () => {
 };
 
 export default Home;
+
