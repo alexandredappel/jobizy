@@ -1,7 +1,6 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BriefcaseBusiness, User, Zap, Layout, Wifi, ShieldCheck } from "lucide-react";
+import { BriefcaseBusiness, User, Restaurant, Hotel, Building, Home, Wine, ChefHat, Coffee, BadgeEuro, UsersRound, Hammer, Cocktail, ShoppingCart } from "lucide-react";
 
 const Home = () => {
   return (
@@ -18,7 +17,10 @@ const Home = () => {
           </Link>
           <div className="flex gap-6 items-center">
             <Link to="#" className="text-[#1A1F2C] font-medium">Help</Link>
-            <Button className="rounded-full bg-[#439915] hover:bg-[#317110]">
+            <Button 
+              variant="default"
+              className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-6 py-2 rounded-md transition-all duration-200 hover:shadow-lg"
+            >
               Sign Up
             </Button>
           </div>
@@ -35,9 +37,60 @@ const Home = () => {
             The quick and easy way to connect with hospitality businesses
           </p>
           
-          <Button className="rounded-full px-8 text-lg bg-[#439915] hover:bg-[#317110] hover:scale-105 transition-transform">
+          <Button 
+            className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-8 py-6 rounded-md transition-all duration-200 hover:shadow-lg text-lg"
+          >
             Sign Up Now
           </Button>
+        </div>
+      </section>
+
+      {/* Business Types Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
+            For Every Type of Business
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            {[
+              { type: 'Restaurant', icon: Restaurant },
+              { type: 'Hotel', icon: Hotel },
+              { type: 'Property Management', icon: Building },
+              { type: 'Guest House', icon: Home },
+              { type: 'Club', icon: Wine }
+            ].map(({ type, icon: Icon }) => (
+              <div key={type} className="flex flex-col items-center p-6 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300">
+                <Icon className="w-12 h-12 text-[#439915] mb-4" />
+                <h3 className="text-lg font-semibold text-[#1A1F2C]">{type}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Job Types Section */}
+      <section className="py-24 bg-[#eefceb]">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
+            Available Positions
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {[
+              { type: 'Waiter', icon: Coffee },
+              { type: 'Cook', icon: ChefHat },
+              { type: 'Cashier', icon: BadgeEuro },
+              { type: 'Manager', icon: UsersRound },
+              { type: 'Housekeeper', icon: Home },
+              { type: 'Gardener', icon: Hammer },
+              { type: 'Bartender', icon: Cocktail },
+              { type: 'Seller', icon: ShoppingCart }
+            ].map(({ type, icon: Icon }) => (
+              <div key={type} className="flex flex-col items-center p-6 bg-white rounded-xl hover:shadow-lg transition-all duration-300">
+                <Icon className="w-12 h-12 text-[#439915] mb-4" />
+                <h3 className="text-lg font-semibold text-[#1A1F2C]">{type}</h3>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -45,7 +98,6 @@ const Home = () => {
       <section className="py-24 relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12">
-            {/* Business Column */}
             <div className="text-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-3xl hover:shadow-xl transition-all duration-300">
               <BriefcaseBusiness className="w-16 h-16 mx-auto mb-6 text-[#439915] animate-bounce" />
               <h2 className="text-3xl font-bold text-[#1A1F2C] mb-8">
@@ -69,7 +121,6 @@ const Home = () => {
               </Button>
             </div>
 
-            {/* Worker Column */}
             <div className="text-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-3xl hover:shadow-xl transition-all duration-300">
               <User className="w-16 h-16 mx-auto mb-6 text-[#439915] animate-bounce" />
               <h2 className="text-3xl font-bold text-[#1A1F2C] mb-8">
@@ -100,28 +151,24 @@ const Home = () => {
       <section className="bg-white py-24 relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Speed */}
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
               <Zap className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Find in a few clicks</h3>
               <p className="text-[#8E9196]">Quick and efficient matching</p>
             </div>
 
-            {/* Simplicity */}
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
               <Layout className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Intuitive interface</h3>
               <p className="text-[#8E9196]">Easy to use platform</p>
             </div>
 
-            {/* Flexibility */}
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
               <Wifi className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Available offline</h3>
               <p className="text-[#8E9196]">Work even without internet</p>
             </div>
 
-            {/* Reliability */}
             <div className="text-center p-8 rounded-3xl bg-gradient-to-br from-[#eefceb] to-white hover:shadow-lg transition-all duration-300">
               <ShieldCheck className="w-12 h-12 mx-auto mb-6 text-[#439915]" />
               <h3 className="text-xl font-bold text-[#1A1F2C] mb-4">Verified profiles</h3>
@@ -156,4 +203,3 @@ const Home = () => {
 };
 
 export default Home;
-
