@@ -26,8 +26,8 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#eefceb] to-white relative overflow-hidden">
       {/* Decorative Elements */}
-      <div className="absolute top-20 left-20 w-64 h-64 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" />
-      <div className="absolute top-40 right-20 w-72 h-72 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-300" />
+      <div className="absolute top-20 left-20 w-64 h-64 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20" />
+      <div className="absolute top-40 right-20 w-72 h-72 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20" />
       
       {/* Header */}
       <header className="p-6 relative">
@@ -37,12 +37,14 @@ const Home = () => {
           </Link>
           <div className="flex gap-6 items-center">
             <Link to="#" className="text-[#1A1F2C] font-medium">Help</Link>
-            <Button 
-              variant="default"
-              className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-6 py-2 rounded-md transition-all duration-200 hover:shadow-lg"
-            >
-              Sign Up
-            </Button>
+            <Link to="/signup">
+              <Button 
+                variant="default"
+                className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-6 py-2 rounded-md transition-all duration-200 hover:shadow-lg"
+              >
+                Sign Up
+              </Button>
+            </Link>
           </div>
         </nav>
       </header>
@@ -61,11 +63,13 @@ const Home = () => {
             The quick and easy way to connect with hospitality businesses
           </p>
           
-          <Button 
-            className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-8 py-6 rounded-md transition-all duration-200 hover:shadow-lg text-lg"
-          >
-            Sign Up Now
-          </Button>
+          <Link to="/signup">
+            <Button 
+              className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-8 py-6 rounded-md transition-all duration-200 hover:shadow-lg text-lg"
+            >
+              Sign Up Now
+            </Button>
+          </Link>
         </div>
       </section>
 
@@ -140,9 +144,11 @@ const Home = () => {
                   </li>
                 ))}
               </ul>
-              <Button className="mt-8 rounded-full bg-[#439915] hover:bg-[#317110] hover:scale-105 transition-transform">
-                Hire Talent
-              </Button>
+              <Link to="/signup">
+                <Button className="mt-8 rounded-full bg-[#439915] hover:bg-[#317110] hover:scale-105 transition-transform">
+                  Hire Talent
+                </Button>
+              </Link>
             </div>
 
             <div className="text-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-3xl hover:shadow-xl transition-all duration-300">
@@ -163,9 +169,11 @@ const Home = () => {
                   </li>
                 ))}
               </ul>
-              <Button className="mt-8 rounded-full bg-[#439915] hover:bg-[#317110] hover:scale-105 transition-transform">
-                Find Jobs
-              </Button>
+              <Link to="/signup">
+                <Button className="mt-8 rounded-full bg-[#439915] hover:bg-[#317110] hover:scale-105 transition-transform">
+                  Find Jobs
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -220,10 +228,11 @@ const Home = () => {
       </footer>
 
       {/* Additional Decorative Elements */}
-      <div className="absolute bottom-20 left-40 w-48 h-48 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-700" />
-      <div className="absolute bottom-40 right-20 w-56 h-56 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500" />
+      <div className="absolute bottom-20 left-40 w-48 h-48 bg-[#439915] rounded-full mix-blend-multiply filter blur-xl opacity-20" />
+      <div className="absolute bottom-40 right-20 w-56 h-56 bg-[#5EC435] rounded-full mix-blend-multiply filter blur-xl opacity-20" />
     </div>
   );
 };
 
 export default Home;
+
