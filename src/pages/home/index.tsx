@@ -1,128 +1,130 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { 
-  Building2, 
-  Users, 
-  Zap, 
-  Monitor, 
-  WifiOff, 
-  ShieldCheck 
-} from "lucide-react";
-
-const features = [
-  {
-    icon: <Zap className="w-8 h-8 text-primary" />,
-    title: "Find in a few clicks",
-    description: "Quick and efficient matching"
-  },
-  {
-    icon: <Monitor className="w-8 h-8 text-primary" />,
-    title: "Intuitive interface",
-    description: "Easy to use platform"
-  },
-  {
-    icon: <WifiOff className="w-8 h-8 text-primary" />,
-    title: "Available offline",
-    description: "Work even without internet"
-  },
-  {
-    icon: <ShieldCheck className="w-8 h-8 text-primary" />,
-    title: "Verified profiles",
-    description: "Trusted community"
-  }
-];
+import { Search } from "lucide-react";
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-[#eefceb]">
-      {/* Hero Section - Adapted to brand colors */}
-      <main className="relative pt-20 pb-20">
-        {/* Decorative Elements using brand colors */}
-        <div className="absolute top-20 right-10">
-          <div className="w-32 h-32 bg-secondary/20 rounded-full blur-xl" />
-        </div>
-        <div className="absolute bottom-10 left-10">
-          <div className="w-40 h-24 bg-primary/20 rounded-t-full blur-xl" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6">
-          {/* Main Content */}
-          <div className="text-center mb-12">
-            <h1 className="text-6xl md:text-8xl font-bold text-primary mb-6">
-              Your 24/7
-              <br />
-              <span className="text-secondary">HR Solution in Bali</span>
-            </h1>
-            <p className="text-2xl md:text-4xl text-secondary/80">
-              Connect directly with talents
-              <br />
-              or employers in Bali
-            </p>
-          </div>
-
-          {/* Action Button */}
-          <div className="max-w-2xl mx-auto">
-            <Button className="w-full py-6 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90">
-              Sign Up Now
+    <div className="min-h-screen bg-[#FFF8E7]">
+      {/* Header */}
+      <header className="p-6">
+        <nav className="max-w-7xl mx-auto flex justify-between items-center">
+          <Link to="/" className="text-4xl font-bold text-primary">
+            Jobizy
+          </Link>
+          <div className="flex gap-6 items-center">
+            <Link to="#" className="text-primary font-medium">Help</Link>
+            <Button className="rounded-full">
+              Sign Up
             </Button>
           </div>
-        </div>
-      </main>
+        </nav>
+      </header>
 
-      {/* Value Proposition Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* For Businesses */}
-            <div className="card p-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
-                <Building2 className="w-8 h-8 text-primary" />
-              </div>
-              <h2 className="text-2xl font-bold mb-4 text-primary">
-                The talent you need, when you need it
-              </h2>
-              <ul className="space-y-3 text-muted-foreground">
-                <li>✓ Advanced candidate search</li>
-                <li>✓ Direct contact with available workers</li>
-                <li>✓ Emergency replacement solution</li>
-                <li>✓ Precise filters (location, languages, experience)</li>
-              </ul>
+      {/* Hero Section */}
+      <section className="max-w-7xl mx-auto px-6 pt-12 pb-24">
+        <div className="text-center max-w-3xl mx-auto">
+          <h1 className="text-6xl md:text-7xl font-bold text-primary mb-6">
+            Find Your Next Job in Bali
+          </h1>
+          <p className="text-xl md:text-2xl text-secondary/80 mb-12">
+            The quick and easy way to connect with hospitality businesses
+          </p>
+          
+          {/* Search Box */}
+          <div className="bg-white p-2 rounded-full shadow-lg flex gap-2 max-w-xl mx-auto">
+            <div className="flex-1 flex items-center gap-3 pl-6">
+              <Search className="w-5 h-5 text-primary/50" />
+              <input 
+                type="text"
+                placeholder="Search job positions..."
+                className="w-full bg-transparent outline-none text-primary"
+              />
             </div>
-
-            {/* For Workers */}
-            <div className="card p-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary/10 mb-6">
-                <Users className="w-8 h-8 text-secondary" />
-              </div>
-              <h2 className="text-2xl font-bold mb-4 text-secondary">
-                Find your next hospitality job in Bali
-              </h2>
-              <ul className="space-y-3 text-muted-foreground">
-                <li>✓ Showcase your skills</li>
-                <li>✓ Control your availability</li>
-                <li>✓ Direct employer contact</li>
-                <li>✓ Island-wide opportunities</li>
-              </ul>
-            </div>
+            <Button className="rounded-full px-8">
+              Get Started
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="bg-white py-20">
+      <section className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-            {features.map(feature => (
-              <div key={feature.title} className="card text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/20 mb-6">
-                  {feature.icon}
-                </div>
+          <h2 className="text-4xl font-bold text-center mb-16 text-primary">
+            Our Services
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              {
+                title: "Direct Messaging",
+                price: "$0/day",
+                description: "Connect directly with potential employers",
+                color: "bg-pink-100",
+              },
+              {
+                title: "Profile Management",
+                price: "$0/day",
+                description: "Create and manage your professional profile",
+                color: "bg-blue-100",
+              },
+              {
+                title: "Job Alerts",
+                price: "$0/day",
+                description: "Get notified about new opportunities",
+                color: "bg-green-100",
+              }
+            ].map((service) => (
+              <div 
+                key={service.title}
+                className={`rounded-3xl ${service.color} p-8 text-center hover:scale-105 transition-transform duration-300`}
+              >
                 <h3 className="text-2xl font-bold mb-4 text-primary">
-                  {feature.title}
+                  {service.title}
                 </h3>
-                <p className="text-muted-foreground">
-                  {feature.description}
+                <p className="text-lg font-semibold text-secondary mb-2">
+                  {service.price}
+                </p>
+                <p className="text-secondary/80">
+                  {service.description}
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="mt-6 rounded-full"
+                >
+                  Learn More
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              {
+                title: "Free Profile Creation",
+                description: "Create your professional profile and start connecting with businesses in minutes"
+              },
+              {
+                title: "Exceptional Support",
+                description: "Our team is here to help you every step of the way with 24/7 support"
+              },
+              {
+                title: "Modern Platform",
+                description: "Use our easy-to-use platform to manage your job search efficiently"
+              }
+            ].map((benefit) => (
+              <div key={benefit.title} className="text-center">
+                <h3 className="text-xl font-bold mb-4 text-primary">
+                  {benefit.title}
+                </h3>
+                <p className="text-secondary/80">
+                  {benefit.description}
                 </p>
               </div>
             ))}
@@ -130,18 +132,52 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Floating CTA */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button 
-          size="lg" 
-          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg"
-        >
-          Sign Up Now
-        </Button>
-      </div>
+      {/* Testimonials Section */}
+      <section className="bg-white py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-bold text-center mb-16 text-primary">
+            People Love Jobizy
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div 
+                key={i}
+                className="bg-[#FFF8E7] p-8 rounded-3xl"
+              >
+                <div className="flex gap-1 mb-4">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} className="text-yellow-400">★</span>
+                  ))}
+                </div>
+                <p className="text-secondary/80 mb-4">
+                  "Great platform! Found my dream job in Bali within days. The process was smooth and the support team was very helpful."
+                </p>
+                <p className="font-semibold text-primary">- Happy User</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-[#FFF8E7] py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {["Help", "Contact", "About", "Terms"].map((item) => (
+              <Link 
+                key={item}
+                to="#"
+                className="text-primary hover:text-secondary transition-colors"
+              >
+                {item}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
 
 export default Home;
-
