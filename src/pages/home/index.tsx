@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { RotatingText } from "@/components/ui/rotating-text";
@@ -74,12 +73,12 @@ const Home = () => {
       </section>
 
       {/* Business Types Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-gradient-to-b from-[#eefceb] to-white">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
             For Every Type of Business
           </h2>
-          <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory">
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
             {[
               { type: 'Restaurant', icon: Coffee, description: 'From casual dining to fine restaurants' },
               { type: 'Hotel', icon: Building2, description: 'Luxury and boutique hotels' },
@@ -87,7 +86,7 @@ const Home = () => {
               { type: 'Guest House', icon: HomeIcon, description: 'Cozy and welcoming stays' },
               { type: 'Club', icon: GlassWater, description: 'Nightlife and entertainment venues' }
             ].map(({ type, icon: Icon, description }) => (
-              <div key={type} className="flex-none w-full md:w-1/3 snap-center">
+              <div key={type} className="flex-none">
                 <div className="flex flex-col items-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300 h-full">
                   <Icon className="w-16 h-16 text-[#439915] mb-6" />
                   <h3 className="text-2xl font-semibold text-[#1A1F2C] mb-4">{type}</h3>
@@ -96,16 +95,25 @@ const Home = () => {
               </div>
             ))}
           </div>
+          <div className="text-center">
+            <Link to="/signup">
+              <Button 
+                className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-8 py-4 rounded-md transition-all duration-200 hover:shadow-lg text-lg"
+              >
+                Sign Up Now
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Job Types Section */}
-      <section className="py-24 bg-[#eefceb]">
+      <section className="py-24 bg-gradient-to-b from-[#eefceb] to-white">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
             Available Positions
           </h2>
-          <div className="flex overflow-x-auto pb-6 gap-6 snap-x snap-mandatory">
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
             {[
               { type: 'Waiter', icon: Coffee, description: 'Front of house service professionals' },
               { type: 'Cook', icon: ChefHat, description: 'Kitchen and culinary experts' },
@@ -116,14 +124,23 @@ const Home = () => {
               { type: 'Bartender', icon: Beer, description: 'Beverage service specialists' },
               { type: 'Seller', icon: ShoppingCart, description: 'Retail and sales professionals' }
             ].map(({ type, icon: Icon, description }) => (
-              <div key={type} className="flex-none w-full md:w-1/3 snap-center">
-                <div className="flex flex-col items-center p-8 bg-white rounded-xl hover:shadow-lg transition-all duration-300 h-full">
+              <div key={type} className="flex-none">
+                <div className="flex flex-col items-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300 h-full">
                   <Icon className="w-16 h-16 text-[#439915] mb-6" />
                   <h3 className="text-2xl font-semibold text-[#1A1F2C] mb-4">{type}</h3>
                   <p className="text-[#8E9196] text-center">{description}</p>
                 </div>
               </div>
             ))}
+          </div>
+          <div className="text-center">
+            <Link to="/signup">
+              <Button 
+                className="bg-[#439915] hover:bg-[#317110] text-white font-semibold px-8 py-4 rounded-md transition-all duration-200 hover:shadow-lg text-lg"
+              >
+                Sign Up Now
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -241,4 +258,3 @@ const Home = () => {
 };
 
 export default Home;
-
