@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { RotatingText } from "@/components/ui/rotating-text";
@@ -78,7 +79,7 @@ const Home = () => {
           <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
             For Every Type of Business
           </h2>
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-x-visible pb-6 md:pb-0 gap-6 snap-x snap-mandatory md:snap-none mb-12">
             {[
               { type: 'Restaurant', icon: Coffee, description: 'From casual dining to fine restaurants' },
               { type: 'Hotel', icon: Building2, description: 'Luxury and boutique hotels' },
@@ -86,7 +87,7 @@ const Home = () => {
               { type: 'Guest House', icon: HomeIcon, description: 'Cozy and welcoming stays' },
               { type: 'Club', icon: GlassWater, description: 'Nightlife and entertainment venues' }
             ].map(({ type, icon: Icon, description }) => (
-              <div key={type} className="flex-none">
+              <div key={type} className="flex-none w-[90vw] md:w-auto snap-center">
                 <div className="flex flex-col items-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300 h-full">
                   <Icon className="w-16 h-16 text-[#439915] mb-6" />
                   <h3 className="text-2xl font-semibold text-[#1A1F2C] mb-4">{type}</h3>
@@ -113,7 +114,7 @@ const Home = () => {
           <h2 className="text-4xl font-bold text-center mb-16 text-[#1A1F2C]">
             Available Positions
           </h2>
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-x-visible pb-6 md:pb-0 gap-6 snap-x snap-mandatory md:snap-none mb-12">
             {[
               { type: 'Waiter', icon: Coffee, description: 'Front of house service professionals' },
               { type: 'Cook', icon: ChefHat, description: 'Kitchen and culinary experts' },
@@ -124,7 +125,7 @@ const Home = () => {
               { type: 'Bartender', icon: Beer, description: 'Beverage service specialists' },
               { type: 'Seller', icon: ShoppingCart, description: 'Retail and sales professionals' }
             ].map(({ type, icon: Icon, description }) => (
-              <div key={type} className="flex-none">
+              <div key={type} className="flex-none w-[90vw] md:w-auto snap-center">
                 <div className="flex flex-col items-center p-8 bg-gradient-to-br from-[#eefceb] to-white rounded-xl hover:shadow-lg transition-all duration-300 h-full">
                   <Icon className="w-16 h-16 text-[#439915] mb-6" />
                   <h3 className="text-2xl font-semibold text-[#1A1F2C] mb-4">{type}</h3>
@@ -258,3 +259,4 @@ const Home = () => {
 };
 
 export default Home;
+
