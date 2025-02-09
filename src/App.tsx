@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
@@ -7,6 +8,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigation } from "@/components/Navigation";
+
+// Home page
+import Home from "@/pages/home";
 
 // Auth pages
 import SignIn from "@/pages/auth/SignIn";
@@ -75,6 +79,7 @@ const App = () => (
             <MainContent>
               <Routes>
                 {/* Public Routes */}
+                <Route path="/" element={<Home />} />
                 <Route path="/signin" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -151,7 +156,7 @@ const App = () => (
                 />
                 
                 {/* Catch-all redirect */}
-                <Route path="*" element={<Navigate to="/signin" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </MainContent>
           </TooltipProvider>
