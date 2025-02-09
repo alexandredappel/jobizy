@@ -48,7 +48,8 @@ export const Navigation = () => {
     '/signup', 
     '/forgot-password', 
     '/reset-password',
-    '/worker/onboarding'
+    '/worker/onboarding',
+    '/'
   ].includes(location.pathname);
   
   if (isHiddenPage) return null;
