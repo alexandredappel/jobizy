@@ -1,7 +1,19 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BriefcaseBusiness, User, Zap, Layout, Wifi, ShieldCheck } from "lucide-react";
+import Map from "@/components/Map";
+
+const BALI_LOCATIONS = {
+  'Seminyak': [115.1563, -8.6848],
+  'Kuta': [115.1889, -8.7214],
+  'Ubud': [115.2636, -8.5069],
+  'Umalas': [115.1563, -8.6567],
+  'Kerobokan': [115.1647, -8.6573],
+  'Uluwatu': [115.1213, -8.8291],
+  'Canggu': [115.1389, -8.6513],
+  'Pererenan': [115.1296, -8.6431],
+  'Sanur': [115.2637, -8.6978]
+};
 
 const Home = () => {
   return (
@@ -96,6 +108,33 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Map Section */}
+      <section className="py-24 bg-white relative">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-bold text-center text-[#1A1F2C] mb-12">
+            Notre présence à Bali
+          </h2>
+          <div className="grid md:grid-cols-3 gap-12">
+            <div className="md:col-span-2">
+              <Map />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-[#1A1F2C] mb-6">
+                Nos emplacements
+              </h3>
+              <ul className="space-y-4">
+                {Object.keys(BALI_LOCATIONS).map((location) => (
+                  <li key={location} className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-[#439915] rounded-full"></span>
+                    <span className="text-lg text-[#8E9196]">{location}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Key Features Section */}
       <section className="bg-white py-24 relative">
         <div className="max-w-7xl mx-auto px-6">
@@ -156,4 +195,3 @@ const Home = () => {
 };
 
 export default Home;
-
