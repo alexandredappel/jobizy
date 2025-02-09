@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { RotatingText } from "@/components/ui/rotating-text";
 import { 
   BriefcaseBusiness, 
   User, 
@@ -49,8 +50,10 @@ const Home = () => {
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-6 pt-12 pb-24 relative">
         <div className="text-center max-w-3xl mx-auto">
-          <h1 className="text-6xl md:text-7xl font-bold text-[#1A1F2C] mb-6 animate-fade-in">
-            Find Your Next Job in Bali
+          <h1 className="text-6xl md:text-7xl font-bold text-[#1A1F2C] mb-6 animate-fade-in flex flex-wrap items-center justify-center gap-x-4">
+            <span>Find your next</span>
+            <RotatingText words={["Staff", "Job"]} />
+            <span>in Bali</span>
           </h1>
           <p className="text-xl md:text-2xl text-[#8E9196] mb-12">
             The quick and easy way to connect with hospitality businesses
