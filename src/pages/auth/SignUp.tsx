@@ -16,6 +16,8 @@ const SignUp = () => {
   const [role, setRole] = useState<UserRole>('worker');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryTimeout, setRetryTimeout] = useState<number>(0);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
@@ -31,9 +33,21 @@ const SignUp = () => {
     };
   }, []);
 
+  // Compte à rebours pour le délai entre les tentatives
+  useEffect(() => {
+    if (retryTimeout > 0) {
+      const timer = setTimeout(() => {
+        setRetryTimeout(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [retryTimeout]);
+
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
+      
       // Validation du mot de passe
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
       if (!passwordRegex.test(password)) {
@@ -50,16 +64,16 @@ const SignUp = () => {
       authService.initRecaptcha('recaptcha-container');
       
       // Format du numéro de téléphone
-      const cleanPhoneNumber = phoneNumber.replace(/\D/g, ''); // Enlève tout sauf les chiffres
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
       const phoneForStorage = cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber : `0${cleanPhoneNumber}`;
 
       const result = await authService.signUpWithPhone(
-        phoneForFirebase, // Pour l'authentification Firebase
+        phoneForFirebase,
         password,
         role,
         {
-          phoneNumber: phoneForStorage, // Pour le stockage dans la base de données
+          phoneNumber: phoneForStorage,
           preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
         }
       );
@@ -72,11 +86,21 @@ const SignUp = () => {
       });
     } catch (error: any) {
       console.error('Phone signup error:', error);
-      const errorMessage = error.code === 'PHONE_ALREADY_EXISTS'
-        ? t('auth.signUp.error.phoneExists')
+      
+      if (error.code === 'auth/too-many-requests') {
+        setRetryTimeout(60); // 60 secondes de délai
+      }
+      
+      const errorMessage = 
+        error.code === 'auth/too-many-requests'
+          ? t('auth.signUp.error.tooManyRequests')
+        : error.code === 'auth/invalid-phone-number'
+          ? t('auth.signUp.error.invalidPhone')
+        : error.code === 'PHONE_ALREADY_EXISTS'
+          ? t('auth.signUp.error.phoneExists')
         : error.code === 'RECAPTCHA_NOT_INITIALIZED'
           ? t('auth.recaptchaError')
-          : error.message;
+        : error.message;
 
       toast({
         title: t('auth.signUp.error.title'),
@@ -84,6 +108,7 @@ const SignUp = () => {
         variant: "destructive"
       });
     } finally {
+      setIsLoading(false);
       authService.clearRecaptcha();
     }
   };
@@ -91,6 +116,7 @@ const SignUp = () => {
   const handleOTPVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setIsLoading(true);
       if (!confirmationResult) {
         throw new Error('No confirmation result found');
       }
@@ -106,12 +132,13 @@ const SignUp = () => {
         variant: "destructive"
       });
     } finally {
+      setIsLoading(false);
       authService.clearRecaptcha();
     }
   };
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ''); // Enlève tout sauf les chiffres
+    let value = e.target.value.replace(/\D/g, '');
     if (!value.startsWith('0')) {
       value = '0' + value;
     }
@@ -130,6 +157,7 @@ const SignUp = () => {
           value={phoneNumber}
           onChange={handlePhoneNumberChange}
           className="pl-12"
+          disabled={isLoading || retryTimeout > 0}
           required
         />
       </div>
@@ -138,6 +166,7 @@ const SignUp = () => {
         placeholder={t('auth.password')}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        disabled={isLoading || retryTimeout > 0}
         required
         minLength={8}
       />
@@ -147,6 +176,7 @@ const SignUp = () => {
           variant={role === 'worker' ? 'default' : 'outline'}
           className="flex-1"
           onClick={() => setRole('worker')}
+          disabled={isLoading || retryTimeout > 0}
         >
           {t('auth.signUp.roleButtons.worker')}
         </Button>
@@ -155,12 +185,21 @@ const SignUp = () => {
           variant={role === 'business' ? 'default' : 'outline'}
           className="flex-1"
           onClick={() => setRole('business')}
+          disabled={isLoading || retryTimeout > 0}
         >
           {t('auth.signUp.roleButtons.business')}
         </Button>
       </div>
-      <Button type="submit" className="w-full">
-        {t('auth.signUp.submitButton')}
+      <Button 
+        type="submit" 
+        className="w-full"
+        disabled={isLoading || retryTimeout > 0}
+      >
+        {retryTimeout > 0 
+          ? t('auth.signUp.retryIn', { seconds: retryTimeout })
+          : isLoading 
+            ? t('auth.signUp.loading')
+            : t('auth.signUp.submitButton')}
       </Button>
       <div id="recaptcha-container"></div>
     </form>
@@ -173,10 +212,15 @@ const SignUp = () => {
         placeholder={t('auth.signUp.otpPlaceholder')}
         value={verificationCode}
         onChange={(e) => setVerificationCode(e.target.value)}
+        disabled={isLoading}
         required
       />
-      <Button type="submit" className="w-full">
-        {t('auth.signUp.verifyButton')}
+      <Button 
+        type="submit" 
+        className="w-full"
+        disabled={isLoading}
+      >
+        {isLoading ? t('auth.signUp.verifying') : t('auth.signUp.verifyButton')}
       </Button>
     </form>
   );
