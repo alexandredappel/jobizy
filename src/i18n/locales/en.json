@@ -27,8 +27,8 @@
       "title": "Sign Up",
       "submitButton": "Sign Up",
       "roleButtons": {
-        "worker": "I'm a Worker",
-        "business": "I'm a Business"
+        "worker": "I'm looking for Job",
+        "business": "I'm looking for Staff"
       },
       "alreadyHaveAccount": "Already have an account?",
       "error": {
