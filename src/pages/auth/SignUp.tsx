@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -27,15 +26,20 @@ const SignUp = () => {
     const defaultLang = ['en', 'id'].includes(browserLang) ? browserLang : 'en';
     console.log('Setting language based on browser:', defaultLang);
     i18n.changeLanguage(defaultLang);
+    return () => {
+      authService.clearRecaptcha();
+    };
   }, []);
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (password.length < 6) {
+      // Validation du mot de passe
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+      if (!passwordRegex.test(password)) {
         toast({
           title: t('auth.signUp.error.title'),
-          description: t('auth.signUp.error.passwordTooShort'),
+          description: t('auth.signUp.error.passwordRequirements'),
           variant: "destructive"
         });
         return;
@@ -45,12 +49,17 @@ const SignUp = () => {
       
       authService.initRecaptcha('recaptcha-container');
       
-      const formatPhoneNumber = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      // Format du numéro de téléphone
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, ''); // Enlève tout sauf les chiffres
+      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
+      const phoneForStorage = cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber : `0${cleanPhoneNumber}`;
+
       const result = await authService.signUpWithPhone(
-        formatPhoneNumber,
+        phoneForFirebase, // Pour l'authentification Firebase
         password,
         role,
         {
+          phoneNumber: phoneForStorage, // Pour le stockage dans la base de données
           preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
         }
       );
@@ -63,11 +72,19 @@ const SignUp = () => {
       });
     } catch (error: any) {
       console.error('Phone signup error:', error);
+      const errorMessage = error.code === 'PHONE_ALREADY_EXISTS'
+        ? t('auth.signUp.error.phoneExists')
+        : error.code === 'RECAPTCHA_NOT_INITIALIZED'
+          ? t('auth.recaptchaError')
+          : error.message;
+
       toast({
         title: t('auth.signUp.error.title'),
-        description: error.message,
+        description: errorMessage,
         variant: "destructive"
       });
+    } finally {
+      authService.clearRecaptcha();
     }
   };
 
@@ -88,25 +105,41 @@ const SignUp = () => {
         description: error.message,
         variant: "destructive"
       });
+    } finally {
+      authService.clearRecaptcha();
     }
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, ''); // Enlève tout sauf les chiffres
+    if (!value.startsWith('0')) {
+      value = '0' + value;
+    }
+    setPhoneNumber(value);
   };
 
   const renderPhoneForm = () => (
     <form className="space-y-4" onSubmit={handlePhoneSubmit}>
-      <Input
-        type="tel"
-        placeholder={t('auth.phoneNumber')}
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-        required
-      />
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+          +62
+        </span>
+        <Input
+          type="tel"
+          placeholder="082266255603"
+          value={phoneNumber}
+          onChange={handlePhoneNumberChange}
+          className="pl-12"
+          required
+        />
+      </div>
       <Input
         type="password"
         placeholder={t('auth.password')}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        minLength={6}
+        minLength={8}
       />
       <div className="flex gap-4">
         <Button
@@ -165,4 +198,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-
