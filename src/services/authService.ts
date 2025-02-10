@@ -12,6 +12,20 @@ import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
 
 export class AuthService {
+  private recaptchaVerifier: ApplicationVerifier | null = null;
+
+  initRecaptcha(elementId: string) {
+    if (!this.recaptchaVerifier) {
+      this.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
+        size: 'invisible',
+        callback: () => {
+          console.log('reCAPTCHA solved');
+        }
+      });
+    }
+    return this.recaptchaVerifier;
+  }
+
   async signUp(
     email: string, 
     password: string, 
@@ -111,5 +125,71 @@ export class AuthService {
 
   getCurrentUser(): FirebaseUser | null {
     return auth.currentUser;
+  }
+
+  async signUpWithPhone(
+    phoneNumber: string,
+    role: UserRole,
+    profileData: Partial<WorkerProfile | BusinessProfile>
+  ): Promise<{ confirmationResult: any }> {
+    try {
+      if (!this.recaptchaVerifier) {
+        throw new Error('Recaptcha not initialized');
+      }
+      const confirmationResult = await signInWithPhoneNumber(
+        auth, 
+        phoneNumber, 
+        this.recaptchaVerifier
+      );
+      
+      // Store temporary data for use after OTP verification
+      sessionStorage.setItem('tempSignupData', JSON.stringify({
+        role,
+        profileData
+      }));
+
+      return { confirmationResult };
+    } catch (error: any) {
+      console.error('SignUp error:', error);
+      throw new Error(error.message);
+    }
+  }
+
+  async verifyOTP(confirmationResult: any, code: string): Promise<User> {
+    try {
+      const result = await confirmationResult.confirm(code);
+      const tempDataStr = sessionStorage.getItem('tempSignupData');
+      
+      if (!tempDataStr) {
+        throw new Error('Temporary signup data not found');
+      }
+
+      const { role, profileData } = JSON.parse(tempDataStr);
+      
+      const userData = {
+        id: result.user.uid,
+        phoneNumber: result.user.phoneNumber!,
+        role,
+        displayName: '',
+        ...profileData,
+        createdAt: new Date(Timestamp.now().toMillis()),
+        updatedAt: new Date(Timestamp.now().toMillis()),
+        isVerified: true
+      };
+
+      await setDoc(doc(db, 'users', result.user.uid), {
+        ...userData,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now()
+      });
+
+      // Clean up temp data
+      sessionStorage.removeItem('tempSignupData');
+      
+      return userData as User;
+    } catch (error: any) {
+      console.error('OTP verification error:', error);
+      throw new Error(error.message);
+    }
   }
 }

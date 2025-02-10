@@ -1,8 +1,6 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
-import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -10,99 +8,140 @@ import AuthLayout from '@/layouts/auth';
 import { UserRole } from '@/types/firebase.types';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
+import { AuthService } from '@/services/authService';
 
 const SignUp = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
   const [role, setRole] = useState<UserRole>('worker');
+  const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
+  const authService = new AuthService();
 
-  // Detect browser language on first load
   useEffect(() => {
-    // Get browser language (will return something like 'en-US' or 'id-ID')
     const browserLang = navigator.language.split('-')[0];
-    // Check if browser language is supported, default to 'en' if not
     const defaultLang = ['en', 'id'].includes(browserLang) ? browserLang : 'en';
     console.log('Setting language based on browser:', defaultLang);
     i18n.changeLanguage(defaultLang);
   }, []);
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log('Creating new user with role:', role);
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Initializing phone signup with role:', role);
       
-      await setDoc(doc(db, 'users', user.uid), {
-        email,
+      // Initialize reCAPTCHA
+      authService.initRecaptcha('recaptcha-container');
+      
+      const formatPhoneNumber = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      const result = await authService.signUpWithPhone(
+        formatPhoneNumber,
         role,
-        preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+        {
+          preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
+        }
+      );
       
-      console.log('User created successfully, navigating to onboarding');
-      navigate(`/${role}/onboarding`);
+      setConfirmationResult(result.confirmationResult);
+      setStep('otp');
+      toast({
+        title: t('auth.signUp.otpSent.title'),
+        description: t('auth.signUp.otpSent.description'),
+      });
     } catch (error: any) {
-      console.error('SignUp error:', error);
+      console.error('Phone signup error:', error);
       toast({
         title: t('auth.signUp.error.title'),
-        description: t('auth.signUp.error.description'),
+        description: error.message,
         variant: "destructive"
       });
     }
   };
+
+  const handleOTPVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (!confirmationResult) {
+        throw new Error('No confirmation result found');
+      }
+
+      const user = await authService.verifyOTP(confirmationResult, verificationCode);
+      console.log('User created successfully, navigating to onboarding');
+      navigate(`/${user.role}/onboarding`);
+    } catch (error: any) {
+      console.error('OTP verification error:', error);
+      toast({
+        title: t('auth.signUp.error.title'),
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const renderPhoneForm = () => (
+    <form className="space-y-4" onSubmit={handlePhoneSubmit}>
+      <Input
+        type="tel"
+        placeholder={t('auth.phoneNumber')}
+        value={phoneNumber}
+        onChange={(e) => setPhoneNumber(e.target.value)}
+        required
+      />
+      <div className="flex gap-4">
+        <Button
+          type="button"
+          variant={role === 'worker' ? 'default' : 'outline'}
+          className="flex-1"
+          onClick={() => setRole('worker')}
+        >
+          {t('auth.signUp.roleButtons.worker')}
+        </Button>
+        <Button
+          type="button"
+          variant={role === 'business' ? 'default' : 'outline'}
+          className="flex-1"
+          onClick={() => setRole('business')}
+        >
+          {t('auth.signUp.roleButtons.business')}
+        </Button>
+      </div>
+      <Button type="submit" className="w-full">
+        {t('auth.signUp.submitButton')}
+      </Button>
+      <div id="recaptcha-container"></div>
+    </form>
+  );
+
+  const renderOTPForm = () => (
+    <form className="space-y-4" onSubmit={handleOTPVerification}>
+      <Input
+        type="text"
+        placeholder={t('auth.signUp.otpPlaceholder')}
+        value={verificationCode}
+        onChange={(e) => setVerificationCode(e.target.value)}
+        required
+      />
+      <Button type="submit" className="w-full">
+        {t('auth.signUp.verifyButton')}
+      </Button>
+    </form>
+  );
 
   return (
     <AuthLayout title={t('auth.signUp.title')}>
       <div className="absolute top-4 right-4">
         <LanguageSelector />
       </div>
-      <form className="space-y-4" onSubmit={handleSignUp}>
-        <Input
-          type="email"
-          placeholder={t('auth.email')}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Input
-          type="password"
-          placeholder={t('auth.password')}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <div className="flex gap-4">
-          <Button
-            type="button"
-            variant={role === 'worker' ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => setRole('worker')}
-          >
-            {t('auth.signUp.roleButtons.worker')}
-          </Button>
-          <Button
-            type="button"
-            variant={role === 'business' ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => setRole('business')}
-          >
-            {t('auth.signUp.roleButtons.business')}
-          </Button>
-        </div>
-        <Button type="submit" className="w-full">
-          {t('auth.signUp.submitButton')}
-        </Button>
-        <div className="text-center text-sm text-secondary">
-          {t('auth.signUp.alreadyHaveAccount')}{' '}
-          <Link to="/signin" className="text-primary hover:text-primary/80">
-            {t('auth.signIn')}
-          </Link>
-        </div>
-      </form>
+      {step === 'phone' ? renderPhoneForm() : renderOTPForm()}
+      <div className="text-center text-sm text-secondary mt-4">
+        {t('auth.signUp.alreadyHaveAccount')}{' '}
+        <Link to="/signin" className="text-primary hover:text-primary/80">
+          {t('auth.signIn')}
+        </Link>
+      </div>
     </AuthLayout>
   );
 };
