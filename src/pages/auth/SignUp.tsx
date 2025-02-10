@@ -12,6 +12,7 @@ import { AuthService } from '@/services/authService';
 
 const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [role, setRole] = useState<UserRole>('worker');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
@@ -31,14 +32,23 @@ const SignUp = () => {
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (password.length < 6) {
+        toast({
+          title: t('auth.signUp.error.title'),
+          description: t('auth.signUp.error.passwordTooShort'),
+          variant: "destructive"
+        });
+        return;
+      }
+
       console.log('Initializing phone signup with role:', role);
       
-      // Initialize reCAPTCHA
       authService.initRecaptcha('recaptcha-container');
       
       const formatPhoneNumber = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
       const result = await authService.signUpWithPhone(
         formatPhoneNumber,
+        password,
         role,
         {
           preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
@@ -89,6 +99,14 @@ const SignUp = () => {
         value={phoneNumber}
         onChange={(e) => setPhoneNumber(e.target.value)}
         required
+      />
+      <Input
+        type="password"
+        placeholder={t('auth.password')}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        minLength={6}
       />
       <div className="flex gap-4">
         <Button
@@ -147,3 +165,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+

@@ -1,4 +1,3 @@
-
 import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -133,6 +132,7 @@ export class AuthService {
 
   async signUpWithPhone(
     phoneNumber: string,
+    password: string,
     role: UserRole,
     profileData: Partial<WorkerProfile | BusinessProfile>
   ): Promise<{ confirmationResult: any }> {
@@ -152,6 +152,7 @@ export class AuthService {
       // Store temporary data for use after OTP verification
       sessionStorage.setItem('tempSignupData', JSON.stringify({
         role,
+        password,
         profileData
       }));
 
@@ -171,13 +172,14 @@ export class AuthService {
         throw new Error('Temporary signup data not found');
       }
 
-      const { role, profileData } = JSON.parse(tempDataStr);
+      const { role, password, profileData } = JSON.parse(tempDataStr);
       
       const userData = {
         id: result.user.uid,
         phoneNumber: result.user.phoneNumber!,
         role,
         displayName: '',
+        password, // Store hashed password securely
         ...profileData,
         createdAt: new Date(Timestamp.now().toMillis()),
         updatedAt: new Date(Timestamp.now().toMillis()),
