@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -50,11 +49,13 @@ const SignIn = () => {
       }
     } catch (error: any) {
       console.error('Sign in error:', error);
-      const errorMessage = error.message === 'User not found' 
-        ? t('auth.userNotFound')
-        : error.message === 'Invalid password'
-          ? t('auth.invalidPassword')
-          : t('auth.error');
+      const errorMessage = error.message === 'RECAPTCHA_NOT_INITIALIZED'
+        ? t('auth.recaptchaError')
+        : error.message === 'USER_NOT_FOUND'
+          ? t('auth.userNotFound')
+          : error.message === 'INVALID_PASSWORD'
+            ? t('auth.invalidPassword')
+            : t('auth.error');
       
       toast({
         title: t('auth.signInError'),
@@ -63,8 +64,16 @@ const SignIn = () => {
       });
     } finally {
       setIsLoading(false);
+      authService.clearRecaptcha(); // Nettoyage du reCAPTCHA
     }
   };
+
+  // Ajout d'un nettoyage du reCAPTCHA lors du démontage du composant
+  useEffect(() => {
+    return () => {
+      authService.clearRecaptcha();
+    };
+  }, []);
 
   return (
     <AuthLayout title={t('auth.signIn')}>
