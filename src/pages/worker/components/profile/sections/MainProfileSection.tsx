@@ -105,7 +105,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
             className={cn(
               "fixed bottom-[64px] left-0 right-0 z-50 w-full py-4 px-6 shadow-lg transition-colors",
               profile?.availability_status 
-                ? "bg-accent hover:bg-accent/90 text-accent-foreground"
+                ? "bg-accent hover:bg-primary/90 text-primary-foreground"
                 : "bg-red-500 hover:bg-red-600 text-white"
             )}
           >
