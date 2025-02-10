@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -154,15 +155,25 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
 
                 <div className="flex items-center gap-3 justify-center w-full px-4">
                   <Button
-                    variant={profile?.type_contract === "Part time" ? "default" : "secondary"}
-                    className="flex-1"
+                    variant={profile?.type_contract === "Part time" ? "default" : "outline"}
+                    className={cn(
+                      "flex-1",
+                      profile?.type_contract === "Part time"
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "bg-white text-primary hover:bg-white/90 border-primary"
+                    )}
                     onClick={() => handleContractTypeChange("Part time")}
                   >
                     Part time
                   </Button>
                   <Button
-                    variant={profile?.type_contract === "Full time" ? "default" : "secondary"}
-                    className="flex-1"
+                    variant={profile?.type_contract === "Full time" ? "default" : "outline"}
+                    className={cn(
+                      "flex-1",
+                      profile?.type_contract === "Full time"
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "bg-white text-primary hover:bg-white/90 border-primary"
+                    )}
                     onClick={() => handleContractTypeChange("Full time")}
                   >
                     Full time
