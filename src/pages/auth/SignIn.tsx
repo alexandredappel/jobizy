@@ -25,12 +25,12 @@ const SignIn = () => {
     try {
       console.log('Attempting to sign in with phone:', phoneNumber);
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      
+      // Initialize reCAPTCHA verifier
+      authService.initRecaptcha('recaptcha-container');
+      
       const userData = await authService.signInWithPhone(formattedPhone, password);
       
-      if (!userData) {
-        throw new Error('No user data returned from sign in');
-      }
-
       console.log('Sign in successful:', userData);
       
       if (userData.role === 'worker' || userData.role === 'business') {
@@ -90,6 +90,7 @@ const SignIn = () => {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? t('auth.signIn.loading') : t('auth.signIn')}
         </Button>
+        <div id="recaptcha-container"></div>
         <div className="flex flex-col gap-2 text-center text-sm">
           <Link 
             to="/forgot-password"

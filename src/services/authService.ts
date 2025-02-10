@@ -10,8 +10,7 @@ import {
   signInWithPhoneNumber,
   ApplicationVerifier,
   PhoneAuthProvider,
-  signInWithCredential,
-  signInWithCustomToken
+  signInWithCredential
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -209,7 +208,7 @@ export class AuthService {
     try {
       console.log('Attempting to sign in with phone:', phoneNumber);
       
-      // Recherche de l'utilisateur par numéro de téléphone
+      // 1. Rechercher l'utilisateur par numéro de téléphone
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', phoneNumber));
       const querySnapshot = await getDocs(q);
@@ -222,26 +221,30 @@ export class AuthService {
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data();
 
-      // Vérification du mot de passe
+      // 2. Vérifier le mot de passe
       if (userData.password !== password) {
         console.error('Invalid password for user:', phoneNumber);
         throw new Error('Invalid password');
       }
 
-      // Créer un token Firebase personnalisé pour l'utilisateur
-      try {
-        await signInWithEmailAndPassword(auth, `${userDoc.id}@temp.com`, password);
-      } catch (error) {
-        console.error('Firebase auth error:', error);
-        throw new Error('Authentication failed');
-      }
+      // 3. Créer un credential pour Firebase Auth
+      const provider = new PhoneAuthProvider(auth);
+      const verificationId = await provider.verifyPhoneNumber(phoneNumber, this.recaptchaVerifier!);
+      const credential = PhoneAuthProvider.credential(verificationId, password);
 
-      // Retourner les données utilisateur
+      // 4. Connecter l'utilisateur avec le credential
+      await signInWithCredential(auth, credential);
+
+      // 5. Retourner les données utilisateur typées
       return {
         ...userData,
         id: userDoc.id,
-        createdAt: new Date((userData.createdAt as Timestamp).toMillis()),
-        updatedAt: new Date((userData.updatedAt as Timestamp).toMillis())
+        createdAt: userData.createdAt instanceof Timestamp 
+          ? userData.createdAt.toDate() 
+          : new Date(userData.createdAt),
+        updatedAt: userData.updatedAt instanceof Timestamp 
+          ? userData.updatedAt.toDate() 
+          : new Date(userData.updatedAt)
       } as User;
     } catch (error: any) {
       console.error('Phone sign in error:', error);
