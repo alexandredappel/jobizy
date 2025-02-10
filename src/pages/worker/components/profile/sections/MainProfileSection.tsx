@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ interface MainProfileSectionProps {
 
 const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps) => {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { t } = useTranslation();
 
   const handleEditClick = () => {
@@ -98,7 +100,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
 
   const AvailabilitySheetContent = () => {
     return (
-      <Sheet>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetTrigger asChild className="md:hidden">
           <button
             className={cn(
@@ -117,13 +119,14 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
           </button>
         </SheetTrigger>
         <SheetContent 
-            side="bottom" 
-            className="h-[40vh]"
-            onPointerDownOutside={(e) => e.preventDefault()}
-            onInteractOutside={(e) => e.preventDefault()}
-            onEscapeKeyDown={(e) => e.preventDefault()}
-          >
-          <div className="flex flex-col h-full">
+          side="bottom" 
+          className="h-[40vh]"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <div className="flex flex-col h-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex-1 flex flex-col items-center justify-center space-y-6">
               <h3 className="text-lg font-semibold">{t('worker.profile.sections.main.availability.title')}</h3>
               
@@ -131,7 +134,10 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                 <div className="flex items-center gap-3">
                   <Switch
                     checked={profile?.availability_status}
-                    onCheckedChange={handleAvailabilityChange}
+                    onCheckedChange={(checked) => {
+                      handleAvailabilityChange(checked);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                   />
                   <span className={cn(
                     "font-semibold",
@@ -153,7 +159,10 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
                         : "bg-white text-primary hover:bg-white/90 border-primary"
                     )}
-                    onClick={() => handleContractTypeChange("Part time")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleContractTypeChange("Part time");
+                    }}
                   >
                     {t('worker.onboarding.steps.contract.types.partTime')}
                   </Button>
@@ -165,7 +174,10 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                         ? "bg-primary text-primary-foreground hover:bg-primary/90"
                         : "bg-white text-primary hover:bg-white/90 border-primary"
                     )}
-                    onClick={() => handleContractTypeChange("Full time")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleContractTypeChange("Full time");
+                    }}
                   >
                     {t('worker.onboarding.steps.contract.types.fullTime')}
                   </Button>
