@@ -164,7 +164,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                     )}
                     onClick={() => handleContractTypeChange("Part time")}
                   >
-                    Part time
+                    {t('worker.onboarding.steps.contract.types.partTime')}
                   </Button>
                   <Button
                     variant={profile?.type_contract === "Full time" ? "default" : "outline"}
@@ -176,7 +176,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                     )}
                     onClick={() => handleContractTypeChange("Full time")}
                   >
-                    Full time
+                    {t('worker.onboarding.steps.contract.types.fullTime')}
                   </Button>
                 </div>
 
