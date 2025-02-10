@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -119,8 +120,21 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
         <SheetContent 
           side="bottom" 
           className="h-[40vh]"
+          onPointerDownOutside={(e) => {
+            const target = e.target as HTMLElement;
+            if (
+              target.closest('[role="switch"]') || 
+              target.closest('button')
+            ) {
+              e.preventDefault();
+            }
+          }}
           onInteractOutside={(e) => {
-            if (e.target instanceof HTMLElement && e.target.closest('[role="switch"]')) {
+            const target = e.target as HTMLElement;
+            if (
+              target.closest('[role="switch"]') || 
+              target.closest('button')
+            ) {
               e.preventDefault();
             }
           }}
