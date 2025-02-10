@@ -117,14 +117,12 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
           </button>
         </SheetTrigger>
         <SheetContent 
-          side="bottom" 
-          className="h-[40vh]"
-          onInteractOutside={(e) => {
-            if (e.target instanceof HTMLElement && e.target.closest('[role="switch"]')) {
-              e.preventDefault();
-            }
-          }}
-        >
+            side="bottom" 
+            className="h-[40vh]"
+            onPointerDownOutside={(e) => e.preventDefault()}
+            onInteractOutside={(e) => e.preventDefault()}
+            onEscapeKeyDown={(e) => e.preventDefault()}
+          >
           <div className="flex flex-col h-full">
             <div className="flex-1 flex flex-col items-center justify-center space-y-6">
               <h3 className="text-lg font-semibold">{t('worker.profile.sections.main.availability.title')}</h3>
