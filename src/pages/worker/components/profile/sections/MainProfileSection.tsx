@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -120,24 +119,10 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
         <SheetContent 
           side="bottom" 
           className="h-[40vh]"
-          onPointerDownOutside={(e) => {
-            const target = e.target as HTMLElement;
-            if (
-              target.closest('[role="switch"]') || 
-              target.closest('button')
-            ) {
-              e.preventDefault();
-            }
-          }}
-          onInteractOutside={(e) => {
-            const target = e.target as HTMLElement;
-            if (
-              target.closest('[role="switch"]') || 
-              target.closest('button')
-            ) {
-              e.preventDefault();
-            }
-          }}
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => e.preventDefault()}
         >
           <div className="flex flex-col h-full">
             <div className="flex-1 flex flex-col items-center justify-center space-y-6">
