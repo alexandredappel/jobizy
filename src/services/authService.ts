@@ -1,3 +1,4 @@
+
 import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -5,7 +6,10 @@ import {
   sendPasswordResetEmail,
   sendEmailVerification,
   updateProfile,
-  User as FirebaseUser
+  User as FirebaseUser,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  ApplicationVerifier
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -136,6 +140,9 @@ export class AuthService {
       if (!this.recaptchaVerifier) {
         throw new Error('Recaptcha not initialized');
       }
+      
+      console.log('Attempting phone sign up with:', { phoneNumber, role });
+      
       const confirmationResult = await signInWithPhoneNumber(
         auth, 
         phoneNumber, 
