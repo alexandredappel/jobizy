@@ -1,24 +1,19 @@
 import { 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   signOut as firebaseSignOut,
-  sendPasswordResetEmail,
-  sendEmailVerification,
-  updateProfile,
-  User as FirebaseUser,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   ApplicationVerifier,
-  PhoneAuthProvider,
-  signInWithCredential
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
+import { doc, setDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
+import bcrypt from 'bcrypt';
 
 export class AuthService {
+  private readonly SALT_ROUNDS = 10;
   private recaptchaVerifier: ApplicationVerifier | null = null;
 
+  // Initialisation du reCAPTCHA
   initRecaptcha(elementId: string) {
     if (!this.recaptchaVerifier) {
       this.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
@@ -31,107 +26,20 @@ export class AuthService {
     return this.recaptchaVerifier;
   }
 
-  async signUp(
-    email: string, 
-    password: string, 
-    role: UserRole, 
-    profileData: Partial<WorkerProfile | BusinessProfile>
-  ): Promise<User> {
-    try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      await sendEmailVerification(user);
-      
-      const userData = {
-        id: user.uid,
-        email: user.email!,
-        role,
-        displayName: '',
-        ...profileData,
-        createdAt: new Date(Timestamp.now().toMillis()),
-        updatedAt: new Date(Timestamp.now().toMillis()),
-        isVerified: false
-      };
-
-      await setDoc(doc(db, 'users', user.uid), {
-        ...userData,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
-      });
-      
-      return userData as User;
-    } catch (error: any) {
-      console.error('SignUp error:', error);
-      throw new Error(error.message);
+  // Nettoyage du reCAPTCHA
+  clearRecaptcha() {
+    if (this.recaptchaVerifier) {
+      this.recaptchaVerifier.clear();
+      this.recaptchaVerifier = null;
     }
   }
 
-  async signIn(email: string, password: string): Promise<User> {
-    try {
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      
-      if (!userDoc.exists()) {
-        throw new Error('User data not found');
-      }
-
-      const userData = userDoc.data();
-      return {
-        ...userData,
-        createdAt: new Date((userData.createdAt as Timestamp).toMillis()),
-        updatedAt: new Date((userData.updatedAt as Timestamp).toMillis())
-      } as User;
-    } catch (error: any) {
-      console.error('SignIn error:', error);
-      throw new Error(error.message);
-    }
+  // Utilitaire pour hasher les mots de passe
+  private async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, this.SALT_ROUNDS);
   }
 
-  async signOut(): Promise<void> {
-    try {
-      await firebaseSignOut(auth);
-    } catch (error: any) {
-      console.error('SignOut error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async resetPassword(email: string): Promise<void> {
-    try {
-      await sendPasswordResetEmail(auth, email);
-    } catch (error: any) {
-      console.error('Password reset error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async updateUserProfile(user: FirebaseUser, data: Partial<User>): Promise<void> {
-    try {
-      const isWorker = (data as Partial<WorkerProfile>).role === 'worker';
-      const pictureUrl = isWorker 
-        ? (data as Partial<WorkerProfile>).profile_picture_url 
-        : (data as Partial<BusinessProfile>).logo_picture_url;
-
-      if (data.displayName || pictureUrl) {
-        await updateProfile(user, {
-          displayName: data.displayName,
-          photoURL: pictureUrl
-        });
-      }
-
-      await setDoc(doc(db, 'users', user.uid), {
-        ...data,
-        updatedAt: Timestamp.now()
-      }, { merge: true });
-    } catch (error: any) {
-      console.error('Profile update error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  getCurrentUser(): FirebaseUser | null {
-    return auth.currentUser;
-  }
-
+  // SIGNUP - Étape 1: Vérification initiale et envoi OTP
   async signUpWithPhone(
     phoneNumber: string,
     password: string,
@@ -140,102 +48,104 @@ export class AuthService {
   ): Promise<{ confirmationResult: any }> {
     try {
       if (!this.recaptchaVerifier) {
-        throw new Error('Recaptcha not initialized');
+        throw new Error('RECAPTCHA_NOT_INITIALIZED');
       }
+
+      // Vérifier si le numéro existe déjà
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('phoneNumber', '==', phoneNumber));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        throw new Error('PHONE_ALREADY_EXISTS');
+      }
+
+      // Hasher le mot de passe
+      const hashedPassword = await this.hashPassword(password);
       
-      console.log('Attempting phone sign up with:', { phoneNumber, role });
-      
+      // Envoyer l'OTP
       const confirmationResult = await signInWithPhoneNumber(
-        auth, 
-        phoneNumber, 
+        auth,
+        phoneNumber,
         this.recaptchaVerifier
       );
-      
-      // Store temporary data for use after OTP verification
+
+      // Stocker les données temporairement
       sessionStorage.setItem('tempSignupData', JSON.stringify({
         role,
-        password,
+        hashedPassword,
         profileData
       }));
 
       return { confirmationResult };
     } catch (error: any) {
-      console.error('SignUp error:', error);
-      throw new Error(error.message);
+      this.clearRecaptcha();
+      throw error;
     }
   }
 
+  // SIGNUP - Étape 2: Vérification OTP et création du compte
   async verifyOTP(confirmationResult: any, code: string): Promise<User> {
     try {
       const result = await confirmationResult.confirm(code);
       const tempDataStr = sessionStorage.getItem('tempSignupData');
       
       if (!tempDataStr) {
-        throw new Error('Temporary signup data not found');
+        throw new Error('TEMP_DATA_NOT_FOUND');
       }
 
-      const { role, password, profileData } = JSON.parse(tempDataStr);
+      const { role, hashedPassword, profileData } = JSON.parse(tempDataStr);
       
       const userData = {
         id: result.user.uid,
         phoneNumber: result.user.phoneNumber!,
         role,
-        displayName: '',
-        password, // Store hashed password securely
+        password: hashedPassword,
         ...profileData,
-        createdAt: new Date(Timestamp.now().toMillis()),
-        updatedAt: new Date(Timestamp.now().toMillis()),
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
         isVerified: true
       };
 
-      await setDoc(doc(db, 'users', result.user.uid), {
-        ...userData,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now()
-      });
-
-      // Clean up temp data
+      await setDoc(doc(db, 'users', result.user.uid), userData);
       sessionStorage.removeItem('tempSignupData');
       
-      return userData as User;
+      return {
+        ...userData,
+        createdAt: userData.createdAt.toDate(),
+        updatedAt: userData.updatedAt.toDate()
+      } as User;
     } catch (error: any) {
-      console.error('OTP verification error:', error);
-      throw new Error(error.message);
+      throw error;
     }
   }
 
+  // SIGNIN - Authentification avec téléphone et mot de passe
   async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
     try {
-      console.log('Attempting to sign in with phone:', phoneNumber);
-      
-      // 1. Rechercher l'utilisateur par numéro de téléphone
+      if (!this.recaptchaVerifier) {
+        throw new Error('RECAPTCHA_NOT_INITIALIZED');
+      }
+
+      // 1. Rechercher l'utilisateur
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', phoneNumber));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        console.error('User not found with phone:', phoneNumber);
-        throw new Error('User not found');
+        throw new Error('USER_NOT_FOUND');
       }
 
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data();
 
       // 2. Vérifier le mot de passe
-      if (userData.password !== password) {
-        console.error('Invalid password for user:', phoneNumber);
-        throw new Error('Invalid password');
+      const isValidPassword = await bcrypt.compare(password, userData.password);
+      if (!isValidPassword) {
+        throw new Error('INVALID_PASSWORD');
       }
 
-      // 3. Créer un credential pour Firebase Auth
-      const provider = new PhoneAuthProvider(auth);
-      const verificationId = await provider.verifyPhoneNumber(phoneNumber, this.recaptchaVerifier!);
-      const credential = PhoneAuthProvider.credential(verificationId, password);
-
-      // 4. Connecter l'utilisateur avec le credential
-      await signInWithCredential(auth, credential);
-
-      // 5. Retourner les données utilisateur typées
+      // 3. Connecter l'utilisateur et retourner ses données
       return {
         ...userData,
         id: userDoc.id,
@@ -247,8 +157,23 @@ export class AuthService {
           : new Date(userData.updatedAt)
       } as User;
     } catch (error: any) {
-      console.error('Phone sign in error:', error);
+      console.error('Sign in error:', error);
+      this.clearRecaptcha();
       throw error;
     }
+  }
+
+  // Déconnexion
+  async signOut(): Promise<void> {
+    try {
+      await firebaseSignOut(auth);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  // Récupérer l'utilisateur courant
+  getCurrentUser() {
+    return auth.currentUser;
   }
 }
