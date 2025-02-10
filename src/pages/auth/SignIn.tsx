@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -24,23 +25,25 @@ const SignIn = () => {
     
     try {
       console.log('Attempting to sign in with phone:', phoneNumber);
-      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      // Format du numéro de téléphone
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
       
       // Initialize reCAPTCHA verifier
       authService.initRecaptcha('recaptcha-container');
       
-      const userData: User = await authService.signInWithPhone(formattedPhone, password);
+      const userData = await authService.signInWithPhone(phoneForFirebase, password);
       
       console.log('Sign in successful:', userData);
       
-      if (userData.role === 'worker' || userData.role === 'business') {
+      if (userData && userData.role === 'worker' || userData.role === 'business') {
         if (userData.role === 'worker') {
           navigate('/worker/dashboard');
         } else {
           navigate('/business/dashboard');
         }
       } else {
-        console.error('Invalid user role:', userData.role);
+        console.error('Invalid user role:', userData?.role);
         toast({
           title: t('auth.error'),
           description: t('auth.invalidRole'),
@@ -75,20 +78,34 @@ const SignIn = () => {
     };
   }, []);
 
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (!value.startsWith('0')) {
+      value = '0' + value;
+    }
+    setPhoneNumber(value);
+  };
+
   return (
     <AuthLayout title={t('auth.signIn')}>
       <div className="absolute top-4 right-4">
         <LanguageSelector />
       </div>
       <form onSubmit={handleSignIn} className="space-y-4">
-        <Input
-          type="tel"
-          placeholder={t('auth.phone')}
-          value={phoneNumber}
-          onChange={(e) => setPhoneNumber(e.target.value)}
-          disabled={isLoading}
-          required
-        />
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+            +62
+          </span>
+          <Input
+            type="tel"
+            placeholder="082266255603"
+            value={phoneNumber}
+            onChange={handlePhoneNumberChange}
+            className="pl-12"
+            disabled={isLoading}
+            required
+          />
+        </div>
         <Input
           type="password"
           placeholder={t('auth.password')}
@@ -121,3 +138,4 @@ const SignIn = () => {
 };
 
 export default SignIn;
+

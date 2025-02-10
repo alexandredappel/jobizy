@@ -1,3 +1,4 @@
+
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier,
@@ -7,7 +8,7 @@ import {
 import { doc, setDoc, updateDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
-import bcrypt from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 
 export class AuthService {
   private readonly SALT_ROUNDS = 10;
@@ -29,14 +30,14 @@ export class AuthService {
   // Nettoyage du reCAPTCHA
   clearRecaptcha() {
     if (this.recaptchaVerifier) {
-      this.recaptchaVerifier.clear();
+      (this.recaptchaVerifier as any).clear?.();
       this.recaptchaVerifier = null;
     }
   }
 
   // Utilitaire pour hasher les mots de passe
   private async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, this.SALT_ROUNDS);
+    return bcryptjs.hash(password, this.SALT_ROUNDS);
   }
 
   // Utilitaire pour convertir les Timestamps
@@ -150,7 +151,7 @@ export class AuthService {
       }
 
       const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
+      const userData = userDoc.data() as User;
 
       // 2. Vérifier si le mot de passe doit être migré
       let isValidPassword = false;
@@ -168,7 +169,7 @@ export class AuthService {
         }
       } else {
         // Mot de passe déjà hashé : vérification normale
-        isValidPassword = await bcrypt.compare(password, userData.password);
+        isValidPassword = await bcryptjs.compare(password, userData.password);
       }
 
       if (!isValidPassword) {
@@ -203,3 +204,4 @@ export class AuthService {
     return auth.currentUser;
   }
 }
+
