@@ -24,12 +24,10 @@ const SignIn = () => {
     
     try {
       console.log('Attempting to sign in with phone:', phoneNumber);
-      // Initialize reCAPTCHA for phone sign-in
-      authService.initRecaptcha('recaptcha-container');
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
       const userData = await authService.signInWithPhone(formattedPhone, password);
 
-      console.log('Sign in successful');
+      console.log('Sign in successful:', userData);
       
       // Redirect based on role
       if (userData.role === 'worker') {
@@ -39,16 +37,22 @@ const SignIn = () => {
       } else {
         console.error('Invalid user role:', userData.role);
         toast({
-          title: "Error",
-          description: "Invalid user role",
+          title: t('auth.error'),
+          description: t('auth.invalidRole'),
           variant: "destructive"
         });
       }
     } catch (error: any) {
       console.error('Sign in error:', error);
+      const errorMessage = error.message === 'User not found' 
+        ? t('auth.userNotFound')
+        : error.message === 'Invalid password'
+          ? t('auth.invalidPassword')
+          : t('auth.error');
+      
       toast({
-        title: "Sign In Error",
-        description: error.message,
+        title: t('auth.signInError'),
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -95,7 +99,6 @@ const SignIn = () => {
             </Link>
           </span>
         </div>
-        <div id="recaptcha-container"></div>
       </form>
     </AuthLayout>
   );

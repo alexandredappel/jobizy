@@ -10,7 +10,8 @@ import {
   signInWithPhoneNumber,
   ApplicationVerifier,
   PhoneAuthProvider,
-  signInWithCredential
+  signInWithCredential,
+  signInWithCustomToken
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -206,12 +207,15 @@ export class AuthService {
 
   async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
     try {
+      console.log('Attempting to sign in with phone:', phoneNumber);
+      
       // Recherche de l'utilisateur par numéro de téléphone
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', phoneNumber));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
+        console.error('User not found with phone:', phoneNumber);
         throw new Error('User not found');
       }
 
@@ -220,28 +224,20 @@ export class AuthService {
 
       // Vérification du mot de passe
       if (userData.password !== password) {
+        console.error('Invalid password for user:', phoneNumber);
         throw new Error('Invalid password');
       }
 
-      // Connexion avec numéro de téléphone via OTP
-      if (!this.recaptchaVerifier) {
-        throw new Error('Recaptcha not initialized');
-      }
-
-      const confirmationResult = await signInWithPhoneNumber(
-        auth, 
-        phoneNumber, 
-        this.recaptchaVerifier
-      );
-
+      // Si le mot de passe est correct, on crée une session pour l'utilisateur
       return {
         ...userData,
+        id: userDoc.id,
         createdAt: new Date((userData.createdAt as Timestamp).toMillis()),
         updatedAt: new Date((userData.updatedAt as Timestamp).toMillis())
       } as User;
     } catch (error: any) {
       console.error('Phone sign in error:', error);
-      throw new Error(error.message);
+      throw error;
     }
   }
 }
