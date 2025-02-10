@@ -1,6 +1,6 @@
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,44 +9,52 @@ import AuthLayout from '@/layouts/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
+import { AuthService } from '@/services/authService';
 
 const SignIn = () => {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const authService = new AuthService();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
     try {
-      console.log('Attempting to sign in with:', email);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Sign in successful');
+      let userData;
+      
+      // Vérifie si l'identifiant est un email ou un numéro de téléphone
+      const isEmail = identifier.includes('@');
+      
+      if (isEmail) {
+        console.log('Attempting to sign in with email:', identifier);
+        userData = await authService.signIn(identifier, password);
+      } else {
+        console.log('Attempting to sign in with phone:', identifier);
+        // Initialize reCAPTCHA for phone sign-in
+        authService.initRecaptcha('recaptcha-container');
+        const formattedPhone = identifier.startsWith('+') ? identifier : `+${identifier}`;
+        userData = await authService.signInWithPhone(formattedPhone, password);
+      }
 
-      // Fetch user data to get role
-      const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const userRole = userData.role || userData.userType;
-        console.log('User role:', userRole);
-        
-        // Redirect based on role
-        if (userRole === 'worker') {
-          navigate('/worker/dashboard');
-        } else if (userRole === 'business') {
-          navigate('/business/dashboard');
-        } else {
-          console.error('Invalid user role:', userRole);
-          toast({
-            title: "Error",
-            description: "Invalid user role",
-            variant: "destructive"
-          });
-        }
+      console.log('Sign in successful');
+      
+      // Redirect based on role
+      if (userData.role === 'worker') {
+        navigate('/worker/dashboard');
+      } else if (userData.role === 'business') {
+        navigate('/business/dashboard');
+      } else {
+        console.error('Invalid user role:', userData.role);
+        toast({
+          title: "Error",
+          description: "Invalid user role",
+          variant: "destructive"
+        });
       }
     } catch (error: any) {
       console.error('Sign in error:', error);
@@ -67,10 +75,10 @@ const SignIn = () => {
       </div>
       <form onSubmit={handleSignIn} className="space-y-4">
         <Input
-          type="email"
-          placeholder={t('auth.email')}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder={t('auth.emailOrPhone')}
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
           disabled={isLoading}
           required
         />
@@ -99,6 +107,7 @@ const SignIn = () => {
             </Link>
           </span>
         </div>
+        <div id="recaptcha-container"></div>
       </form>
     </AuthLayout>
   );

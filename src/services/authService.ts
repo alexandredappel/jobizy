@@ -8,9 +8,11 @@ import {
   User as FirebaseUser,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-  ApplicationVerifier
+  ApplicationVerifier,
+  PhoneAuthProvider,
+  signInWithCredential
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
 
@@ -198,6 +200,47 @@ export class AuthService {
       return userData as User;
     } catch (error: any) {
       console.error('OTP verification error:', error);
+      throw new Error(error.message);
+    }
+  }
+
+  async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
+    try {
+      // Recherche de l'utilisateur par numéro de téléphone
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('phoneNumber', '==', phoneNumber));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        throw new Error('User not found');
+      }
+
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+
+      // Vérification du mot de passe
+      if (userData.password !== password) {
+        throw new Error('Invalid password');
+      }
+
+      // Connexion avec numéro de téléphone via OTP
+      if (!this.recaptchaVerifier) {
+        throw new Error('Recaptcha not initialized');
+      }
+
+      const confirmationResult = await signInWithPhoneNumber(
+        auth, 
+        phoneNumber, 
+        this.recaptchaVerifier
+      );
+
+      return {
+        ...userData,
+        createdAt: new Date((userData.createdAt as Timestamp).toMillis()),
+        updatedAt: new Date((userData.updatedAt as Timestamp).toMillis())
+      } as User;
+    } catch (error: any) {
+      console.error('Phone sign in error:', error);
       throw new Error(error.message);
     }
   }
