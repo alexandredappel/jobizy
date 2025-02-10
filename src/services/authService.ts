@@ -4,7 +4,7 @@ import {
   signInWithPhoneNumber,
   ApplicationVerifier,
 } from 'firebase/auth';
-import { doc, setDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
 import bcrypt from 'bcryptjs';
@@ -37,6 +37,19 @@ export class AuthService {
   // Utilitaire pour hasher les mots de passe
   private async hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, this.SALT_ROUNDS);
+  }
+
+  // Utilitaire pour convertir les Timestamps
+  private convertTimestamp(timestamp: any): Date {
+    if (timestamp instanceof Timestamp) {
+      return timestamp.toDate();
+    }
+    return new Date(timestamp);
+  }
+
+  // Utilitaire pour vérifier si un mot de passe est hashé
+  private isPasswordHashed(password: string): boolean {
+    return password.startsWith('$2a$') || password.startsWith('$2b$');
   }
 
   // SIGNUP - Étape 1: Vérification initiale et envoi OTP
@@ -112,8 +125,8 @@ export class AuthService {
       
       return {
         ...userData,
-        createdAt: userData.createdAt.toDate(),
-        updatedAt: userData.updatedAt.toDate()
+        createdAt: this.convertTimestamp(userData.createdAt),
+        updatedAt: this.convertTimestamp(userData.updatedAt)
       } as User;
     } catch (error: any) {
       throw error;
@@ -139,8 +152,25 @@ export class AuthService {
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data();
 
-      // 2. Vérifier le mot de passe
-      const isValidPassword = await bcrypt.compare(password, userData.password);
+      // 2. Vérifier si le mot de passe doit être migré
+      let isValidPassword = false;
+      if (!this.isPasswordHashed(userData.password)) {
+        // Ancien format : hasher le mot de passe et mettre à jour
+        if (userData.password === password) { // Comparaison directe pour les anciens mots de passe
+          const hashedPassword = await this.hashPassword(password);
+          await updateDoc(doc(db, 'users', userDoc.id), {
+            password: hashedPassword,
+            updatedAt: Timestamp.now(),
+            passwordMigratedAt: Timestamp.now()
+          });
+          userData.password = hashedPassword;
+          isValidPassword = true;
+        }
+      } else {
+        // Mot de passe déjà hashé : vérification normale
+        isValidPassword = await bcrypt.compare(password, userData.password);
+      }
+
       if (!isValidPassword) {
         throw new Error('INVALID_PASSWORD');
       }
@@ -149,12 +179,8 @@ export class AuthService {
       return {
         ...userData,
         id: userDoc.id,
-        createdAt: userData.createdAt instanceof Timestamp 
-          ? userData.createdAt.toDate() 
-          : new Date(userData.createdAt),
-        updatedAt: userData.updatedAt instanceof Timestamp 
-          ? userData.updatedAt.toDate() 
-          : new Date(userData.updatedAt)
+        createdAt: this.convertTimestamp(userData.createdAt),
+        updatedAt: this.convertTimestamp(userData.updatedAt)
       } as User;
     } catch (error: any) {
       console.error('Sign in error:', error);
