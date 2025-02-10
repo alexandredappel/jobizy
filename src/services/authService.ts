@@ -7,7 +7,7 @@ import {
 import { doc, setDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export class AuthService {
   private readonly SALT_ROUNDS = 10;
