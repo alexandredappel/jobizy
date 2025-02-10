@@ -1,3 +1,4 @@
+
 export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
 
 export type BusinessType = 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
@@ -8,22 +9,22 @@ export type Language = 'English' | 'Bahasa';
 
 export type UserRole = 'worker' | 'business';
 
-export interface BaseUser {
+interface BaseUser {
   id: string;
-  uid: string; // Add Firebase UID
-  email: string;
+  phoneNumber: string;
   role: UserRole;
   displayName: string;
+  preferred_language?: string;
   createdAt: Date;
   updatedAt: Date;
   isVerified: boolean;
+  password?: string;
 }
 
 export interface WorkerProfile extends BaseUser {
   role: 'worker';
   firstName: string;
   lastName: string;
-  phoneNumber: string;
   gender: 'male' | 'female';
   birthday_date?: Date;
   job: JobType;
