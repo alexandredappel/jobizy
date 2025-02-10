@@ -8,7 +8,6 @@ import AuthLayout from '@/layouts/auth';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
 import { AuthService } from '@/services/authService';
-import { User } from '@/types/database.types';
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -34,9 +33,7 @@ const SignIn = () => {
 
       console.log('Sign in successful:', userData);
       
-      // Vérifier explicitement le type de l'utilisateur
       if (userData.role === 'worker' || userData.role === 'business') {
-        // Redirection basée sur le rôle
         if (userData.role === 'worker') {
           navigate('/worker/dashboard');
         } else {

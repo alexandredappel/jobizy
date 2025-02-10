@@ -228,7 +228,15 @@ export class AuthService {
         throw new Error('Invalid password');
       }
 
-      // Si le mot de passe est correct, on crée une session pour l'utilisateur
+      // Créer un token Firebase personnalisé pour l'utilisateur
+      try {
+        await signInWithEmailAndPassword(auth, `${userDoc.id}@temp.com`, password);
+      } catch (error) {
+        console.error('Firebase auth error:', error);
+        throw new Error('Authentication failed');
+      }
+
+      // Retourner les données utilisateur
       return {
         ...userData,
         id: userDoc.id,
