@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth, db } from '@/lib/firebase';
 import { User as FirebaseUser } from 'firebase/auth';
@@ -34,20 +35,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userData = userDoc.data();
             console.log('User data retrieved:', userData);
             
-            // Set language preference if it exists
             if (userData.preferred_language) {
               console.log('Setting language to:', userData.preferred_language);
               i18next.changeLanguage(userData.preferred_language);
             }
-            
-            // Ensure we're using the correct role field
-            const userRole = userData.role || userData.userType;
-            
+
             setUser({
               ...userData,
-              role: userRole, // Ensure we're using the standardized role
               id: userDoc.id,
-              uid: firebaseUser.uid,
               createdAt: userData.createdAt instanceof Timestamp 
                 ? userData.createdAt.toDate() 
                 : new Date(userData.createdAt),
@@ -84,12 +79,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

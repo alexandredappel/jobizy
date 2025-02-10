@@ -26,15 +26,22 @@ const SignIn = () => {
     try {
       console.log('Attempting to sign in with phone:', phoneNumber);
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
-      const userData: User = await authService.signInWithPhone(formattedPhone, password);
+      const userData = await authService.signInWithPhone(formattedPhone, password);
+      
+      if (!userData) {
+        throw new Error('No user data returned from sign in');
+      }
 
       console.log('Sign in successful:', userData);
       
-      // Redirect based on role
-      if (userData.role === 'worker') {
-        navigate('/worker/dashboard');
-      } else if (userData.role === 'business') {
-        navigate('/business/dashboard');
+      // Vérifier explicitement le type de l'utilisateur
+      if (userData.role === 'worker' || userData.role === 'business') {
+        // Redirection basée sur le rôle
+        if (userData.role === 'worker') {
+          navigate('/worker/dashboard');
+        } else {
+          navigate('/business/dashboard');
+        }
       } else {
         console.error('Invalid user role:', userData.role);
         toast({
