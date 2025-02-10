@@ -1,18 +1,16 @@
 
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { auth, db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthLayout from '@/layouts/auth';
-import { doc, getDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
 import { AuthService } from '@/services/authService';
 
 const SignIn = () => {
-  const [identifier, setIdentifier] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -25,21 +23,11 @@ const SignIn = () => {
     setIsLoading(true);
     
     try {
-      let userData;
-      
-      // Vérifie si l'identifiant est un email ou un numéro de téléphone
-      const isEmail = identifier.includes('@');
-      
-      if (isEmail) {
-        console.log('Attempting to sign in with email:', identifier);
-        userData = await authService.signIn(identifier, password);
-      } else {
-        console.log('Attempting to sign in with phone:', identifier);
-        // Initialize reCAPTCHA for phone sign-in
-        authService.initRecaptcha('recaptcha-container');
-        const formattedPhone = identifier.startsWith('+') ? identifier : `+${identifier}`;
-        userData = await authService.signInWithPhone(formattedPhone, password);
-      }
+      console.log('Attempting to sign in with phone:', phoneNumber);
+      // Initialize reCAPTCHA for phone sign-in
+      authService.initRecaptcha('recaptcha-container');
+      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
+      const userData = await authService.signInWithPhone(formattedPhone, password);
 
       console.log('Sign in successful');
       
@@ -75,10 +63,10 @@ const SignIn = () => {
       </div>
       <form onSubmit={handleSignIn} className="space-y-4">
         <Input
-          type="text"
-          placeholder={t('auth.emailOrPhone')}
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
+          type="tel"
+          placeholder={t('auth.phone')}
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
           disabled={isLoading}
           required
         />
