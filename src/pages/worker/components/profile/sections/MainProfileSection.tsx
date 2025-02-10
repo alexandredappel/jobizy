@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -104,7 +105,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
             className={cn(
               "fixed bottom-[64px] left-0 right-0 z-50 w-full py-4 px-6 shadow-lg transition-colors",
               profile?.availability_status 
-                ? "bg-accent hover:bg-primary/90 text-primary-foreground"
+                ? "bg-primary text-primary-foreground"
                 : "bg-red-500 hover:bg-red-600 text-white"
             )}
           >
@@ -267,3 +268,4 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
 };
 
 export default MainProfileSection;
+
