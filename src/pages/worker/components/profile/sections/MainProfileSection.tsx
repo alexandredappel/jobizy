@@ -51,6 +51,10 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
     await onSave({ availability_status: checked });
   };
 
+  const handleContractTypeChange = async (type: "Full time" | "Part time") => {
+    await onSave({ type_contract: type });
+  };
+
   const renderBadges = (values: string[], type: 'contract' | 'languages' | 'location') => {
     if (!values?.length) return [t('worker.profile.sections.main.noneValue')];
     
@@ -99,13 +103,13 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
           <button
             className={cn(
               "fixed bottom-[64px] left-0 right-0 z-50 w-full py-4 px-6 shadow-lg transition-colors",
-              profile.availability_status 
+              profile?.availability_status 
                 ? "bg-accent hover:bg-accent/90 text-accent-foreground"
                 : "bg-red-500 hover:bg-red-600 text-white"
             )}
           >
             <p className="text-center font-medium">
-              {profile.availability_status 
+              {profile?.availability_status 
                 ? t('worker.profile.sections.main.availability.mobileAvailable')
                 : t('worker.profile.sections.main.availability.mobileUnavailable')
               }
@@ -114,7 +118,7 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
         </SheetTrigger>
         <SheetContent 
           side="bottom" 
-          className="h-[30vh]"
+          className="h-[40vh]"
           onInteractOutside={(e) => {
             if (e.target instanceof HTMLElement && e.target.closest('[role="switch"]')) {
               e.preventDefault();
@@ -122,35 +126,56 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
           }}
         >
           <div className="flex flex-col h-full">
-            <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+            <div className="flex-1 flex flex-col items-center justify-center space-y-6">
               <h3 className="text-lg font-semibold">{t('worker.profile.sections.main.availability.title')}</h3>
-              <div className="flex items-center gap-3">
-                <Switch
-                  checked={profile.availability_status}
-                  onCheckedChange={handleAvailabilityChange}
-                  className={cn(
-                    "h-8 w-14",
-                    profile.availability_status 
-                      ? "data-[state=checked]:bg-accent" 
-                      : "data-[state=checked]:bg-red-500"
-                  )}
-                />
-                <span className={cn(
-                  "font-semibold",
-                  profile.availability_status ? "text-accent" : "text-red-500"
-                )}>
-                  {profile.availability_status 
-                    ? t('worker.profile.sections.main.availability.available')
-                    : t('worker.profile.sections.main.availability.unavailable')
+              
+              <div className="flex flex-col items-center gap-6 w-full">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    checked={profile?.availability_status}
+                    onCheckedChange={handleAvailabilityChange}
+                    className={cn(
+                      "h-8 w-14",
+                      profile?.availability_status 
+                        ? "data-[state=checked]:bg-accent" 
+                        : "data-[state=checked]:bg-red-500"
+                    )}
+                  />
+                  <span className={cn(
+                    "font-semibold",
+                    profile?.availability_status ? "text-accent" : "text-red-500"
+                  )}>
+                    {profile?.availability_status 
+                      ? t('worker.profile.sections.main.availability.available')
+                      : t('worker.profile.sections.main.availability.unavailable')
+                    }
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3 justify-center w-full px-4">
+                  <Button
+                    variant={profile?.type_contract === "Part time" ? "default" : "secondary"}
+                    className="flex-1"
+                    onClick={() => handleContractTypeChange("Part time")}
+                  >
+                    Part time
+                  </Button>
+                  <Button
+                    variant={profile?.type_contract === "Full time" ? "default" : "secondary"}
+                    className="flex-1"
+                    onClick={() => handleContractTypeChange("Full time")}
+                  >
+                    Full time
+                  </Button>
+                </div>
+
+                <p className="text-muted-foreground text-center max-w-xs px-4">
+                  {profile?.availability_status 
+                    ? t('worker.profile.sections.main.availability.availableDescription')
+                    : t('worker.profile.sections.main.availability.unavailableDescription')
                   }
-                </span>
+                </p>
               </div>
-              <p className="text-muted-foreground text-center max-w-xs">
-                {profile.availability_status 
-                  ? t('worker.profile.sections.main.availability.availableDescription')
-                  : t('worker.profile.sections.main.availability.unavailableDescription')
-                }
-              </p>
             </div>
           </div>
         </SheetContent>
@@ -165,12 +190,12 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
           <div className="absolute right-4 top-4 flex items-center gap-4 hidden md:flex">
             <div className="flex items-center gap-2">
               <Switch
-                checked={profile.availability_status}
+                checked={profile?.availability_status}
                 onCheckedChange={handleAvailabilityChange}
                 aria-label={t('worker.profile.sections.main.availability.toggleLabel')}
               />
               <span className="text-sm text-muted-foreground">
-                {profile.availability_status 
+                {profile?.availability_status 
                   ? t('worker.profile.sections.main.availability.shortAvailable')
                   : t('worker.profile.sections.main.availability.shortUnavailable')
                 }
