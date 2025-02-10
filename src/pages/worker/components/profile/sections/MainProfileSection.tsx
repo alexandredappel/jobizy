@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Edit, Clock, Globe, MapPin, ChefHat, Coffee, CreditCard, User2, Home, Flower2, Droplets, Wine, ShoppingBag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -134,6 +135,12 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                   <Switch
                     checked={profile?.availability_status}
                     onCheckedChange={handleAvailabilityChange}
+                    className={cn(
+                      "h-8 w-14",
+                      profile?.availability_status 
+                        ? "data-[state=checked]:bg-primary" 
+                        : "data-[state=checked]:bg-red-500"
+                    )}
                   />
                   <span className={cn(
                     "font-semibold",
