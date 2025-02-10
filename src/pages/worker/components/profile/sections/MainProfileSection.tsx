@@ -138,13 +138,13 @@ const MainProfileSection = ({ profile, onSave, onEdit }: MainProfileSectionProps
                     className={cn(
                       "h-8 w-14",
                       profile?.availability_status 
-                        ? "data-[state=checked]:bg-accent" 
+                        ? "data-[state=checked]:bg-primary" 
                         : "data-[state=checked]:bg-red-500"
                     )}
                   />
                   <span className={cn(
                     "font-semibold",
-                    profile?.availability_status ? "text-accent" : "text-red-500"
+                    profile?.availability_status ? "text-primary" : "text-red-500"
                   )}>
                     {profile?.availability_status 
                       ? t('worker.profile.sections.main.availability.available')
