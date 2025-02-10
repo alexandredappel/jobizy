@@ -27,8 +27,8 @@
       "title": "Daftar",
       "submitButton": "Daftar",
       "roleButtons": {
-        "worker": "Saya Pekerja",
-        "business": "Saya Pengusaha"
+        "worker": "Saya mencari Ayub",
+        "business": "Saya mencari Staf"
       },
       "alreadyHaveAccount": "Sudah punya akun?",
       "error": {
