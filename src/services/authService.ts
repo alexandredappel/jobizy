@@ -13,7 +13,7 @@ export class AuthService {
   private readonly SALT_ROUNDS = 10;
   private recaptchaVerifier: ApplicationVerifier | null = null;
 
-  // Initialisation du reCAPTCHA
+  // Initialisation du reCAPTCHA (uniquement pour signup)
   initRecaptcha(elementId: string) {
     if (!this.recaptchaVerifier) {
       this.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
@@ -166,29 +166,33 @@ export class AuthService {
   // SIGNIN - Authentification avec téléphone et mot de passe
   async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
     try {
+      // 1. Formater le numéro de téléphone
       console.log('SignIn - Raw phone number:', phoneNumber);
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
       console.log('SignIn - Formatted phone:', formattedPhone);
 
-      // Rechercher l'utilisateur
+      // 2. Rechercher l'utilisateur
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
+      console.log('Executing query with phone:', formattedPhone);
+      
       const querySnapshot = await getDocs(q);
+      console.log('Query results:', querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
 
       if (querySnapshot.empty) {
         console.log('No user found with phone:', formattedPhone);
         throw new Error('USER_NOT_FOUND');
       }
 
+      // 3. Récupérer et vérifier les données utilisateur
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data() as User;
-      console.log('Found user data:', userData);
+      console.log('Found user data:', { id: userDoc.id, ...userData });
 
-      // Vérifier si le mot de passe doit être migré
+      // 4. Vérifier le mot de passe
       let isValidPassword = false;
       if (!this.isPasswordHashed(userData.password)) {
-        // Ancien format : hasher le mot de passe et mettre à jour
-        if (userData.password === password) { // Comparaison directe pour les anciens mots de passe
+        if (userData.password === password) {
           const hashedPassword = await this.hashPassword(password);
           await updateDoc(doc(db, 'users', userDoc.id), {
             password: hashedPassword,
@@ -199,7 +203,6 @@ export class AuthService {
           isValidPassword = true;
         }
       } else {
-        // Mot de passe déjà hashé : vérification normale
         isValidPassword = await bcryptjs.compare(password, userData.password);
       }
 
@@ -208,12 +211,14 @@ export class AuthService {
         throw new Error('INVALID_PASSWORD');
       }
 
+      // 5. Retourner les données utilisateur
       return {
         ...userData,
         id: userDoc.id,
         createdAt: this.convertTimestamp(userData.createdAt),
         updatedAt: this.convertTimestamp(userData.updatedAt)
       } as User;
+
     } catch (error: any) {
       console.error('Sign in error:', error);
       throw error;
