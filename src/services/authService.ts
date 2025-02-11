@@ -1,4 +1,3 @@
-
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier,
@@ -53,6 +52,18 @@ export class AuthService {
     return password.startsWith('$2a$') || password.startsWith('$2b$');
   }
 
+  // Utilitaire pour formater le numéro de téléphone
+  private formatPhoneNumber(phoneNumber: string): string {
+    let cleanNumber = phoneNumber.replace(/\D/g, '');
+    if (cleanNumber.startsWith('0')) {
+      cleanNumber = cleanNumber.slice(1);
+    }
+    if (!cleanNumber.startsWith('62')) {
+      cleanNumber = '62' + cleanNumber;
+    }
+    return '+' + cleanNumber;
+  }
+
   // SIGNUP - Étape 1: Vérification initiale et envoi OTP
   async signUpWithPhone(
     phoneNumber: string,
@@ -65,9 +76,11 @@ export class AuthService {
         throw new Error('RECAPTCHA_NOT_INITIALIZED');
       }
 
+      const formattedPhone = this.formatPhoneNumber(phoneNumber);
+
       // Vérifier si le numéro existe déjà
       const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('phoneNumber', '==', phoneNumber));
+      const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
@@ -80,7 +93,7 @@ export class AuthService {
       // Envoyer l'OTP
       const confirmationResult = await signInWithPhoneNumber(
         auth,
-        phoneNumber,
+        formattedPhone,
         this.recaptchaVerifier
       );
 
@@ -137,13 +150,12 @@ export class AuthService {
   // SIGNIN - Authentification avec téléphone et mot de passe
   async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
     try {
-      if (!this.recaptchaVerifier) {
-        throw new Error('RECAPTCHA_NOT_INITIALIZED');
-      }
+      // 1. Formater le numéro de téléphone
+      const formattedPhone = this.formatPhoneNumber(phoneNumber);
 
-      // 1. Rechercher l'utilisateur
+      // 2. Rechercher l'utilisateur
       const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('phoneNumber', '==', phoneNumber));
+      const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
@@ -153,7 +165,7 @@ export class AuthService {
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data() as User;
 
-      // 2. Vérifier si le mot de passe doit être migré
+      // 3. Vérifier si le mot de passe doit être migré
       let isValidPassword = false;
       if (!this.isPasswordHashed(userData.password)) {
         // Ancien format : hasher le mot de passe et mettre à jour
@@ -176,7 +188,7 @@ export class AuthService {
         throw new Error('INVALID_PASSWORD');
       }
 
-      // 3. Connecter l'utilisateur et retourner ses données
+      // 4. Connecter l'utilisateur et retourner ses données
       return {
         ...userData,
         id: userDoc.id,
@@ -185,7 +197,6 @@ export class AuthService {
       } as User;
     } catch (error: any) {
       console.error('Sign in error:', error);
-      this.clearRecaptcha();
       throw error;
     }
   }
@@ -204,4 +215,3 @@ export class AuthService {
     return auth.currentUser;
   }
 }
-
