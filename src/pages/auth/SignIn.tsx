@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +7,6 @@ import AuthLayout from '@/layouts/auth';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
 import { AuthService } from '@/services/authService';
-import { User } from '@/types/database.types';
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -25,14 +23,8 @@ const SignIn = () => {
     
     try {
       console.log('Attempting to sign in with phone:', phoneNumber);
-      // Format du numéro de téléphone
-      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
-      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
       
-      // Initialize reCAPTCHA verifier
-      authService.initRecaptcha('recaptcha-container');
-      
-      const userData = await authService.signInWithPhone(phoneForFirebase, password);
+      const userData = await authService.signInWithPhone(phoneNumber, password);
       
       console.log('Sign in successful:', userData);
       
@@ -52,13 +44,11 @@ const SignIn = () => {
       }
     } catch (error: any) {
       console.error('Sign in error:', error);
-      const errorMessage = error.message === 'RECAPTCHA_NOT_INITIALIZED'
-        ? t('auth.recaptchaError')
-        : error.message === 'USER_NOT_FOUND'
-          ? t('auth.userNotFound')
-          : error.message === 'INVALID_PASSWORD'
-            ? t('auth.invalidPassword')
-            : t('auth.error');
+      const errorMessage = error.message === 'USER_NOT_FOUND'
+        ? t('auth.userNotFound')
+        : error.message === 'INVALID_PASSWORD'
+          ? t('auth.invalidPassword')
+          : t('auth.error');
       
       toast({
         title: t('auth.signInError'),
@@ -67,16 +57,8 @@ const SignIn = () => {
       });
     } finally {
       setIsLoading(false);
-      authService.clearRecaptcha(); // Nettoyage du reCAPTCHA
     }
   };
-
-  // Ajout d'un nettoyage du reCAPTCHA lors du démontage du composant
-  useEffect(() => {
-    return () => {
-      authService.clearRecaptcha();
-    };
-  }, []);
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -117,7 +99,6 @@ const SignIn = () => {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? t('auth.signIn.loading') : t('auth.signIn')}
         </Button>
-        <div id="recaptcha-container"></div>
         <div className="flex flex-col gap-2 text-center text-sm">
           <Link 
             to="/forgot-password"
@@ -138,4 +119,3 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
