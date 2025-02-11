@@ -1,4 +1,3 @@
-
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier,

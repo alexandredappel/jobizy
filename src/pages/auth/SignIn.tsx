@@ -8,6 +8,7 @@ import AuthLayout from '@/layouts/auth';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
 import { AuthService } from '@/services/authService';
+import { User } from '@/types/database.types';
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -25,7 +26,7 @@ const SignIn = () => {
     try {
       console.log('Raw phone number input:', phoneNumber);
       
-      const userData = await authService.signInWithPhone(phoneNumber, password);
+      const userData: User = await authService.signInWithPhone(phoneNumber, password);
       
       console.log('Sign in successful:', userData);
       
