@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -22,18 +23,16 @@ const SignIn = () => {
     setIsLoading(true);
     
     try {
-      console.log('Attempting to sign in with phone:', phoneNumber);
+      console.log('Raw phone number input:', phoneNumber);
       
       const userData = await authService.signInWithPhone(phoneNumber, password);
       
       console.log('Sign in successful:', userData);
       
-      if (userData && userData.role === 'worker' || userData.role === 'business') {
-        if (userData.role === 'worker') {
-          navigate('/worker/dashboard');
-        } else {
-          navigate('/business/dashboard');
-        }
+      if (userData?.role === 'worker') {
+        navigate('/worker/dashboard');
+      } else if (userData?.role === 'business') {
+        navigate('/business/dashboard');
       } else {
         console.error('Invalid user role:', userData?.role);
         toast({

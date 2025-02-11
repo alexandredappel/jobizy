@@ -1,3 +1,4 @@
+
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier,
@@ -54,14 +55,29 @@ export class AuthService {
 
   // Utilitaire pour formater le numéro de téléphone
   private formatPhoneNumber(phoneNumber: string): string {
+    console.log('Formatting phone number:', phoneNumber);
+    
+    // Nettoyer le numéro (garder uniquement les chiffres)
     let cleanNumber = phoneNumber.replace(/\D/g, '');
+    console.log('Cleaned number:', cleanNumber);
+    
+    // Si le numéro commence par 0, le supprimer
     if (cleanNumber.startsWith('0')) {
       cleanNumber = cleanNumber.slice(1);
+      console.log('Removed leading 0:', cleanNumber);
     }
+    
+    // Si le numéro ne commence pas par 62, l'ajouter
     if (!cleanNumber.startsWith('62')) {
       cleanNumber = '62' + cleanNumber;
+      console.log('Added country code:', cleanNumber);
     }
-    return '+' + cleanNumber;
+    
+    // Ajouter le +
+    const formattedNumber = '+' + cleanNumber;
+    console.log('Final formatted number:', formattedNumber);
+    
+    return formattedNumber;
   }
 
   // SIGNUP - Étape 1: Vérification initiale et envoi OTP
@@ -77,6 +93,7 @@ export class AuthService {
       }
 
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
+      console.log('Signup - Formatted phone:', formattedPhone);
 
       // Vérifier si le numéro existe déjà
       const usersRef = collection(db, 'users');
@@ -150,22 +167,25 @@ export class AuthService {
   // SIGNIN - Authentification avec téléphone et mot de passe
   async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
     try {
-      // 1. Formater le numéro de téléphone
+      console.log('SignIn - Raw phone number:', phoneNumber);
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
+      console.log('SignIn - Formatted phone:', formattedPhone);
 
-      // 2. Rechercher l'utilisateur
+      // Rechercher l'utilisateur
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
+        console.log('No user found with phone:', formattedPhone);
         throw new Error('USER_NOT_FOUND');
       }
 
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data() as User;
+      console.log('Found user data:', userData);
 
-      // 3. Vérifier si le mot de passe doit être migré
+      // Vérifier si le mot de passe doit être migré
       let isValidPassword = false;
       if (!this.isPasswordHashed(userData.password)) {
         // Ancien format : hasher le mot de passe et mettre à jour
@@ -185,10 +205,10 @@ export class AuthService {
       }
 
       if (!isValidPassword) {
+        console.log('Invalid password for user:', formattedPhone);
         throw new Error('INVALID_PASSWORD');
       }
 
-      // 4. Connecter l'utilisateur et retourner ses données
       return {
         ...userData,
         id: userDoc.id,
