@@ -8,8 +8,7 @@ import AuthLayout from '@/layouts/auth';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
 import { AuthService } from '@/services/authService';
-
-const RETRY_DELAY = 30; // 30 secondes de délai entre les tentatives
+import { User } from '@/types/database.types';
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -18,7 +17,6 @@ const SignIn = () => {
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [retryTimer, setRetryTimer] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -26,19 +24,15 @@ const SignIn = () => {
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (retryTimer > 0) {
-      toast({
-        title: t('auth.error'),
-        description: t('auth.tooManyAttempts', { seconds: retryTimer }),
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
     
     try {
+      console.log('Raw phone number input:', phoneNumber);
+      console.log('Attempting phone sign in...');
+      
       const result = await authService.signInWithPhone(phoneNumber, password);
+      console.log('Phone sign in successful, got confirmation result');
+      
       setConfirmationResult(result.confirmationResult);
       setStep('otp');
       
@@ -47,28 +41,12 @@ const SignIn = () => {
         description: t('auth.enterOTP'),
       });
     } catch (error: any) {
-      console.error('Sign in error:', error);
-      
-      if (error.message === 'TOO_MANY_ATTEMPTS') {
-        setRetryTimer(RETRY_DELAY);
-        const timer = setInterval(() => {
-          setRetryTimer((prev) => {
-            if (prev <= 1) {
-              clearInterval(timer);
-              return 0;
-            }
-            return prev - 1;
-          });
-        }, 1000);
-      }
-
+      console.error('Phone sign in error:', error);
       toast({
         title: t('auth.error'),
-        description: error.message === 'TOO_MANY_ATTEMPTS'
-          ? t('auth.tooManyAttempts', { seconds: RETRY_DELAY })
-          : error.message === 'USER_NOT_FOUND'
-            ? t('auth.userNotFound')
-            : t('auth.error'),
+        description: error.message === 'USER_NOT_FOUND'
+          ? t('auth.userNotFound')
+          : t('auth.error'),
         variant: "destructive"
       });
     } finally {
@@ -81,14 +59,25 @@ const SignIn = () => {
     setIsLoading(true);
     
     try {
-      const userData = await authService.verifySignInOTP(confirmationResult, verificationCode);
+      console.log('Verifying OTP...');
+      const userData: User = await authService.verifySignInOTP(confirmationResult, verificationCode);
+      console.log('OTP verification successful:', userData);
       
+      if (!userData) {
+        throw new Error('No user data returned');
+      }
+
       if (userData.role === 'worker') {
         navigate('/worker/dashboard');
       } else if (userData.role === 'business') {
         navigate('/business/dashboard');
       } else {
-        throw new Error('INVALID_ROLE');
+        console.error('Invalid user role:', userData.role);
+        toast({
+          title: t('auth.error'),
+          description: t('auth.invalidRole'),
+          variant: "destructive"
+        });
       }
     } catch (error: any) {
       console.error('OTP verification error:', error);
