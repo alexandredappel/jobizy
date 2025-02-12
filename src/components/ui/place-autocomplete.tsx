@@ -1,0 +1,189 @@
+
+import React, { useEffect, useState, useRef } from 'react';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { PlaceDetails, GooglePlaceResult } from '@/types/places.types';
+import { useToast } from '@/hooks/use-toast';
+
+interface PlaceAutocompleteProps {
+  onPlaceSelect: (place: PlaceDetails) => void;
+  placeholder?: string;
+  types?: string[];
+  defaultValue?: string;
+  className?: string;
+}
+
+export function PlaceAutocomplete({
+  onPlaceSelect,
+  placeholder = "Search for a place...",
+  types = ['establishment'],
+  defaultValue = '',
+  className
+}: PlaceAutocompleteProps) {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(defaultValue);
+  const [predictions, setPredictions] = useState<GooglePlaceResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
+  const placesService = useRef<google.maps.places.PlacesService | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Load Google Places script
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VITE_GOOGLE_PLACES_API_KEY}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      autocompleteService.current = new google.maps.places.AutocompleteService();
+      const mapDiv = document.createElement('div');
+      placesService.current = new google.maps.places.PlacesService(mapDiv);
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const getPlacePredictions = async (input: string) => {
+    if (!input || !autocompleteService.current) return;
+
+    try {
+      const request = {
+        input,
+        types,
+        componentRestrictions: { country: 'id' } // Restrict to Indonesia
+      };
+
+      const response = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve, reject) => {
+        autocompleteService.current?.getPlacePredictions(
+          request,
+          (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+              resolve(results);
+            } else {
+              reject(status);
+            }
+          }
+        );
+      });
+
+      setPredictions(response.map(prediction => ({
+        place_id: prediction.place_id,
+        description: prediction.description,
+        structured_formatting: {
+          main_text: prediction.structured_formatting.main_text,
+          secondary_text: prediction.structured_formatting.secondary_text,
+        }
+      })));
+    } catch (error) {
+      console.error('Error fetching predictions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch place predictions",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePlaceSelect = async (placeId: string, description: string) => {
+    if (!placesService.current) return;
+
+    try {
+      setIsLoading(true);
+      const place = await new Promise<google.maps.places.PlaceResult>((resolve, reject) => {
+        placesService.current?.getDetails(
+          {
+            placeId: placeId,
+            fields: ['name', 'formatted_address', 'geometry', 'types']
+          },
+          (result, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && result) {
+              resolve(result);
+            } else {
+              reject(status);
+            }
+          }
+        );
+      });
+
+      const placeDetails: PlaceDetails = {
+        place_id: placeId,
+        name: place.name || description,
+        formatted_address: place.formatted_address || '',
+        types: place.types || [],
+        location: place.geometry?.location ? {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng()
+        } : undefined
+      };
+
+      setValue(placeDetails.name);
+      setOpen(false);
+      onPlaceSelect(placeDetails);
+    } catch (error) {
+      console.error('Error fetching place details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch place details",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn("w-full justify-between", className)}
+          disabled={isLoading}
+        >
+          {value || placeholder}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px] p-0">
+        <Command>
+          <CommandInput
+            placeholder={placeholder}
+            onValueChange={(search) => {
+              getPlacePredictions(search);
+            }}
+          />
+          <CommandEmpty>No places found.</CommandEmpty>
+          <CommandGroup className="max-h-[300px] overflow-auto">
+            {predictions.map((prediction) => (
+              <CommandItem
+                key={prediction.place_id}
+                value={prediction.place_id}
+                onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    value === prediction.description ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                <div className="flex flex-col">
+                  <span>{prediction.structured_formatting.main_text}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {prediction.structured_formatting.secondary_text}
+                  </span>
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
