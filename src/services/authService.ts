@@ -14,7 +14,6 @@ import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database
 export class AuthService {
   private recaptchaVerifier: ApplicationVerifier | null = null;
 
-  // Initialisation du reCAPTCHA (uniquement pour signup)
   initRecaptcha(elementId: string) {
     if (!this.recaptchaVerifier) {
       this.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
@@ -27,7 +26,6 @@ export class AuthService {
     return this.recaptchaVerifier;
   }
 
-  // Nettoyage du reCAPTCHA
   clearRecaptcha() {
     if (this.recaptchaVerifier) {
       (this.recaptchaVerifier as any).clear?.();
@@ -35,7 +33,6 @@ export class AuthService {
     }
   }
 
-  // Utilitaire pour convertir les Timestamps
   private convertTimestamp(timestamp: any): Date {
     if (timestamp instanceof Timestamp) {
       return timestamp.toDate();
@@ -43,34 +40,28 @@ export class AuthService {
     return new Date(timestamp);
   }
 
-  // Utilitaire pour formater le numéro de téléphone
   private formatPhoneNumber(phoneNumber: string): string {
     console.log('Formatting phone number:', phoneNumber);
     
-    // Nettoyer le numéro (garder uniquement les chiffres)
     let cleanNumber = phoneNumber.replace(/\D/g, '');
     console.log('Cleaned number:', cleanNumber);
     
-    // Si le numéro commence par 0, le supprimer
     if (cleanNumber.startsWith('0')) {
       cleanNumber = cleanNumber.slice(1);
       console.log('Removed leading 0:', cleanNumber);
     }
     
-    // Si le numéro ne commence pas par 62, l'ajouter
     if (!cleanNumber.startsWith('62')) {
       cleanNumber = '62' + cleanNumber;
       console.log('Added country code:', cleanNumber);
     }
     
-    // Ajouter le +
     const formattedNumber = '+' + cleanNumber;
     console.log('Final formatted number:', formattedNumber);
     
     return formattedNumber;
   }
 
-  // SIGNUP - Étape 1: Vérification initiale et envoi OTP
   async signUpWithPhone(
     phoneNumber: string,
     password: string,
@@ -80,7 +71,6 @@ export class AuthService {
     try {
       console.log('=== DEBUG SIGNUP START ===');
       console.log('Phone number:', phoneNumber);
-      console.log('Password:', password);
       console.log('Role:', role);
       console.log('Profile data:', profileData);
 
@@ -110,7 +100,7 @@ export class AuthService {
       );
       console.log('OTP sent successfully');
 
-      // Stocker les données temporairement SANS le mot de passe
+      // Stocker les données temporairement
       const tempData = {
         role,
         profileData
@@ -127,7 +117,6 @@ export class AuthService {
     }
   }
 
-  // SIGNUP - Étape 2: Vérification OTP et création du compte
   async verifyOTP(confirmationResult: any, code: string): Promise<User> {
     try {
       console.log('=== DEBUG VERIFY OTP START ===');
@@ -177,36 +166,6 @@ export class AuthService {
     }
   }
 
-  // SIGNIN - Authentification avec téléphone et vérification OTP
-  async signInWithPhone(phoneNumber: string, password: string): Promise<{ confirmationResult: any }> {
-    try {
-      console.log('=== DEBUG SIGNIN START ===');
-      console.log('Phone number:', phoneNumber);
-      console.log('Password:', password);
-      console.log('Password length:', password.length);
-      console.log('Password type:', typeof password);
-
-      const formattedPhone = this.formatPhoneNumber(phoneNumber);
-      console.log('Formatted phone:', formattedPhone);
-
-      const appVerifier = this.initRecaptcha('recaptcha-container');
-      console.log('reCAPTCHA initialized');
-      
-      // Envoyer le code de vérification
-      console.log('Sending verification code...');
-      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
-      console.log('Verification code sent successfully');
-      
-      console.log('=== DEBUG SIGNIN END ===');
-      return { confirmationResult };
-    } catch (error: any) {
-      console.error('Sign in error:', error);
-      this.clearRecaptcha();
-      throw error;
-    }
-  }
-
-  // SIGNIN - Vérification du code OTP pour la connexion
   async verifySignInOTP(confirmationResult: any, code: string): Promise<User> {
     try {
       console.log('=== DEBUG VERIFY SIGNIN OTP START ===');
@@ -215,10 +174,7 @@ export class AuthService {
       const userCredential = await confirmationResult.confirm(code);
       console.log('OTP confirmed successfully');
 
-      const user = userCredential.user;
-      console.log('Firebase user:', user);
-
-      const userDocRef = doc(db, 'users', user.uid);
+      const userDocRef = doc(db, 'users', userCredential.user.uid);
       const userDocSnap = await getDoc(userDocRef);
 
       if (!userDocSnap.exists()) {
@@ -244,7 +200,6 @@ export class AuthService {
     }
   }
 
-  // Déconnexion
   async signOut(): Promise<void> {
     try {
       await firebaseSignOut(auth);
@@ -253,7 +208,6 @@ export class AuthService {
     }
   }
 
-  // Récupérer l'utilisateur courant
   getCurrentUser() {
     return auth.currentUser;
   }
