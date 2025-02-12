@@ -60,15 +60,19 @@ const SignIn = () => {
     
     try {
       console.log('Verifying OTP...');
-      const userData = await authService.verifySignInOTP(confirmationResult, verificationCode);
+      const userData: User = await authService.verifySignInOTP(confirmationResult, verificationCode);
       console.log('OTP verification successful:', userData);
       
-      if (userData?.role === 'worker') {
+      if (!userData) {
+        throw new Error('No user data returned');
+      }
+
+      if (userData.role === 'worker') {
         navigate('/worker/dashboard');
-      } else if (userData?.role === 'business') {
+      } else if (userData.role === 'business') {
         navigate('/business/dashboard');
       } else {
-        console.error('Invalid user role:', userData?.role);
+        console.error('Invalid user role:', userData.role);
         toast({
           title: t('auth.error'),
           description: t('auth.invalidRole'),
