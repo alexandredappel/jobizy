@@ -11,17 +11,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Badge } from "@/components/ui/badge";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { BusinessType, WorkArea, JobType, Language } from "@/types/firebase.types";
+import { BusinessType, JobType, Language } from "@/types/firebase.types";
 import { PlaceDetails } from "@/types/places.types";
 import { CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PlaceAutocomplete } from "@/components/ui/place-autocomplete";
 
 const BUSINESS_TYPES: BusinessType[] = ['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'];
-const WORK_AREAS: WorkArea[] = [
-  'Seminyak', 'Kuta', 'Kerobokan', 'Canggu', 'Umalas', 'Ubud', 
-  'Uluwatu', 'Denpasar', 'Sanur', 'Jimbaran', 'Pererenan', 'Nusa Dua'
-];
 const JOB_TYPES: JobType[] = [
   'Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 
   'Gardener', 'Bartender', 'Seller'
@@ -30,10 +26,8 @@ const LANGUAGES: Language[] = ['English', 'Bahasa'];
 
 interface OnboardingData {
   business_type: BusinessType;
-  location: WorkArea;
   job_type: JobType;
   languages: Language[];
-  company_name: string;
   place_details?: PlaceDetails;
 }
 
@@ -45,17 +39,15 @@ const BusinessOnboarding = () => {
   const [isCompleting, setIsCompleting] = useState(false);
   const [data, setData] = useState<OnboardingData>({
     business_type: 'Restaurant',
-    location: 'Seminyak',
     job_type: 'Waiter',
     languages: [],
-    company_name: "",
     place_details: undefined,
   });
 
-  const progress = (step / 5) * 100;
+  const progress = (step / 4) * 100;
 
   const handleNext = async () => {
-    if (step === 5) {
+    if (step === 4) {
       await completeOnboarding();
     } else {
       setStep(step + 1);
@@ -71,8 +63,7 @@ const BusinessOnboarding = () => {
       
       await setDoc(doc(db, 'users', user.id), {
         business_type: data.business_type,
-        location: data.location,
-        company_name: data.company_name,
+        company_name: data.place_details?.name,
         place_details: data.place_details,
         role: 'business',
         created_at: Timestamp.now(),
@@ -144,29 +135,12 @@ const BusinessOnboarding = () => {
 
             {step === 2 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">Where is your business located?</h2>
-                <Select
-                  value={data.location}
-                  onValueChange={(value: WorkArea) => setData({ ...data, location: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {WORK_AREAS.map((area) => (
-                      <SelectItem key={area} value={area}>
-                        {area}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="mt-4">
-                  <PlaceAutocomplete
-                    placeholder="Enter your exact business address"
-                    onPlaceSelect={(place) => setData({ ...data, place_details: place })}
-                    types={['establishment']}
-                  />
-                </div>
+                <h2 className="text-2xl font-bold">What is the name of your business?</h2>
+                <PlaceAutocomplete
+                  placeholder="Enter the name of your business"
+                  onPlaceSelect={(place) => setData({ ...data, place_details: place })}
+                  types={['establishment']}
+                />
               </div>
             )}
 
@@ -221,29 +195,17 @@ const BusinessOnboarding = () => {
               </div>
             )}
 
-            {step === 5 && (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">What is the name of your Business?</h2>
-                <Input
-                  value={data.company_name}
-                  onChange={(e) => setData({ ...data, company_name: e.target.value })}
-                  placeholder="Enter your business name"
-                />
-              </div>
-            )}
-
             <Button 
               className="w-full mt-8" 
               onClick={handleNext}
               disabled={
                 (step === 1 && !data.business_type) ||
-                (step === 2 && (!data.location || !data.place_details)) ||
+                (step === 2 && !data.place_details) ||
                 (step === 3 && !data.job_type) ||
-                (step === 4 && data.languages.length === 0) ||
-                (step === 5 && !data.company_name)
+                (step === 4 && data.languages.length === 0)
               }
             >
-              {step === 5 ? "Complete" : "Next"}
+              {step === 4 ? "Complete" : "Next"}
             </Button>
           </div>
         </CardContent>
@@ -253,4 +215,3 @@ const BusinessOnboarding = () => {
 };
 
 export default BusinessOnboarding;
-
