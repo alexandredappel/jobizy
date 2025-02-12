@@ -3,8 +3,10 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   ApplicationVerifier,
+  signInWithCredential,
+  PhoneAuthProvider,
 } from 'firebase/auth';
-import { doc, setDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
+import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
 
@@ -80,7 +82,6 @@ export class AuthService {
       }
 
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
-      console.log('Signup - Formatted phone:', formattedPhone);
 
       // Vérifier si le numéro existe déjà
       const usersRef = collection(db, 'users');
@@ -98,10 +99,9 @@ export class AuthService {
         this.recaptchaVerifier
       );
 
-      // Stocker les données temporairement
+      // Stocker les données temporairement SANS le mot de passe
       sessionStorage.setItem('tempSignupData', JSON.stringify({
         role,
-        password,
         profileData
       }));
 
@@ -122,18 +122,12 @@ export class AuthService {
         throw new Error('TEMP_DATA_NOT_FOUND');
       }
 
-      const { role, password, profileData } = JSON.parse(tempDataStr);
-      
-      console.log('=== DEBUG SIGNUP ===');
-      console.log('Mot de passe à stocker:', password);
-      console.log('Length:', password.length);
-      console.log('Type:', typeof password);
+      const { role, profileData } = JSON.parse(tempDataStr);
       
       const userData = {
         id: result.user.uid,
         phoneNumber: result.user.phoneNumber!,
         role,
-        password,
         ...profileData,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -141,9 +135,6 @@ export class AuthService {
       };
 
       await setDoc(doc(db, 'users', result.user.uid), userData);
-      console.log('Utilisateur créé avec succès');
-      console.log('=== FIN DEBUG SIGNUP ===');
-      
       sessionStorage.removeItem('tempSignupData');
       
       return {
@@ -156,54 +147,45 @@ export class AuthService {
     }
   }
 
-  // SIGNIN - Authentification avec téléphone et mot de passe
-  async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
+  // SIGNIN - Authentification avec téléphone et vérification OTP
+  async signInWithPhone(phoneNumber: string, password: string): Promise<{ confirmationResult: any }> {
     try {
-      console.log('=== DEBUG SIGNIN ===');
-      console.log('Tentative de connexion avec:');
-      console.log('Mot de passe fourni:', password);
-      console.log('Length:', password.length);
-      console.log('Type:', typeof password);
-      
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
-      console.log('Numéro formaté:', formattedPhone);
+      const appVerifier = this.initRecaptcha('recaptcha-container');
       
-      const usersRef = collection(db, 'users');
-      const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
-      const querySnapshot = await getDocs(q);
+      // Envoyer le code de vérification
+      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+      
+      return { confirmationResult };
+    } catch (error: any) {
+      this.clearRecaptcha();
+      throw error;
+    }
+  }
 
-      if (querySnapshot.empty) {
-        console.log('❌ Erreur: Utilisateur non trouvé');
+  // SIGNIN - Vérification du code OTP pour la connexion
+  async verifySignInOTP(confirmationResult: any, code: string): Promise<User> {
+    try {
+      const userCredential = await confirmationResult.confirm(code);
+      const user = userCredential.user;
+
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
         throw new Error('USER_NOT_FOUND');
       }
 
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data() as User;
-      
-      console.log('Mot de passe stocké:', userData.password);
-      console.log('Length:', userData.password.length);
-      console.log('Type:', typeof userData.password);
-      console.log('Comparaison:', userData.password === password);
-      
-      // Simple comparaison directe du mot de passe
-      if (userData.password !== password) {
-        console.log('❌ Erreur: Mot de passe invalide');
-        throw new Error('INVALID_PASSWORD');
-      }
-
-      console.log('✅ Authentification réussie');
-      console.log('=== FIN DEBUG SIGNIN ===');
-
+      const userData = userDocSnap.data() as User;
       return {
         ...userData,
-        id: userDoc.id,
         createdAt: this.convertTimestamp(userData.createdAt),
         updatedAt: this.convertTimestamp(userData.updatedAt)
-      } as User;
-
+      };
     } catch (error: any) {
-      console.error('Sign in error:', error);
-      console.log('=== FIN DEBUG AVEC ERREUR ===');
+      if (error.code === 'auth/invalid-verification-code') {
+        throw new Error('INVALID_VERIFICATION_CODE');
+      }
       throw error;
     }
   }
