@@ -1,4 +1,3 @@
-
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier,
@@ -125,11 +124,16 @@ export class AuthService {
 
       const { role, password, profileData } = JSON.parse(tempDataStr);
       
+      console.log('=== DEBUG SIGNUP ===');
+      console.log('Mot de passe à stocker:', password);
+      console.log('Length:', password.length);
+      console.log('Type:', typeof password);
+      
       const userData = {
         id: result.user.uid,
         phoneNumber: result.user.phoneNumber!,
         role,
-        password, // Stockage direct du mot de passe (à améliorer dans une version future)
+        password,
         ...profileData,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -137,6 +141,9 @@ export class AuthService {
       };
 
       await setDoc(doc(db, 'users', result.user.uid), userData);
+      console.log('Utilisateur créé avec succès');
+      console.log('=== FIN DEBUG SIGNUP ===');
+      
       sessionStorage.removeItem('tempSignupData');
       
       return {
@@ -152,10 +159,14 @@ export class AuthService {
   // SIGNIN - Authentification avec téléphone et mot de passe
   async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
     try {
-      console.log('=== SIGNIN DEBUG ===');
+      console.log('=== DEBUG SIGNIN ===');
+      console.log('Tentative de connexion avec:');
+      console.log('Mot de passe fourni:', password);
+      console.log('Length:', password.length);
+      console.log('Type:', typeof password);
       
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
-      console.log('1. Numéro formaté:', formattedPhone);
+      console.log('Numéro formaté:', formattedPhone);
       
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
@@ -169,6 +180,11 @@ export class AuthService {
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data() as User;
       
+      console.log('Mot de passe stocké:', userData.password);
+      console.log('Length:', userData.password.length);
+      console.log('Type:', typeof userData.password);
+      console.log('Comparaison:', userData.password === password);
+      
       // Simple comparaison directe du mot de passe
       if (userData.password !== password) {
         console.log('❌ Erreur: Mot de passe invalide');
@@ -176,7 +192,7 @@ export class AuthService {
       }
 
       console.log('✅ Authentification réussie');
-      console.log('=== FIN DEBUG ===');
+      console.log('=== FIN DEBUG SIGNIN ===');
 
       return {
         ...userData,
