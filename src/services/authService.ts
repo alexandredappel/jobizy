@@ -166,32 +166,61 @@ export class AuthService {
   // SIGNIN - Authentification avec téléphone et mot de passe
   async signInWithPhone(phoneNumber: string, password: string): Promise<User> {
     try {
-      // 1. Formater le numéro de téléphone
-      console.log('SignIn - Raw phone number:', phoneNumber);
+      console.log('=== SIGNIN DEBUG ===');
+      
+      // 1. Analyse du numéro entrant
+      console.log('1. Numéro brut:', phoneNumber);
+      console.log('1a. Longueur du numéro:', phoneNumber.length);
+      console.log('1b. Type de donnée:', typeof phoneNumber);
+      
+      // 2. Formatage du numéro
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
-      console.log('SignIn - Formatted phone:', formattedPhone);
-
-      // 2. Rechercher l'utilisateur
+      console.log('2. Numéro après formatage:', formattedPhone);
+      console.log('2a. Longueur après formatage:', formattedPhone.length);
+      
+      // 3. Recherche dans Firestore
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
-      console.log('Executing query with phone:', formattedPhone);
+      console.log('3. Recherche Firestore avec le numéro:', formattedPhone);
       
       const querySnapshot = await getDocs(q);
-      console.log('Query results:', querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      console.log('4. Nombre de résultats trouvés:', querySnapshot.size);
+      
+      // Log détaillé des résultats trouvés
+      if (querySnapshot.size > 0) {
+        console.log('5. Détails des résultats:');
+        querySnapshot.docs.forEach((doc, index) => {
+          const data = doc.data();
+          console.log(`  Document ${index + 1}:`);
+          console.log('    - ID:', doc.id);
+          console.log('    - Numéro de téléphone:', data.phoneNumber);
+          console.log('    - Rôle:', data.role);
+        });
+      } else {
+        console.log('5. Aucun utilisateur trouvé');
+      }
 
       if (querySnapshot.empty) {
-        console.log('No user found with phone:', formattedPhone);
+        console.log('❌ Erreur: Utilisateur non trouvé pour:', formattedPhone);
         throw new Error('USER_NOT_FOUND');
       }
 
-      // 3. Récupérer et vérifier les données utilisateur
+      // 6. Données utilisateur
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data() as User;
-      console.log('Found user data:', { id: userDoc.id, ...userData });
+      console.log('6. Données utilisateur trouvées:', {
+        id: userDoc.id,
+        phoneNumber: userData.phoneNumber,
+        role: userData.role
+      });
 
-      // 4. Vérifier le mot de passe
+      // 7. Vérification du mot de passe
       let isValidPassword = false;
+      console.log('7. Début de la vérification du mot de passe');
+      console.log('7a. Mot de passe hashé?:', this.isPasswordHashed(userData.password));
+      
       if (!this.isPasswordHashed(userData.password)) {
+        console.log('7b. Comparaison directe du mot de passe non hashé');
         if (userData.password === password) {
           const hashedPassword = await this.hashPassword(password);
           await updateDoc(doc(db, 'users', userDoc.id), {
@@ -201,17 +230,22 @@ export class AuthService {
           });
           userData.password = hashedPassword;
           isValidPassword = true;
+          console.log('7c. Migration du mot de passe réussie');
         }
       } else {
+        console.log('7b. Vérification du mot de passe hashé');
         isValidPassword = await bcryptjs.compare(password, userData.password);
       }
 
       if (!isValidPassword) {
-        console.log('Invalid password for user:', formattedPhone);
+        console.log('❌ Erreur: Mot de passe invalide pour:', formattedPhone);
         throw new Error('INVALID_PASSWORD');
       }
 
-      // 5. Retourner les données utilisateur
+      console.log('8. Authentification réussie ✅');
+      console.log('=== FIN DEBUG ===');
+
+      // 9. Retour des données utilisateur
       return {
         ...userData,
         id: userDoc.id,
@@ -221,6 +255,7 @@ export class AuthService {
 
     } catch (error: any) {
       console.error('Sign in error:', error);
+      console.log('=== FIN DEBUG AVEC ERREUR ===');
       throw error;
     }
   }
