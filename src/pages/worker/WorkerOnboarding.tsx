@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -37,7 +38,6 @@ interface OnboardingData {
   type_contract: ContractType;
   full_name: string;
   gender: "male" | "female";
-  phone_number: string;
 }
 
 const WorkerOnboarding = () => {
@@ -54,23 +54,13 @@ const WorkerOnboarding = () => {
     type_contract: 'Full time',
     full_name: "",
     gender: "male",
-    phone_number: "",
   });
 
-  const progress = (step / 6) * 100;
-
-  const validatePhoneNumber = (number: string) => {
-    const cleanNumber = number.replace('+62', '').replace(/^0+/, '');
-    return cleanNumber.length >= 8 && cleanNumber.length <= 12;
-  };
-
-  const formatPhoneNumber = (number: string) => {
-    let cleaned = number.replace('+62', '').replace(/^0+/, '');
-    return cleaned;
-  };
+  // Ajustement du calcul de la progression maintenant qu'il n'y a que 5 étapes
+  const progress = (step / 5) * 100;
 
   const handleNext = async () => {
-    if (step === 6) {
+    if (step === 5) {
       await completeOnboarding();
     } else {
       setStep(step + 1);
@@ -89,7 +79,6 @@ const WorkerOnboarding = () => {
         availability_status: true,
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
-        phone_number: `+62${formatPhoneNumber(data.phone_number)}`,
       });
 
       toast({
@@ -262,35 +251,6 @@ const WorkerOnboarding = () => {
               </div>
             )}
 
-            {step === 6 && (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">{t('worker.onboarding.steps.phone.title')}</h2>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <span className="text-gray-500">+62</span>
-                  </div>
-                  <Input
-                    type="tel"
-                    value={data.phone_number}
-                    onChange={(e) => {
-                      const value = formatPhoneNumber(e.target.value);
-                      setData({ ...data, phone_number: value });
-                    }}
-                    className="pl-12"
-                    placeholder={t('worker.onboarding.steps.phone.placeholder')}
-                  />
-                </div>
-                {data.phone_number && !validatePhoneNumber(data.phone_number) && (
-                  <p className="text-sm text-destructive">
-                    {t('worker.onboarding.steps.phone.validation')}
-                  </p>
-                )}
-                <p className="text-sm text-muted-foreground">
-                  {t('worker.onboarding.steps.phone.description')}
-                </p>
-              </div>
-            )}
-
             <Button 
               className="w-full mt-8" 
               onClick={handleNext}
@@ -299,11 +259,10 @@ const WorkerOnboarding = () => {
                 (step === 2 && data.location.length === 0) ||
                 (step === 3 && data.languages.length === 0) ||
                 (step === 4 && !data.type_contract) ||
-                (step === 5 && (!data.full_name || !data.gender)) ||
-                (step === 6 && !data.phone_number)
+                (step === 5 && (!data.full_name || !data.gender))
               }
             >
-              {step === 6 ? t('worker.onboarding.navigation.complete') : t('worker.onboarding.navigation.next')}
+              {step === 5 ? t('worker.onboarding.navigation.complete') : t('worker.onboarding.navigation.next')}
             </Button>
           </div>
         </CardContent>
@@ -313,3 +272,4 @@ const WorkerOnboarding = () => {
 };
 
 export default WorkerOnboarding;
+
