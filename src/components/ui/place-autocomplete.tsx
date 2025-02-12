@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -85,7 +84,7 @@ export function PlaceAutocomplete({
       const request = {
         input,
         types,
-        // Removed the country restriction to allow worldwide search
+        componentRestrictions: { country: 'id' } // Restreindre à l'Indonésie
       };
 
       const response = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve, reject) => {
@@ -173,51 +172,52 @@ export function PlaceAutocomplete({
   };
 
   return (
-    <div className="relative">
-      <Input
-        type="text"
-        placeholder={placeholder}
-        value={inputValue}
-        onChange={(e) => {
-          setInputValue(e.target.value);
-          getPlacePredictions(e.target.value);
-        }}
-        className={cn("w-full", className)}
-        disabled={isLoading}
-      />
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverContent 
-          className="w-full p-0" 
-          align="start"
-          style={{ width: 'var(--radix-popover-trigger-width)' }}
-        >
-          <Command>
-            <CommandEmpty>No places found.</CommandEmpty>
-            <CommandGroup className="max-h-[300px] overflow-auto">
-              {predictions.map((prediction) => (
-                <CommandItem
-                  key={prediction.place_id}
-                  value={prediction.place_id}
-                  onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === prediction.description ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <div className="flex flex-col">
-                    <span>{prediction.structured_formatting.main_text}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {prediction.structured_formatting.secondary_text}
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Input
+          type="text"
+          placeholder={placeholder}
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            getPlacePredictions(e.target.value);
+          }}
+          className={cn("w-full", className)}
+          disabled={isLoading}
+        />
+      </PopoverTrigger>
+      <PopoverContent 
+        className="w-[var(--radix-popover-trigger-width)] p-0" 
+        align="start"
+        side="bottom"
+        sideOffset={4}
+      >
+        <Command>
+          <CommandEmpty>No places found.</CommandEmpty>
+          <CommandGroup className="max-h-[300px] overflow-auto">
+            {predictions.map((prediction) => (
+              <CommandItem
+                key={prediction.place_id}
+                value={prediction.place_id}
+                onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    value === prediction.description ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                <div className="flex flex-col">
+                  <span>{prediction.structured_formatting.main_text}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {prediction.structured_formatting.secondary_text}
+                  </span>
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
