@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,8 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { BusinessType, WorkArea, JobType, Language } from "@/types/firebase.types";
+import { PlaceDetails } from "@/types/places.types";
 import { CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { PlaceAutocomplete } from "@/components/ui/place-autocomplete";
 
 const BUSINESS_TYPES: BusinessType[] = ['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'];
 const WORK_AREAS: WorkArea[] = [
@@ -31,6 +34,7 @@ interface OnboardingData {
   job_type: JobType;
   languages: Language[];
   company_name: string;
+  place_details?: PlaceDetails;
 }
 
 const BusinessOnboarding = () => {
@@ -45,6 +49,7 @@ const BusinessOnboarding = () => {
     job_type: 'Waiter',
     languages: [],
     company_name: "",
+    place_details: undefined,
   });
 
   const progress = (step / 5) * 100;
@@ -68,6 +73,7 @@ const BusinessOnboarding = () => {
         business_type: data.business_type,
         location: data.location,
         company_name: data.company_name,
+        place_details: data.place_details,
         role: 'business',
         created_at: Timestamp.now(),
         updated_at: Timestamp.now(),
@@ -78,7 +84,6 @@ const BusinessOnboarding = () => {
         description: "Your business profile has been created successfully!",
       });
 
-      // Redirect to search page after successful onboarding
       setTimeout(() => {
         navigate("/business/search");
       }, 3000);
@@ -155,6 +160,13 @@ const BusinessOnboarding = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                <div className="mt-4">
+                  <PlaceAutocomplete
+                    placeholder="Enter your exact business address"
+                    onPlaceSelect={(place) => setData({ ...data, place_details: place })}
+                    types={['establishment']}
+                  />
+                </div>
               </div>
             )}
 
@@ -225,7 +237,7 @@ const BusinessOnboarding = () => {
               onClick={handleNext}
               disabled={
                 (step === 1 && !data.business_type) ||
-                (step === 2 && !data.location) ||
+                (step === 2 && (!data.location || !data.place_details)) ||
                 (step === 3 && !data.job_type) ||
                 (step === 4 && data.languages.length === 0) ||
                 (step === 5 && !data.company_name)
@@ -241,3 +253,4 @@ const BusinessOnboarding = () => {
 };
 
 export default BusinessOnboarding;
+
