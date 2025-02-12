@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState, useRef } from 'react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Popover, PopoverContent } from "@/components/ui/popover";
+import { Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { PlaceDetails, GooglePlaceResult } from '@/types/places.types';
 import { useToast } from '@/hooks/use-toast';
@@ -25,6 +24,7 @@ export function PlaceAutocomplete({
 }: PlaceAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(defaultValue);
+  const [inputValue, setInputValue] = useState(defaultValue);
   const [predictions, setPredictions] = useState<GooglePlaceResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
@@ -50,7 +50,11 @@ export function PlaceAutocomplete({
   }, []);
 
   const getPlacePredictions = async (input: string) => {
-    if (!input || !autocompleteService.current) return;
+    if (!input || !autocompleteService.current) {
+      setPredictions([]);
+      setOpen(false);
+      return;
+    }
 
     try {
       const request = {
@@ -72,14 +76,17 @@ export function PlaceAutocomplete({
         );
       });
 
-      setPredictions(response.map(prediction => ({
+      const newPredictions = response.map(prediction => ({
         place_id: prediction.place_id,
         description: prediction.description,
         structured_formatting: {
           main_text: prediction.structured_formatting.main_text,
           secondary_text: prediction.structured_formatting.secondary_text,
         }
-      })));
+      }));
+
+      setPredictions(newPredictions);
+      setOpen(newPredictions.length > 0);
     } catch (error) {
       console.error('Error fetching predictions:', error);
       toast({
@@ -87,6 +94,8 @@ export function PlaceAutocomplete({
         description: "Failed to fetch place predictions",
         variant: "destructive",
       });
+      setPredictions([]);
+      setOpen(false);
     }
   };
 
@@ -123,6 +132,7 @@ export function PlaceAutocomplete({
       };
 
       setValue(placeDetails.name);
+      setInputValue(placeDetails.name);
       setOpen(false);
       onPlaceSelect(placeDetails);
     } catch (error) {
@@ -138,52 +148,51 @@ export function PlaceAutocomplete({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className={cn("w-full justify-between", className)}
-          disabled={isLoading}
+    <div className="relative">
+      <Input
+        type="text"
+        placeholder={placeholder}
+        value={inputValue}
+        onChange={(e) => {
+          setInputValue(e.target.value);
+          getPlacePredictions(e.target.value);
+        }}
+        className={cn("w-full", className)}
+        disabled={isLoading}
+      />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverContent 
+          className="w-full p-0" 
+          align="start"
+          style={{ width: 'var(--radix-popover-trigger-width)' }}
         >
-          {value || placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0">
-        <Command>
-          <CommandInput
-            placeholder={placeholder}
-            onValueChange={(search) => {
-              getPlacePredictions(search);
-            }}
-          />
-          <CommandEmpty>No places found.</CommandEmpty>
-          <CommandGroup className="max-h-[300px] overflow-auto">
-            {predictions.map((prediction) => (
-              <CommandItem
-                key={prediction.place_id}
-                value={prediction.place_id}
-                onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === prediction.description ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                <div className="flex flex-col">
-                  <span>{prediction.structured_formatting.main_text}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {prediction.structured_formatting.secondary_text}
-                  </span>
-                </div>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          <Command>
+            <CommandEmpty>No places found.</CommandEmpty>
+            <CommandGroup className="max-h-[300px] overflow-auto">
+              {predictions.map((prediction) => (
+                <CommandItem
+                  key={prediction.place_id}
+                  value={prediction.place_id}
+                  onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === prediction.description ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  <div className="flex flex-col">
+                    <span>{prediction.structured_formatting.main_text}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {prediction.structured_formatting.secondary_text}
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
