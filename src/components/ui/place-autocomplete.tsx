@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent } from "@/components/ui/popover";
@@ -32,22 +33,46 @@ export function PlaceAutocomplete({
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load Google Places script
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.VITE_GOOGLE_PLACES_API_KEY}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
+    if (typeof window === 'undefined') return;
+
+    // Check if the script is already loaded
+    if (window.google?.maps?.places) {
+      autocompleteService.current = new google.maps.places.AutocompleteService();
+      const mapDiv = document.createElement('div');
+      placesService.current = new google.maps.places.PlacesService(mapDiv);
+      return;
+    }
+
+    const googlePlacesScript = document.createElement('script');
+    googlePlacesScript.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_PLACES_API_KEY}&libraries=places`;
+    googlePlacesScript.async = true;
+    googlePlacesScript.defer = true;
+    
+    googlePlacesScript.onerror = () => {
+      console.error('Failed to load Google Places API');
+      toast({
+        title: "Error",
+        description: "Failed to load Google Places API",
+        variant: "destructive",
+      });
+    };
+
+    googlePlacesScript.onload = () => {
+      console.log('Google Places API loaded successfully');
       autocompleteService.current = new google.maps.places.AutocompleteService();
       const mapDiv = document.createElement('div');
       placesService.current = new google.maps.places.PlacesService(mapDiv);
     };
-    document.head.appendChild(script);
+
+    document.head.appendChild(googlePlacesScript);
 
     return () => {
-      document.head.removeChild(script);
+      const script = document.querySelector(`script[src*="maps.googleapis.com/maps/api"]`);
+      if (script) {
+        document.head.removeChild(script);
+      }
     };
-  }, []);
+  }, [toast]);
 
   const getPlacePredictions = async (input: string) => {
     if (!input || !autocompleteService.current) {
@@ -60,7 +85,7 @@ export function PlaceAutocomplete({
       const request = {
         input,
         types,
-        componentRestrictions: { country: 'id' } // Restrict to Indonesia
+        // Removed the country restriction to allow worldwide search
       };
 
       const response = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve, reject) => {
