@@ -4,13 +4,11 @@ import {
   signInWithPhoneNumber,
   ApplicationVerifier,
 } from 'firebase/auth';
-import { doc, setDoc, updateDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
+import { doc, setDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
-import bcryptjs from 'bcryptjs';
 
 export class AuthService {
-  private readonly SALT_ROUNDS = 10;
   private recaptchaVerifier: ApplicationVerifier | null = null;
 
   // Initialisation du reCAPTCHA (uniquement pour signup)
@@ -34,22 +32,12 @@ export class AuthService {
     }
   }
 
-  // Utilitaire pour hasher les mots de passe
-  private async hashPassword(password: string): Promise<string> {
-    return bcryptjs.hash(password, this.SALT_ROUNDS);
-  }
-
   // Utilitaire pour convertir les Timestamps
   private convertTimestamp(timestamp: any): Date {
     if (timestamp instanceof Timestamp) {
       return timestamp.toDate();
     }
     return new Date(timestamp);
-  }
-
-  // Utilitaire pour vérifier si un mot de passe est hashé
-  private isPasswordHashed(password: string): boolean {
-    return password.startsWith('$2a$') || password.startsWith('$2b$');
   }
 
   // Utilitaire pour formater le numéro de téléphone
@@ -102,9 +90,6 @@ export class AuthService {
       if (!querySnapshot.empty) {
         throw new Error('PHONE_ALREADY_EXISTS');
       }
-
-      // Hasher le mot de passe
-      const hashedPassword = await this.hashPassword(password);
       
       // Envoyer l'OTP
       const confirmationResult = await signInWithPhoneNumber(
@@ -116,7 +101,7 @@ export class AuthService {
       // Stocker les données temporairement
       sessionStorage.setItem('tempSignupData', JSON.stringify({
         role,
-        hashedPassword,
+        password,
         profileData
       }));
 
@@ -137,13 +122,13 @@ export class AuthService {
         throw new Error('TEMP_DATA_NOT_FOUND');
       }
 
-      const { role, hashedPassword, profileData } = JSON.parse(tempDataStr);
+      const { role, password, profileData } = JSON.parse(tempDataStr);
       
       const userData = {
         id: result.user.uid,
         phoneNumber: result.user.phoneNumber!,
         role,
-        password: hashedPassword,
+        password,
         ...profileData,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -168,84 +153,30 @@ export class AuthService {
     try {
       console.log('=== SIGNIN DEBUG ===');
       
-      // 1. Analyse du numéro entrant
-      console.log('1. Numéro brut:', phoneNumber);
-      console.log('1a. Longueur du numéro:', phoneNumber.length);
-      console.log('1b. Type de donnée:', typeof phoneNumber);
-      
-      // 2. Formatage du numéro
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
-      console.log('2. Numéro après formatage:', formattedPhone);
-      console.log('2a. Longueur après formatage:', formattedPhone.length);
+      console.log('1. Numéro formaté:', formattedPhone);
       
-      // 3. Recherche dans Firestore
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
-      console.log('3. Recherche Firestore avec le numéro:', formattedPhone);
-      
       const querySnapshot = await getDocs(q);
-      console.log('4. Nombre de résultats trouvés:', querySnapshot.size);
-      
-      // Log détaillé des résultats trouvés
-      if (querySnapshot.size > 0) {
-        console.log('5. Détails des résultats:');
-        querySnapshot.docs.forEach((doc, index) => {
-          const data = doc.data();
-          console.log(`  Document ${index + 1}:`);
-          console.log('    - ID:', doc.id);
-          console.log('    - Numéro de téléphone:', data.phoneNumber);
-          console.log('    - Rôle:', data.role);
-        });
-      } else {
-        console.log('5. Aucun utilisateur trouvé');
-      }
 
       if (querySnapshot.empty) {
-        console.log('❌ Erreur: Utilisateur non trouvé pour:', formattedPhone);
+        console.log('❌ Erreur: Utilisateur non trouvé');
         throw new Error('USER_NOT_FOUND');
       }
 
-      // 6. Données utilisateur
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data() as User;
-      console.log('6. Données utilisateur trouvées:', {
-        id: userDoc.id,
-        phoneNumber: userData.phoneNumber,
-        role: userData.role
-      });
-
-      // 7. Vérification du mot de passe
-      let isValidPassword = false;
-      console.log('7. Début de la vérification du mot de passe');
-      console.log('7a. Mot de passe hashé?:', this.isPasswordHashed(userData.password));
       
-      if (!this.isPasswordHashed(userData.password)) {
-        console.log('7b. Comparaison directe du mot de passe non hashé');
-        if (userData.password === password) {
-          const hashedPassword = await this.hashPassword(password);
-          await updateDoc(doc(db, 'users', userDoc.id), {
-            password: hashedPassword,
-            updatedAt: Timestamp.now(),
-            passwordMigratedAt: Timestamp.now()
-          });
-          userData.password = hashedPassword;
-          isValidPassword = true;
-          console.log('7c. Migration du mot de passe réussie');
-        }
-      } else {
-        console.log('7b. Vérification du mot de passe hashé');
-        isValidPassword = await bcryptjs.compare(password, userData.password);
-      }
-
-      if (!isValidPassword) {
-        console.log('❌ Erreur: Mot de passe invalide pour:', formattedPhone);
+      // Simple comparaison directe du mot de passe
+      if (userData.password !== password) {
+        console.log('❌ Erreur: Mot de passe invalide');
         throw new Error('INVALID_PASSWORD');
       }
 
-      console.log('8. Authentification réussie ✅');
+      console.log('✅ Authentification réussie');
       console.log('=== FIN DEBUG ===');
 
-      // 9. Retour des données utilisateur
       return {
         ...userData,
         id: userDoc.id,
