@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Badge } from "@/components/ui/badge";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
@@ -135,11 +134,11 @@ const BusinessOnboarding = () => {
 
             {step === 2 && (
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold">What is the name of your business?</h2>
                 <PlaceAutocomplete
                   placeholder="Enter the name of your business"
                   onPlaceSelect={(place) => setData({ ...data, place_details: place })}
                   types={['establishment']}
+                  className="border-none shadow-none text-xl focus-visible:ring-0 px-0"
                 />
               </div>
             )}
