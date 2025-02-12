@@ -1,3 +1,4 @@
+
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier,
@@ -128,7 +129,7 @@ export class AuthService {
         id: result.user.uid,
         phoneNumber: result.user.phoneNumber!,
         role,
-        password,
+        password, // Stockage direct du mot de passe (à améliorer dans une version future)
         ...profileData,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
