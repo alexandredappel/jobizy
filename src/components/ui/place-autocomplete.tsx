@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -19,6 +19,8 @@ interface PlaceAutocompleteProps {
   className?: string;
 }
 
+const GOOGLE_MAPS_API_KEY = 'AIzaSyBlcii5tyxXu4ELNjkJxXczmVSI27y3LdA';
+
 export function PlaceAutocomplete({
   onPlaceSelect,
   placeholder = "Search for a place...",
@@ -31,11 +33,35 @@ export function PlaceAutocomplete({
   const [inputValue, setInputValue] = useState(defaultValue);
   const [predictions, setPredictions] = useState<GooglePlaceResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.async = true;
+      script.onload = () => {
+        console.log('Google Maps script loaded successfully');
+        setIsScriptLoaded(true);
+      };
+      script.onerror = (error) => {
+        console.error('Error loading Google Maps script:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load Google Maps",
+          variant: "destructive",
+        });
+      };
+      document.head.appendChild(script);
+    } else {
+      setIsScriptLoaded(true);
+    }
+  }, [toast]);
 
   const debouncedFetchPredictions = useCallback(
     debounce(async (input: string) => {
-      if (!input || input.length < 2) {
+      if (!input || input.length < 2 || !isScriptLoaded) {
         setPredictions([]);
         setIsLoading(false);
         setOpen(false);
@@ -60,7 +86,7 @@ export function PlaceAutocomplete({
         setIsLoading(false);
       }
     }, 300),
-    [types, toast]
+    [types, toast, isScriptLoaded]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
