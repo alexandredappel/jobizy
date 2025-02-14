@@ -8,7 +8,6 @@ import AuthLayout from '@/layouts/auth';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
 import { AuthService } from '@/services/authService';
-import { User } from '@/types/database.types';
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -60,7 +59,7 @@ const SignIn = () => {
     
     try {
       console.log('Verifying OTP...');
-      const userData: User = await authService.verifySignInOTP(confirmationResult, verificationCode);
+      const userData = await authService.verifySignInOTP(confirmationResult, verificationCode);
       console.log('OTP verification successful:', userData);
       
       if (!userData) {

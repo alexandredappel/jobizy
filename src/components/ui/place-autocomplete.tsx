@@ -33,39 +33,42 @@ export function PlaceAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // Créer une version debounced de la fonction fetchPredictions
   const debouncedFetchPredictions = useCallback(
     debounce(async (input: string) => {
       if (!input || input.length < 2) {
         setPredictions([]);
         setIsLoading(false);
+        setOpen(false);
         return;
       }
 
       try {
+        setIsLoading(true);
         const result = await getPlacePredictions({ input, types });
         setPredictions(result.predictions);
-        setOpen(true);
+        setOpen(result.predictions.length > 0);
       } catch (error) {
         console.error('Error fetching predictions:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch place predictions. You can still enter the name manually.",
-          variant: "destructive",
-        });
         setPredictions([]);
+        setOpen(false);
       } finally {
         setIsLoading(false);
       }
     }, 300),
-    [types, toast]
+    [types]
   );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
-    setValue(newValue); // Mettre à jour la valeur immédiatement pour éviter le blocage
-    setIsLoading(true);
+    setValue(newValue);
+    
+    if (!newValue) {
+      setPredictions([]);
+      setOpen(false);
+      return;
+    }
+
     debouncedFetchPredictions(newValue);
   };
 
@@ -73,18 +76,14 @@ export function PlaceAutocomplete({
     try {
       setIsLoading(true);
       const result = await getPlaceDetails({ placeId });
-      const placeDetails = result.place_details;
       
-      setValue(placeDetails.name);
-      setInputValue(placeDetails.name);
-      setOpen(false);
-      onPlaceSelect(placeDetails);
+      setValue(result.place_details.name);
+      setInputValue(result.place_details.name);
+      onPlaceSelect(result.place_details);
     } catch (error) {
       console.error('Error fetching place details:', error);
-      // En cas d'erreur, on garde quand même la valeur saisie
       setValue(description);
       setInputValue(description);
-      setOpen(false);
       onPlaceSelect({
         place_id: placeId,
         name: description,
@@ -93,11 +92,17 @@ export function PlaceAutocomplete({
       });
     } finally {
       setIsLoading(false);
+      setOpen(false);
     }
   };
 
   return (
-    <Popover open={open && predictions.length > 0} onOpenChange={setOpen}>
+    <Popover 
+      open={open} 
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen && predictions.length > 0);
+      }}
+    >
       <PopoverTrigger asChild>
         <div className="relative">
           <Input
@@ -114,38 +119,39 @@ export function PlaceAutocomplete({
           )}
         </div>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] p-0" 
-        align="start"
-        side="bottom"
-        sideOffset={4}
-      >
-        <Command>
-          <CommandEmpty>No places found.</CommandEmpty>
-          <CommandGroup className="max-h-[300px] overflow-auto">
-            {predictions.map((prediction) => (
-              <CommandItem
-                key={prediction.place_id}
-                value={prediction.place_id}
-                onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    value === prediction.description ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                <div className="flex flex-col">
-                  <span>{prediction.structured_formatting.main_text}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {prediction.structured_formatting.secondary_text}
-                  </span>
-                </div>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
+      {predictions.length > 0 && (
+        <PopoverContent 
+          className="w-[var(--radix-popover-trigger-width)] p-0" 
+          align="start"
+          side="bottom"
+          sideOffset={4}
+        >
+          <Command>
+            <CommandGroup className="max-h-[300px] overflow-auto">
+              {predictions.map((prediction) => (
+                <CommandItem
+                  key={prediction.place_id}
+                  value={prediction.place_id}
+                  onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === prediction.description ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  <div className="flex flex-col">
+                    <span>{prediction.structured_formatting.main_text}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {prediction.structured_formatting.secondary_text}
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      )}
     </Popover>
   );
 }
