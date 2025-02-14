@@ -11,22 +11,14 @@ interface UsePlacesAutocompleteProps {
   inputRef: RefObject<HTMLInputElement>;
 }
 
-interface AutocompleteState {
-  isLoading: boolean;
-  predictions: google.maps.places.AutocompletePrediction[];
-  value: string;
-  inputValue: string;
-  open: boolean;
-}
-
 export function usePlacesAutocomplete({
   onPlaceSelect,
   defaultValue = '',
   inputRef
 }: UsePlacesAutocompleteProps) {
-  const [state, setState] = useState<AutocompleteState>({
+  const [state, setState] = useState({
     isLoading: false,
-    predictions: [],
+    predictions: [] as google.maps.places.AutocompletePrediction[],
     value: defaultValue,
     inputValue: defaultValue,
     open: false
@@ -34,20 +26,23 @@ export function usePlacesAutocomplete({
 
   const { toast } = useToast();
 
-  // Charger l'API Google Maps au montage du composant
   useEffect(() => {
-    mapsService.loadGoogleMapsScript()
-      .catch((error) => {
+    const initializeMaps = async () => {
+      try {
+        await mapsService.loadGoogleMapsScript();
+      } catch (error) {
         console.error('Failed to load Google Maps:', error);
         toast({
           title: "Error",
           description: "Failed to load location service",
           variant: "destructive",
         });
-      });
+      }
+    };
+
+    initializeMaps();
   }, [toast]);
 
-  // Gérer les prédictions de manière debounced
   const debouncedFetchPredictions = useCallback(
     debounce(async (input: string) => {
       if (!input || input.length < 2) {
@@ -65,10 +60,13 @@ export function usePlacesAutocomplete({
       try {
         const predictions = await mapsService.getPredictions(input);
         
+        // Vérifier que predictions est un tableau valide
+        const validPredictions = Array.isArray(predictions) ? predictions : [];
+        
         setState(prev => ({
           ...prev,
-          predictions,
-          open: predictions.length > 0
+          predictions: validPredictions,
+          open: validPredictions.length > 0
         }));
       } catch (error) {
         console.error('Error fetching predictions:', error);
@@ -89,7 +87,6 @@ export function usePlacesAutocomplete({
     [toast]
   );
 
-  // Gérer les changements de l'input
   const handleInputChange = useCallback((newValue: string) => {
     setState(prev => ({ ...prev, inputValue: newValue }));
     
@@ -105,7 +102,6 @@ export function usePlacesAutocomplete({
     debouncedFetchPredictions(newValue);
   }, [debouncedFetchPredictions]);
 
-  // Gérer la sélection d'un lieu
   const handlePlaceSelect = useCallback(async (placeId: string, description: string) => {
     setState(prev => ({ ...prev, isLoading: true }));
 
@@ -159,7 +155,6 @@ export function usePlacesAutocomplete({
     }
   }, [onPlaceSelect, toast]);
 
-  // Gérer l'ouverture/fermeture du popover
   const setOpen = useCallback((open: boolean) => {
     setState(prev => ({ ...prev, open }));
   }, []);
