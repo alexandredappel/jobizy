@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -14,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
-import { PlaceAutocomplete } from "@/components/ui/place-autocomplete";
+import { SimplePlaceAutocomplete } from "@/components/ui/simple-place-autocomplete";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -220,11 +219,10 @@ const WorkExperienceListModal = ({
                   
                   <div className="space-y-2">
                     <Label>{t('worker.profile.modals.workExperience.companyName.label')}</Label>
-                    <PlaceAutocomplete
+                    <SimplePlaceAutocomplete
                       onPlaceSelect={(place) => handlePlaceSelect(index, place)}
                       placeholder={t('worker.profile.modals.workExperience.companyName.placeholder')}
                       defaultValue={exp.companyName}
-                      types={['establishment']}
                     />
                   </div>
 

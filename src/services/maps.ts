@@ -120,8 +120,8 @@ class MapsService {
       componentRestrictions: { country: "id" }, // Indonesia
       fields: ["name", "formatted_address", "geometry", "place_id"],
       types: ["establishment"],
-      locationBias: bounds,
-      locationRestriction: bounds
+      bounds: bounds,
+      strictBounds: true
     });
   }
 
