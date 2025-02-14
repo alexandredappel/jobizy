@@ -15,7 +15,7 @@ import { BusinessType, JobType, Language } from "@/types/firebase.types";
 import { PlaceDetails } from "@/types/places.types";
 import { CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { PlaceAutocomplete } from "@/components/ui/place-autocomplete";
+import { SimplePlaceAutocomplete } from "@/components/ui/simple-place-autocomplete";
 
 const BUSINESS_TYPES: BusinessType[] = ['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'];
 const JOB_TYPES: JobType[] = [
@@ -136,10 +136,9 @@ const BusinessOnboarding = () => {
             {step === 2 && (
               <div className="space-y-4">
                 <h2 className="text-2xl font-bold">What is the name of your business?</h2>
-                <PlaceAutocomplete
+                <SimplePlaceAutocomplete
                   placeholder="Enter the name of your business"
                   onPlaceSelect={(place) => setData({ ...data, place_details: place })}
-                  types={['establishment']}
                 />
               </div>
             )}
