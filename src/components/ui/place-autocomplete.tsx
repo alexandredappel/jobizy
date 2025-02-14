@@ -46,7 +46,6 @@ export function PlaceAutocomplete({
     const existingScript = document.getElementById(scriptId);
     
     if (existingScript) {
-      // Si le script existe déjà, on attend qu'il soit chargé
       const checkGoogleMaps = setInterval(() => {
         if (window.google?.maps?.places) {
           setIsScriptLoaded(true);
@@ -68,7 +67,6 @@ export function PlaceAutocomplete({
       if (window.google?.maps?.places) {
         setIsScriptLoaded(true);
       } else {
-        // Réessayer après un court délai si l'API n'est pas immédiatement disponible
         setTimeout(() => {
           if (window.google?.maps?.places) {
             setIsScriptLoaded(true);
@@ -103,10 +101,6 @@ export function PlaceAutocomplete({
       console.log('debouncedFetchPredictions called with:', input, 'isScriptLoaded:', isScriptLoaded);
     
       if (!input || input.length < 2 || !isScriptLoaded) {
-        console.log('Validation failed:', { 
-          inputTooShort: !input || input.length < 2, 
-          scriptNotLoaded: !isScriptLoaded 
-        });
         setPredictions([]);
         setIsLoading(false);
         setOpen(false);
@@ -114,23 +108,28 @@ export function PlaceAutocomplete({
       }
 
       try {
-        console.log('Fetching predictions...');
         setIsLoading(true);
         const result = await getPlacePredictions({ input, types });
-        console.log('Got predictions result:', result);
         
-        if (!result || !Array.isArray(result.predictions)) {
-          throw new Error('Invalid predictions response');
+        // Validation stricte des prédictions
+        if (!result?.predictions || !Array.isArray(result.predictions)) {
+          setPredictions([]);
+          setOpen(false);
+          return;
         }
 
         const validPredictions = result.predictions.filter(prediction => 
-          prediction?.place_id && 
-          prediction?.description &&
-          prediction?.structured_formatting?.main_text &&
-          prediction?.structured_formatting?.secondary_text
+          prediction &&
+          typeof prediction === 'object' &&
+          'place_id' in prediction &&
+          'description' in prediction &&
+          'structured_formatting' in prediction &&
+          prediction.structured_formatting &&
+          typeof prediction.structured_formatting === 'object' &&
+          'main_text' in prediction.structured_formatting &&
+          'secondary_text' in prediction.structured_formatting
         );
         
-        console.log('Setting predictions:', validPredictions);
         setPredictions(validPredictions);
         setOpen(validPredictions.length > 0);
         
@@ -152,17 +151,14 @@ export function PlaceAutocomplete({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    console.log('Input changed:', newValue, 'isScriptLoaded:', isScriptLoaded);
     setInputValue(newValue);
     
     if (!newValue) {
-      console.log('Empty input, clearing predictions');
       setPredictions([]);
       setOpen(false);
       return;
     }
 
-    console.log('Calling debouncedFetchPredictions');
     debouncedFetchPredictions(newValue);
   };
 
@@ -200,6 +196,56 @@ export function PlaceAutocomplete({
     }
   };
 
+  const renderPredictions = () => {
+    if (!open || !Array.isArray(predictions) || predictions.length === 0) {
+      return null;
+    }
+
+    return (
+      <PopoverContent 
+        className="w-[var(--radix-popover-trigger-width)] p-0" 
+        align="start"
+        side="bottom"
+        sideOffset={4}
+      >
+        <Command>
+          <CommandGroup>
+            {predictions.map((prediction) => {
+              if (!prediction?.place_id || 
+                  !prediction?.description ||
+                  !prediction?.structured_formatting?.main_text ||
+                  !prediction?.structured_formatting?.secondary_text) {
+                return null;
+              }
+              
+              return (
+                <CommandItem
+                  key={prediction.place_id}
+                  value={prediction.description}
+                  onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+                  className="cursor-pointer"
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === prediction.description ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  <div className="flex flex-col">
+                    <span>{prediction.structured_formatting.main_text}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {prediction.structured_formatting.secondary_text}
+                    </span>
+                  </div>
+                </CommandItem>
+              );
+            })}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    );
+  };
+
   return (
     <Popover 
       open={open} 
@@ -221,46 +267,7 @@ export function PlaceAutocomplete({
           )}
         </div>
       </PopoverTrigger>
-      {open && Array.isArray(predictions) && predictions.length > 0 && (
-        <PopoverContent 
-          className="w-[var(--radix-popover-trigger-width)] p-0" 
-          align="start"
-          side="bottom"
-          sideOffset={4}
-        >
-          <Command>
-            <CommandGroup>
-              {predictions.map((prediction) => {
-                if (!prediction?.place_id || !prediction?.description) {
-                  return null;
-                }
-                
-                return (
-                  <CommandItem
-                    key={prediction.place_id}
-                    value={prediction.description}
-                    onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
-                    className="cursor-pointer"
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === prediction.description ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    <div className="flex flex-col">
-                      <span>{prediction.structured_formatting.main_text}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {prediction.structured_formatting.secondary_text}
-                      </span>
-                    </div>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      )}
+      {renderPredictions()}
     </Popover>
   );
 }
