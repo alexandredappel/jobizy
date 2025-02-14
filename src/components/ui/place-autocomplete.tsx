@@ -1,4 +1,4 @@
-// src/components/ui/place-autocomplete.tsx
+
 import React, { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
@@ -39,29 +39,31 @@ export function PlaceAutocomplete({
   useEffect(() => {
     const scriptId = 'google-maps-script';
     console.log('Checking for Google Maps script...');
-    if (!document.getElementById(scriptId)) {
-      console.log('Script not found, adding it to the page...');
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-      script.async = true;
-      script.onload = () => {
-        console.log('Google Maps script loaded successfully', window.google?.maps);
-        setIsScriptLoaded(true);
-      };
-      script.onerror = (error) => {
-        console.error('Error loading Google Maps script:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load Google Maps",
-          variant: "destructive",
-        });
-      };
-      document.head.appendChild(script);
-    } else {
-      console.log('Script already exists, checking Google Maps object:', window.google?.maps);
+    
+    if (document.getElementById(scriptId) || window.google?.maps) {
+      console.log('Script already loaded or loading');
       setIsScriptLoaded(true);
+      return;
     }
+
+    console.log('Script not found, adding it to the page...');
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`;
+    script.async = true;
+    script.onload = () => {
+      console.log('Google Maps script loaded successfully');
+      setIsScriptLoaded(true);
+    };
+    script.onerror = (error) => {
+      console.error('Error loading Google Maps script:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load Google Maps",
+        variant: "destructive",
+      });
+    };
+    document.head.appendChild(script);
   }, [toast]);
 
   const debouncedFetchPredictions = useCallback(
@@ -186,7 +188,7 @@ export function PlaceAutocomplete({
         >
           <Command>
             <CommandGroup>
-              {predictions.map((prediction) => (
+              {Array.isArray(predictions) && predictions.map((prediction) => (
                 <CommandItem
                   key={prediction.place_id}
                   value={prediction.description}
