@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
@@ -37,24 +36,30 @@ export function PlaceAutocomplete({
   const { toast } = useToast();
 
   useEffect(() => {
-    const scriptId = 'google-maps-script';
-    console.log('Checking for Google Maps script...');
-    
-    if (document.getElementById(scriptId) || window.google?.maps) {
-      console.log('Script already loaded or loading');
+    if (window.google?.maps?.places) {
+      console.log('Google Maps Places API already available');
       setIsScriptLoaded(true);
       return;
     }
 
-    console.log('Script not found, adding it to the page...');
+    const scriptId = 'google-maps-script';
+    if (document.getElementById(scriptId)) {
+      console.log('Script tag already exists');
+      return;
+    }
+
+    console.log('Loading Google Maps script...');
     const script = document.createElement('script');
     script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap&loading=async`;
     script.async = true;
-    script.onload = () => {
-      console.log('Google Maps script loaded successfully');
+    script.defer = true;
+
+    window.initMap = () => {
+      console.log('Google Maps initialized successfully');
       setIsScriptLoaded(true);
     };
+
     script.onerror = (error) => {
       console.error('Error loading Google Maps script:', error);
       toast({
@@ -63,7 +68,12 @@ export function PlaceAutocomplete({
         variant: "destructive",
       });
     };
+
     document.head.appendChild(script);
+
+    return () => {
+      window.initMap = undefined;
+    };
   }, [toast]);
 
   const debouncedFetchPredictions = useCallback(
@@ -179,7 +189,7 @@ export function PlaceAutocomplete({
           )}
         </div>
       </PopoverTrigger>
-      {open && predictions && predictions.length > 0 && (
+      {open && Array.isArray(predictions) && predictions.length > 0 && (
         <PopoverContent 
           className="w-[var(--radix-popover-trigger-width)] p-0" 
           align="start"
@@ -188,7 +198,7 @@ export function PlaceAutocomplete({
         >
           <Command>
             <CommandGroup>
-              {Array.isArray(predictions) && predictions.map((prediction) => (
+              {predictions.map((prediction) => (
                 <CommandItem
                   key={prediction.place_id}
                   value={prediction.description}
