@@ -1,5 +1,7 @@
+// src/services/maps.ts
+
 // Définition des types
-interface BaliRegion {
+interface BoundsConfig {
   north: number;
   south: number;
   east: number;
@@ -8,7 +10,7 @@ interface BaliRegion {
 
 interface MapServiceConfig {
   apiKey: string;
-  bounds: BaliRegion;
+  bounds: BoundsConfig;
 }
 
 // Configuration pour l'Indonésie
@@ -39,23 +41,27 @@ class MapsService {
     return MapsService.instance;
   }
 
+  private getBoundsAsLatLngBounds(): google.maps.LatLngBounds {
+    return new google.maps.LatLngBounds(
+      { lat: this.config.bounds.south, lng: this.config.bounds.west }, // SW
+      { lat: this.config.bounds.north, lng: this.config.bounds.east }  // NE
+    );
+  }
+
   public isApiLoaded(): boolean {
     return this.isLoaded;
   }
 
   public async loadGoogleMapsScript(): Promise<void> {
-    // Si déjà chargé, retourne immédiatement
     if (this.isLoaded) {
       return Promise.resolve();
     }
 
-    // Si déjà en cours de chargement, retourne la promesse existante
     if (this.loadPromise) {
       return this.loadPromise;
     }
 
     this.loadPromise = new Promise((resolve, reject) => {
-      // Vérifie si l'API est déjà disponible
       if (window.google?.maps?.places) {
         this.isLoaded = true;
         resolve();
@@ -65,13 +71,11 @@ class MapsService {
       const scriptId = 'google-maps-script';
       const existingScript = document.getElementById(scriptId);
 
-      // Si le script existe déjà
       if (existingScript) {
         this.waitForGoogleMaps().then(resolve).catch(reject);
         return;
       }
 
-      // Crée et ajoute le script
       const script = document.createElement('script');
       script.id = scriptId;
       script.src = `https://maps.googleapis.com/maps/api/js?key=${this.config.apiKey}&libraries=places`;
@@ -110,12 +114,14 @@ class MapsService {
       throw new Error('Google Maps API not loaded');
     }
 
+    const bounds = this.getBoundsAsLatLngBounds();
+
     return new google.maps.places.Autocomplete(input, {
-      bounds: this.config.bounds,
       componentRestrictions: { country: "id" }, // Indonesia
       fields: ["name", "formatted_address", "geometry", "place_id"],
       types: ["establishment"],
-      strictBounds: true
+      locationBias: bounds,
+      locationRestriction: bounds
     });
   }
 
@@ -157,13 +163,15 @@ class MapsService {
 
     return new Promise((resolve, reject) => {
       const service = new google.maps.places.AutocompleteService();
+      const bounds = this.getBoundsAsLatLngBounds();
       
       service.getPlacePredictions(
         {
           input,
-          bounds: this.config.bounds,
           componentRestrictions: { country: 'id' },
-          types: ['establishment']
+          types: ['establishment'],
+          locationBias: bounds,
+          locationRestriction: bounds
         },
         (predictions, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
