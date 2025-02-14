@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import debounce from 'lodash/debounce';
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check } from "lucide-react";
@@ -32,30 +33,39 @@ export function PlaceAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const fetchPredictions = async (input: string) => {
-    if (!input) {
-      setPredictions([]);
-      setOpen(false);
-      return;
-    }
+  // Créer une version debounced de la fonction fetchPredictions
+  const debouncedFetchPredictions = useCallback(
+    debounce(async (input: string) => {
+      if (!input || input.length < 2) {
+        setPredictions([]);
+        setIsLoading(false);
+        return;
+      }
 
-    try {
-      setIsLoading(true);
-      const result = await getPlacePredictions({ input, types });
-      setPredictions(result.predictions);
-      setOpen(result.predictions.length > 0);
-    } catch (error) {
-      console.error('Error fetching predictions:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch place predictions",
-        variant: "destructive",
-      });
-      setPredictions([]);
-      setOpen(false);
-    } finally {
-      setIsLoading(false);
-    }
+      try {
+        const result = await getPlacePredictions({ input, types });
+        setPredictions(result.predictions);
+        setOpen(result.predictions.length > 0);
+      } catch (error) {
+        console.error('Error fetching predictions:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch place predictions. Please try again.",
+          variant: "destructive",
+        });
+        setPredictions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300),
+    [types, toast]
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    setIsLoading(true);
+    debouncedFetchPredictions(newValue);
   };
 
   const handlePlaceSelect = async (placeId: string, description: string) => {
@@ -72,7 +82,7 @@ export function PlaceAutocomplete({
       console.error('Error fetching place details:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch place details",
+        description: "Failed to fetch place details. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -88,10 +98,7 @@ export function PlaceAutocomplete({
             type="text"
             placeholder={placeholder}
             value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              fetchPredictions(e.target.value);
-            }}
+            onChange={handleInputChange}
             className={cn("w-full pr-8", className)}
             disabled={isLoading}
           />
