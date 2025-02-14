@@ -113,6 +113,7 @@ export function usePlacesAutocomplete({
         name: placeResult.name || description,
         formatted_address: placeResult.formatted_address || description,
         types: placeResult.types || [],
+        primaryType: placeResult.types?.[0],
         location: placeResult.geometry?.location ? {
           lat: placeResult.geometry.location.lat(),
           lng: placeResult.geometry.location.lng()
@@ -133,7 +134,8 @@ export function usePlacesAutocomplete({
         place_id: placeId,
         name: description,
         formatted_address: description,
-        types: []
+        types: [],
+        primaryType: undefined
       };
       
       setState(prev => ({

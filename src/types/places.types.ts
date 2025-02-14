@@ -4,6 +4,7 @@ export interface PlaceDetails {
   name: string;
   formatted_address: string;
   types: string[];
+  primaryType?: string;
   location?: {
     lat: number;
     lng: number;

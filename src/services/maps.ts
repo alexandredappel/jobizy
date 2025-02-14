@@ -147,6 +147,10 @@ class MapsService {
         },
         (result, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && result) {
+            // Add primaryType to the result
+            if (result.types && result.types.length > 0) {
+              (result as any).primaryType = result.types[0];
+            }
             resolve(result);
           } else {
             reject(new Error(`Failed to fetch place details: ${status}`));
