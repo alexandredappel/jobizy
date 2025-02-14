@@ -170,8 +170,7 @@ class MapsService {
           input,
           componentRestrictions: { country: 'id' },
           types: ['establishment'],
-          locationBias: bounds,
-          locationRestriction: bounds
+          bounds: bounds
         },
         (predictions, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
