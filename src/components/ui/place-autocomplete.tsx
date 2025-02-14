@@ -45,12 +45,12 @@ export function PlaceAutocomplete({
       try {
         const result = await getPlacePredictions({ input, types });
         setPredictions(result.predictions);
-        setOpen(result.predictions.length > 0);
+        setOpen(true);
       } catch (error) {
         console.error('Error fetching predictions:', error);
         toast({
           title: "Error",
-          description: "Failed to fetch place predictions. Please try again.",
+          description: "Failed to fetch place predictions. You can still enter the name manually.",
           variant: "destructive",
         });
         setPredictions([]);
@@ -64,6 +64,7 @@ export function PlaceAutocomplete({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
+    setValue(newValue); // Mettre à jour la valeur immédiatement pour éviter le blocage
     setIsLoading(true);
     debouncedFetchPredictions(newValue);
   };
@@ -80,10 +81,15 @@ export function PlaceAutocomplete({
       onPlaceSelect(placeDetails);
     } catch (error) {
       console.error('Error fetching place details:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch place details. Please try again.",
-        variant: "destructive",
+      // En cas d'erreur, on garde quand même la valeur saisie
+      setValue(description);
+      setInputValue(description);
+      setOpen(false);
+      onPlaceSelect({
+        place_id: placeId,
+        name: description,
+        formatted_address: description,
+        types: []
       });
     } finally {
       setIsLoading(false);
@@ -91,7 +97,7 @@ export function PlaceAutocomplete({
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open && predictions.length > 0} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <div className="relative">
           <Input
@@ -100,7 +106,6 @@ export function PlaceAutocomplete({
             value={inputValue}
             onChange={handleInputChange}
             className={cn("w-full pr-8", className)}
-            disabled={isLoading}
           />
           {isLoading && (
             <div className="absolute right-2 top-1/2 -translate-y-1/2">
