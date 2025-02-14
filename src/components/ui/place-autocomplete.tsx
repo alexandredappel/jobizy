@@ -37,8 +37,10 @@ export function PlaceAutocomplete({
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
+    const scriptId = 'google-maps-script';
+    if (!document.getElementById(scriptId)) {
       const script = document.createElement('script');
+      script.id = scriptId;
       script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
       script.async = true;
       script.onload = () => {
@@ -71,8 +73,12 @@ export function PlaceAutocomplete({
       try {
         setIsLoading(true);
         const result = await getPlacePredictions({ input, types });
-        setPredictions(result.predictions || []);
-        setOpen((result.predictions || []).length > 0);
+        
+        // S'assurer que predictions est toujours un tableau
+        const predictionsArray = result.predictions || [];
+        setPredictions(predictionsArray);
+        setOpen(predictionsArray.length > 0);
+        
       } catch (error) {
         console.error('Error fetching predictions:', error);
         setPredictions([]);
@@ -107,6 +113,10 @@ export function PlaceAutocomplete({
       setIsLoading(true);
       const result = await getPlaceDetails({ placeId });
       
+      if (!result || !result.place_details) {
+        throw new Error('Invalid place details response');
+      }
+
       const newPlace = result.place_details;
       setValue(newPlace.name);
       setInputValue(newPlace.name);
@@ -153,7 +163,7 @@ export function PlaceAutocomplete({
           )}
         </div>
       </PopoverTrigger>
-      {open && (
+      {open && predictions && predictions.length > 0 && (
         <PopoverContent 
           className="w-[var(--radix-popover-trigger-width)] p-0" 
           align="start"
@@ -161,33 +171,29 @@ export function PlaceAutocomplete({
           sideOffset={4}
         >
           <Command>
-            {predictions.length === 0 ? (
-              <CommandEmpty>No results found</CommandEmpty>
-            ) : (
-              <CommandGroup>
-                {predictions.map((prediction) => (
-                  <CommandItem
-                    key={prediction.place_id}
-                    value={prediction.description}
-                    onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
-                    className="cursor-pointer"
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === prediction.description ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    <div className="flex flex-col">
-                      <span>{prediction.structured_formatting.main_text}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {prediction.structured_formatting.secondary_text}
-                      </span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
+            <CommandGroup>
+              {predictions.map((prediction) => (
+                <CommandItem
+                  key={prediction.place_id}
+                  value={prediction.description}
+                  onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+                  className="cursor-pointer"
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === prediction.description ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  <div className="flex flex-col">
+                    <span>{prediction.structured_formatting.main_text}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {prediction.structured_formatting.secondary_text}
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
           </Command>
         </PopoverContent>
       )}
