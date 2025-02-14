@@ -7,16 +7,18 @@ import { PlaceDetails } from '@/types/places.types';
 interface SimplePlaceAutocompleteProps {
   onPlaceSelect: (place: PlaceDetails) => void;
   placeholder?: string;
+  defaultValue?: string;
 }
 
 export function SimplePlaceAutocomplete({ 
   onPlaceSelect,
-  placeholder = "Search for a place..."
+  placeholder = "Search for a place...",
+  defaultValue = ""
 }: SimplePlaceAutocompleteProps) {
   const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(defaultValue);
 
   useEffect(() => {
     const initGoogleMaps = async () => {
@@ -29,6 +31,10 @@ export function SimplePlaceAutocomplete({
 
     initGoogleMaps();
   }, []);
+
+  useEffect(() => {
+    setInputValue(defaultValue);
+  }, [defaultValue]);
 
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
