@@ -222,7 +222,6 @@ const WorkExperienceListModal = ({
                     <SimplePlaceAutocomplete
                       onPlaceSelect={(place) => handlePlaceSelect(index, place)}
                       placeholder={t('worker.profile.modals.workExperience.companyName.placeholder')}
-                      defaultValue={exp.companyName}
                     />
                   </div>
 
