@@ -1,4 +1,4 @@
-
+// src/components/ui/place-autocomplete.tsx
 import React, { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
@@ -38,13 +38,15 @@ export function PlaceAutocomplete({
 
   useEffect(() => {
     const scriptId = 'google-maps-script';
+    console.log('Checking for Google Maps script...');
     if (!document.getElementById(scriptId)) {
+      console.log('Script not found, adding it to the page...');
       const script = document.createElement('script');
       script.id = scriptId;
       script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
       script.async = true;
       script.onload = () => {
-        console.log('Google Maps script loaded successfully');
+        console.log('Google Maps script loaded successfully', window.google?.maps);
         setIsScriptLoaded(true);
       };
       script.onerror = (error) => {
@@ -57,13 +59,20 @@ export function PlaceAutocomplete({
       };
       document.head.appendChild(script);
     } else {
+      console.log('Script already exists, checking Google Maps object:', window.google?.maps);
       setIsScriptLoaded(true);
     }
   }, [toast]);
 
   const debouncedFetchPredictions = useCallback(
     debounce(async (input: string) => {
+      console.log('debouncedFetchPredictions called with:', input, 'isScriptLoaded:', isScriptLoaded);
+    
       if (!input || input.length < 2 || !isScriptLoaded) {
+        console.log('Validation failed:', { 
+          inputTooShort: !input || input.length < 2, 
+          scriptNotLoaded: !isScriptLoaded 
+        });
         setPredictions([]);
         setIsLoading(false);
         setOpen(false);
@@ -71,11 +80,13 @@ export function PlaceAutocomplete({
       }
 
       try {
+        console.log('Fetching predictions...');
         setIsLoading(true);
         const result = await getPlacePredictions({ input, types });
+        console.log('Got predictions result:', result);
         
-        // S'assurer que predictions est toujours un tableau
         const predictionsArray = result.predictions || [];
+        console.log('Setting predictions:', predictionsArray);
         setPredictions(predictionsArray);
         setOpen(predictionsArray.length > 0);
         
@@ -97,14 +108,17 @@ export function PlaceAutocomplete({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    console.log('Input changed:', newValue, 'isScriptLoaded:', isScriptLoaded);
     setInputValue(newValue);
     
     if (!newValue) {
+      console.log('Empty input, clearing predictions');
       setPredictions([]);
       setOpen(false);
       return;
     }
 
+    console.log('Calling debouncedFetchPredictions');
     debouncedFetchPredictions(newValue);
   };
 
