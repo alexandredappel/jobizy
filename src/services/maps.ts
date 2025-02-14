@@ -29,7 +29,7 @@ class MapsService {
   private config: MapServiceConfig;
 
   private constructor() {
-    this.config = BALI_CONFIG;
+    this.config = INDONESIA_CONFIG;
   }
 
   public static getInstance(): MapsService {
