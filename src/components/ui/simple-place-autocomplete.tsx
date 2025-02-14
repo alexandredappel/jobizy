@@ -37,7 +37,6 @@ export function SimplePlaceAutocomplete({
       try {
         await mapsService.loadGoogleMapsScript();
         if (inputRef.current) {
-          // Disable browser's native autocomplete
           inputRef.current.setAttribute('autocomplete', 'off');
         }
       } catch (error) {
@@ -70,20 +69,25 @@ export function SimplePlaceAutocomplete({
   const handleSuggestionClick = async (prediction: google.maps.places.AutocompletePrediction) => {
     try {
       const placeDetails = await mapsService.getPlaceDetails(prediction.place_id);
+      console.log('Place details in handleSuggestionClick:', placeDetails); // Debug log
+      
       if (placeDetails) {
         const place: PlaceDetails = {
           place_id: placeDetails.place_id || '',
           name: placeDetails.name || '',
           formatted_address: placeDetails.formatted_address || '',
           types: placeDetails.types || [],
+          primaryType: placeDetails.types?.[0] || undefined,
           location: placeDetails.geometry?.location ? {
             lat: placeDetails.geometry.location.lat(),
             lng: placeDetails.geometry.location.lng()
           } : undefined
         };
         
+        console.log('Created place object:', place); // Debug log
+        
         if (inputRef.current) {
-          inputRef.current.value = prediction.structured_formatting.main_text;
+          inputRef.current.value = place.name;
         }
         
         onPlaceSelect(place);

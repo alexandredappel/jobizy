@@ -1,3 +1,4 @@
+
 // src/services/maps.ts
 
 // Définition des types
@@ -142,16 +143,20 @@ class MapsService {
             'formatted_address',
             'geometry',
             'place_id',
-            'types'
+            'types',
+            'business_status'
           ]
         },
         (result, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && result) {
-            // Add primaryType to the result
-            if (result.types && result.types.length > 0) {
-              (result as any).primaryType = result.types[0];
-            }
-            resolve(result);
+            console.log('Place details result:', result); // Debug log
+            const primaryType = result.types?.[0];
+            console.log('Primary type:', primaryType); // Debug log
+            const enhancedResult = {
+              ...result,
+              primaryType
+            };
+            resolve(enhancedResult);
           } else {
             reject(new Error(`Failed to fetch place details: ${status}`));
           }
