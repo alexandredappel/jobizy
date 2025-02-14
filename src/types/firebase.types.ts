@@ -71,5 +71,7 @@ export interface WorkExperience {
 
 export interface UserData {
   role: UserRole;
-  id?: string;
+  id: string;
+  phone_number?: string;
+  email?: string;
 }

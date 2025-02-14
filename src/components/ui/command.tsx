@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
@@ -10,7 +11,7 @@ const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive>
 >(({ className, children, ...props }, ref) => {
-  // Ensure children is always defined
+  // S'assurer que children est toujours un tableau valide
   const safeChildren = React.Children.toArray(children).filter(Boolean)
   
   console.log('Command render:', { childrenCount: React.Children.count(safeChildren) })
@@ -67,7 +68,7 @@ const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
 >(({ className, children, ...props }, ref) => {
-  // Ensure children is always defined
+  // S'assurer que children est toujours un tableau valide
   const safeChildren = React.Children.toArray(children).filter(Boolean)
   
   return (
@@ -100,7 +101,7 @@ const CommandGroup = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Group>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>
 >(({ className, children, ...props }, ref) => {
-  // Ensure children is always defined
+  // S'assurer que children est toujours un tableau valide
   const safeChildren = React.Children.toArray(children).filter(Boolean)
 
   return (
@@ -135,7 +136,7 @@ const CommandItem = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
 >(({ className, children, ...props }, ref) => {
-  // Ensure children is always defined
+  // S'assurer que children est toujours un tableau valide
   const safeChildren = React.Children.toArray(children).filter(Boolean)
 
   return (
