@@ -1,4 +1,3 @@
-
 import { Timestamp } from 'firebase/firestore';
 
 export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool technician' | 'Bartender' | 'Seller';
@@ -67,6 +66,8 @@ export interface WorkExperience {
   updated_at: Timestamp;
   user_id: string;
   created_at: Timestamp;
+  types?: string[];
+  primaryType?: string;
 }
 
 export interface UserData {

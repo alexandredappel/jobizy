@@ -27,6 +27,7 @@ import {
 import { doc, deleteDoc, collection, writeBatch, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useTranslation } from 'react-i18next';
+import { PlaceDetails } from '@/types/places.types';
 
 interface WorkExperienceListModalProps {
   open: boolean;
@@ -42,6 +43,8 @@ interface ExperienceForm {
   startDate: Date;
   endDate?: Date;
   isCurrentPosition: boolean;
+  types?: string[];
+  primaryType?: string;
 }
 
 const WorkExperienceListModal = ({
@@ -58,7 +61,9 @@ const WorkExperienceListModal = ({
       position: exp.position,
       startDate: exp.start_date.toDate(),
       endDate: exp.end_date?.toDate(),
-      isCurrentPosition: !exp.end_date
+      isCurrentPosition: !exp.end_date,
+      types: exp.types,
+      primaryType: exp.primaryType
     }))
   );
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -110,6 +115,19 @@ const WorkExperienceListModal = ({
     setHasUnsavedChanges(true);
   };
 
+  const handlePlaceSelect = (index: number, placeDetails: PlaceDetails) => {
+    console.log('Selected place details:', placeDetails);
+    setLocalExperiences(prev => prev.map((exp, i) => 
+      i === index ? {
+        ...exp,
+        companyName: placeDetails.name,
+        types: placeDetails.types,
+        primaryType: placeDetails.primaryType
+      } : exp
+    ));
+    setHasUnsavedChanges(true);
+  };
+
   const handleUpdateField = (index: number, field: keyof ExperienceForm, value: any) => {
     console.log('Updating field:', field, 'with value:', value, 'at index:', index);
     setLocalExperiences(prev => prev.map((exp, i) => 
@@ -158,7 +176,9 @@ const WorkExperienceListModal = ({
           start_date: Timestamp.fromDate(exp.startDate),
           end_date: exp.isCurrentPosition ? null : exp.endDate ? Timestamp.fromDate(exp.endDate) : null,
           updated_at: Timestamp.now(),
-          created_at: Timestamp.now()
+          created_at: Timestamp.now(),
+          types: exp.types || [],
+          primaryType: exp.primaryType || null
         };
 
         const newDocRef = doc(experiencesRef);
@@ -185,10 +205,6 @@ const WorkExperienceListModal = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handlePlaceSelect = (index: number, placeDetails: any) => {
-    handleUpdateField(index, 'companyName', placeDetails.name);
   };
 
   return (

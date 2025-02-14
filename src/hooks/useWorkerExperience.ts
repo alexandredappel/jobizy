@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -22,10 +23,17 @@ export function useWorkerExperience(userId: string) {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const experienceData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as WorkExperience[];
+        const experienceData = snapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            types: data.types || [],
+            primaryType: data.primaryType || null
+          };
+        }) as WorkExperience[];
+        
+        console.log('Fetched experiences with types:', experienceData);
         setExperience(experienceData);
         setIsLoading(false);
       },
