@@ -65,3 +65,7 @@ export interface WorkExperience {
   user_id: string;
   created_at: Timestamp;
 }
+
+export interface UserData {
+  role: 'worker' | 'business';
+}

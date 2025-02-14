@@ -45,8 +45,13 @@ export function PlaceAutocomplete({
       try {
         setIsLoading(true);
         const result = await getPlacePredictions({ input, types });
-        setPredictions(result.predictions);
-        setOpen(result.predictions.length > 0);
+        if (result.predictions) {
+          setPredictions(result.predictions);
+          setOpen(result.predictions.length > 0);
+        } else {
+          setPredictions([]);
+          setOpen(false);
+        }
       } catch (error) {
         console.error('Error fetching predictions:', error);
         setPredictions([]);
@@ -100,7 +105,9 @@ export function PlaceAutocomplete({
     <Popover 
       open={open} 
       onOpenChange={(isOpen) => {
-        setOpen(isOpen && predictions.length > 0);
+        if (!isOpen) {
+          setOpen(false);
+        }
       }}
     >
       <PopoverTrigger asChild>
@@ -119,7 +126,7 @@ export function PlaceAutocomplete({
           )}
         </div>
       </PopoverTrigger>
-      {predictions.length > 0 && (
+      {open && predictions.length > 0 && (
         <PopoverContent 
           className="w-[var(--radix-popover-trigger-width)] p-0" 
           align="start"
@@ -127,11 +134,11 @@ export function PlaceAutocomplete({
           sideOffset={4}
         >
           <Command>
-            <CommandGroup className="max-h-[300px] overflow-auto">
+            <CommandGroup>
               {predictions.map((prediction) => (
                 <CommandItem
                   key={prediction.place_id}
-                  value={prediction.place_id}
+                  value={prediction.description}
                   onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
                 >
                   <Check
