@@ -158,12 +158,9 @@ class MapsService {
 
   public async getPredictions(input: string): Promise<google.maps.places.AutocompletePrediction[]> {
     if (!this.isLoaded) {
-      console.error('Google Maps API not loaded');
       throw new Error('Google Maps API not loaded');
     }
 
-    console.log('Getting predictions for input:', input);
-    
     return new Promise((resolve, reject) => {
       const service = new google.maps.places.AutocompleteService();
       const bounds = this.getBoundsAsLatLngBounds();
@@ -173,17 +170,13 @@ class MapsService {
           input,
           componentRestrictions: { country: 'id' },
           types: ['establishment'],
-          bounds: bounds,
-          strictBounds: true
+          locationBias: bounds,
+          locationRestriction: bounds
         },
         (predictions, status) => {
-          console.log('Predictions status:', status);
-          console.log('Predictions result:', predictions);
-          
           if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
             resolve(predictions);
           } else {
-            console.log('No predictions found or error');
             resolve([]);
           }
         }
