@@ -1,3 +1,18 @@
+declare global {
+  interface Window {
+    google: {
+      maps: {
+        places: {
+          AutocompleteService: any;
+          PlacesService: any;
+          PlacesServiceStatus: {
+            OK: any;
+          };
+        };
+      };
+    };
+  }
+}
 
 interface PredictionResponse {
   predictions: Array<{
@@ -25,66 +40,33 @@ interface PlaceDetailsResponse {
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null;
 let placesService: google.maps.places.PlacesService | null = null;
-let isInitializing = false;
-let hasInitializationError = false;
-
-const waitForGoogleMaps = (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    if (window.google && window.google.maps) {
-      resolve();
-      return;
-    }
-
-    const checkCounter = 0;
-    const checkInterval = setInterval(() => {
-      if (window.google && window.google.maps) {
-        clearInterval(checkInterval);
-        resolve();
-      } else if (checkCounter > 20) { // 10 secondes maximum
-        clearInterval(checkInterval);
-        reject(new Error('Google Maps failed to load'));
-      }
-    }, 500);
-  });
-};
 
 const initializeServices = async () => {
-  if (hasInitializationError) {
-    console.log('Previous initialization failed, not retrying');
-    return false;
-  }
-
   if (autocompleteService && placesService) {
     console.log('Services already initialized');
     return true;
   }
 
-  if (isInitializing) {
-    console.log('Services are being initialized');
+  if (!window.google?.maps?.places) {
+    console.error('Google Maps Places API not available');
     return false;
   }
 
-  isInitializing = true;
-
   try {
-    console.log('Waiting for Google Maps to load...');
-    await waitForGoogleMaps();
-    
-    console.log('Initializing autocomplete service...');
+    console.log('Initializing services...');
     autocompleteService = new window.google.maps.places.AutocompleteService();
-    
-    console.log('Initializing places service...');
     const tempDiv = document.createElement('div');
     placesService = new window.google.maps.places.PlacesService(tempDiv);
+    
+    if (!autocompleteService || !placesService) {
+      throw new Error('Failed to initialize services');
+    }
     
     console.log('Services initialized successfully');
     return true;
   } catch (error) {
     console.error('Failed to initialize Google Places API:', error);
-    hasInitializationError = true;
     return false;
-  } finally {
-    isInitializing = false;
   }
 };
 
