@@ -25,14 +25,14 @@ interface PlaceDetailsResponse {
   };
 }
 
-export const getPlacePredictions = async (
-  input: string,
-  types?: string[]
-): Promise<PredictionResponse> => {
+export const getPlacePredictions = async (params: {
+  input: string;
+  types?: string[];
+}): Promise<PredictionResponse> => {
   const response = await fetch(
     `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
-      input
-    )}&types=${types?.join('|')}&key=${GOOGLE_MAPS_API_KEY}`
+      params.input
+    )}&types=${params.types?.join('|')}&key=${GOOGLE_MAPS_API_KEY}`
   );
 
   if (!response.ok) {
@@ -52,11 +52,11 @@ export const getPlacePredictions = async (
   };
 };
 
-export const getPlaceDetails = async (
-  placeId: string
-): Promise<PlaceDetailsResponse> => {
+export const getPlaceDetails = async (params: {
+  placeId: string;
+}): Promise<PlaceDetailsResponse> => {
   const response = await fetch(
-    `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_address,geometry,types&key=${GOOGLE_MAPS_API_KEY}`
+    `https://maps.googleapis.com/maps/api/place/details/json?place_id=${params.placeId}&fields=name,formatted_address,geometry,types&key=${GOOGLE_MAPS_API_KEY}`
   );
 
   if (!response.ok) {

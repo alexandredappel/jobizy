@@ -42,8 +42,8 @@ export function PlaceAutocomplete({
     try {
       setIsLoading(true);
       const result = await getPlacePredictions({ input, types });
-      setPredictions(result.data.predictions);
-      setOpen(result.data.predictions.length > 0);
+      setPredictions(result.predictions);
+      setOpen(result.predictions.length > 0);
     } catch (error) {
       console.error('Error fetching predictions:', error);
       toast({
@@ -62,7 +62,7 @@ export function PlaceAutocomplete({
     try {
       setIsLoading(true);
       const result = await getPlaceDetails({ placeId });
-      const placeDetails = result.data.place_details;
+      const placeDetails = result.place_details;
       
       setValue(placeDetails.name);
       setInputValue(placeDetails.name);
