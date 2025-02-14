@@ -1,13 +1,11 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import debounce from 'lodash/debounce';
-import { Command, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import React, { useRef } from 'react';
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { PlaceDetails, GooglePlaceResult } from '@/types/places.types';
-import { useToast } from '@/hooks/use-toast';
-import { getPlacePredictions, getPlaceDetails } from '@/functions/places';
+import { PlaceDetails } from '@/types/places.types';
+import { usePlacesAutocomplete } from '@/hooks/usePlacesAutocomplete';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 interface PlaceAutocompleteProps {
@@ -18,8 +16,6 @@ interface PlaceAutocompleteProps {
   className?: string;
 }
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBlcii5tyxXu4ELNjkJxXczmVSI27y3LdA';
-
 export function PlaceAutocomplete({
   onPlaceSelect,
   placeholder = "Search for a place...",
@@ -27,224 +23,23 @@ export function PlaceAutocomplete({
   defaultValue = '',
   className
 }: PlaceAutocompleteProps) {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(defaultValue);
-  const [inputValue, setInputValue] = useState(defaultValue);
-  const [predictions, setPredictions] = useState<GooglePlaceResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    if (window.google?.maps?.places) {
-      console.log('Google Maps Places API already available');
-      setIsScriptLoaded(true);
-      return;
-    }
-
-    const scriptId = 'google-maps-script';
-    const existingScript = document.getElementById(scriptId);
-    
-    if (existingScript) {
-      const checkGoogleMaps = setInterval(() => {
-        if (window.google?.maps?.places) {
-          setIsScriptLoaded(true);
-          clearInterval(checkGoogleMaps);
-        }
-      }, 100);
-      
-      return () => clearInterval(checkGoogleMaps);
-    }
-
-    console.log('Loading Google Maps script...');
-    const script = document.createElement('script');
-    script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-    script.async = true;
-    
-    const handleScriptLoad = () => {
-      console.log('Google Maps script loaded');
-      if (window.google?.maps?.places) {
-        setIsScriptLoaded(true);
-      } else {
-        setTimeout(() => {
-          if (window.google?.maps?.places) {
-            setIsScriptLoaded(true);
-          }
-        }, 500);
-      }
-    };
-
-    script.addEventListener('load', handleScriptLoad);
-
-    script.onerror = (error) => {
-      console.error('Error loading Google Maps script:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load Google Maps",
-        variant: "destructive",
-      });
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      script.removeEventListener('load', handleScriptLoad);
-      if (document.getElementById(scriptId)) {
-        document.getElementById(scriptId)?.remove();
-      }
-    };
-  }, [toast]);
-
-  const debouncedFetchPredictions = useCallback(
-    debounce(async (input: string) => {
-      console.log('debouncedFetchPredictions called with:', input, 'isScriptLoaded:', isScriptLoaded);
-    
-      if (!input || input.length < 2 || !isScriptLoaded) {
-        setPredictions([]);
-        setIsLoading(false);
-        setOpen(false);
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        const result = await getPlacePredictions({ input, types });
-        
-        // Validation stricte des prédictions
-        if (!result?.predictions || !Array.isArray(result.predictions)) {
-          setPredictions([]);
-          setOpen(false);
-          return;
-        }
-
-        const validPredictions = result.predictions.filter(prediction => 
-          prediction &&
-          typeof prediction === 'object' &&
-          'place_id' in prediction &&
-          'description' in prediction &&
-          'structured_formatting' in prediction &&
-          prediction.structured_formatting &&
-          typeof prediction.structured_formatting === 'object' &&
-          'main_text' in prediction.structured_formatting &&
-          'secondary_text' in prediction.structured_formatting
-        );
-        
-        setPredictions(validPredictions);
-        setOpen(validPredictions.length > 0);
-        
-      } catch (error) {
-        console.error('Error fetching predictions:', error);
-        setPredictions([]);
-        setOpen(false);
-        toast({
-          title: "Error",
-          description: "Failed to fetch places",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    }, 300),
-    [types, toast, isScriptLoaded]
-  );
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    
-    if (!newValue) {
-      setPredictions([]);
-      setOpen(false);
-      return;
-    }
-
-    debouncedFetchPredictions(newValue);
-  };
-
-  const handlePlaceSelect = async (placeId: string, description: string) => {
-    try {
-      setIsLoading(true);
-      const result = await getPlaceDetails({ placeId });
-      
-      if (!result?.place_details?.name) {
-        throw new Error('Invalid place details response');
-      }
-
-      const newPlace = result.place_details;
-      setValue(newPlace.name);
-      setInputValue(newPlace.name);
-      onPlaceSelect(newPlace);
-      setOpen(false);
-    } catch (error) {
-      console.error('Error fetching place details:', error);
-      setValue(description);
-      setInputValue(description);
-      onPlaceSelect({
-        place_id: placeId,
-        name: description,
-        formatted_address: description,
-        types: []
-      });
-      toast({
-        title: "Error",
-        description: "Failed to fetch place details",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const renderPredictions = () => {
-    if (!open || !Array.isArray(predictions) || predictions.length === 0) {
-      return null;
-    }
-
-    return (
-      <PopoverContent 
-        className="w-[var(--radix-popover-trigger-width)] p-0" 
-        align="start"
-        side="bottom"
-        sideOffset={4}
-      >
-        <Command>
-          <CommandGroup>
-            {predictions.map((prediction) => {
-              if (!prediction?.place_id || 
-                  !prediction?.description ||
-                  !prediction?.structured_formatting?.main_text ||
-                  !prediction?.structured_formatting?.secondary_text) {
-                return null;
-              }
-              
-              return (
-                <CommandItem
-                  key={prediction.place_id}
-                  value={prediction.description}
-                  onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
-                  className="cursor-pointer"
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === prediction.description ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <div className="flex flex-col">
-                    <span>{prediction.structured_formatting.main_text}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {prediction.structured_formatting.secondary_text}
-                    </span>
-                  </div>
-                </CommandItem>
-              );
-            })}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    );
-  };
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  const {
+    isLoading,
+    predictions,
+    value,
+    inputValue,
+    open,
+    setOpen,
+    handleInputChange,
+    handlePlaceSelect
+  } = usePlacesAutocomplete({
+    onPlaceSelect,
+    defaultValue,
+    inputRef,
+    types
+  });
 
   return (
     <Popover 
@@ -254,10 +49,11 @@ export function PlaceAutocomplete({
       <PopoverTrigger asChild>
         <div className="relative">
           <Input
+            ref={inputRef}
             type="text"
             placeholder={placeholder}
             value={inputValue}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e.target.value)}
             className={cn("w-full pr-8", className)}
           />
           {isLoading && (
@@ -267,7 +63,49 @@ export function PlaceAutocomplete({
           )}
         </div>
       </PopoverTrigger>
-      {renderPredictions()}
+      {open && predictions.length > 0 && (
+        <PopoverContent 
+          className="w-[var(--radix-popover-trigger-width)] p-0" 
+          align="start"
+          side="bottom"
+          sideOffset={4}
+        >
+          <Command>
+            <CommandGroup>
+              {predictions.map((prediction) => {
+                if (!prediction?.place_id || 
+                    !prediction?.description ||
+                    !prediction?.structured_formatting?.main_text ||
+                    !prediction?.structured_formatting?.secondary_text) {
+                  return null;
+                }
+                
+                return (
+                  <CommandItem
+                    key={prediction.place_id}
+                    value={prediction.description}
+                    onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+                    className="cursor-pointer"
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === prediction.description ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <div className="flex flex-col">
+                      <span>{prediction.structured_formatting.main_text}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {prediction.structured_formatting.secondary_text}
+                      </span>
+                    </div>
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      )}
     </Popover>
   );
 }
