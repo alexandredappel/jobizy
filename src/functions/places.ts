@@ -1,5 +1,5 @@
 
-const GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY'; // À remplacer avec votre clé API
+const GOOGLE_MAPS_API_KEY = 'AIzaSyBlcii5tyxXu4ELNjkJxXczmVSI27y3LdA'; // À remplacer avec votre clé API
 
 interface PredictionResponse {
   predictions: Array<{
