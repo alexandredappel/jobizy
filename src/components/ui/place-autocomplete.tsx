@@ -43,22 +43,41 @@ export function PlaceAutocomplete({
     }
 
     const scriptId = 'google-maps-script';
-    if (document.getElementById(scriptId)) {
-      console.log('Script tag already exists');
-      return;
+    const existingScript = document.getElementById(scriptId);
+    
+    if (existingScript) {
+      // Si le script existe déjà, on attend qu'il soit chargé
+      const checkGoogleMaps = setInterval(() => {
+        if (window.google?.maps?.places) {
+          setIsScriptLoaded(true);
+          clearInterval(checkGoogleMaps);
+        }
+      }, 100);
+      
+      return () => clearInterval(checkGoogleMaps);
     }
 
     console.log('Loading Google Maps script...');
     const script = document.createElement('script');
     script.id = scriptId;
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initMap&loading=async`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
     script.async = true;
-    script.defer = true;
-
-    window.initMap = () => {
-      console.log('Google Maps initialized successfully');
-      setIsScriptLoaded(true);
+    
+    const handleScriptLoad = () => {
+      console.log('Google Maps script loaded');
+      if (window.google?.maps?.places) {
+        setIsScriptLoaded(true);
+      } else {
+        // Réessayer après un court délai si l'API n'est pas immédiatement disponible
+        setTimeout(() => {
+          if (window.google?.maps?.places) {
+            setIsScriptLoaded(true);
+          }
+        }, 500);
+      }
     };
+
+    script.addEventListener('load', handleScriptLoad);
 
     script.onerror = (error) => {
       console.error('Error loading Google Maps script:', error);
@@ -72,7 +91,10 @@ export function PlaceAutocomplete({
     document.head.appendChild(script);
 
     return () => {
-      window.initMap = undefined;
+      script.removeEventListener('load', handleScriptLoad);
+      if (document.getElementById(scriptId)) {
+        document.getElementById(scriptId)?.remove();
+      }
     };
   }, [toast]);
 
@@ -97,10 +119,20 @@ export function PlaceAutocomplete({
         const result = await getPlacePredictions({ input, types });
         console.log('Got predictions result:', result);
         
-        const predictionsArray = result.predictions || [];
-        console.log('Setting predictions:', predictionsArray);
-        setPredictions(predictionsArray);
-        setOpen(predictionsArray.length > 0);
+        if (!result || !Array.isArray(result.predictions)) {
+          throw new Error('Invalid predictions response');
+        }
+
+        const validPredictions = result.predictions.filter(prediction => 
+          prediction?.place_id && 
+          prediction?.description &&
+          prediction?.structured_formatting?.main_text &&
+          prediction?.structured_formatting?.secondary_text
+        );
+        
+        console.log('Setting predictions:', validPredictions);
+        setPredictions(validPredictions);
+        setOpen(validPredictions.length > 0);
         
       } catch (error) {
         console.error('Error fetching predictions:', error);
@@ -139,7 +171,7 @@ export function PlaceAutocomplete({
       setIsLoading(true);
       const result = await getPlaceDetails({ placeId });
       
-      if (!result || !result.place_details) {
+      if (!result?.place_details?.name) {
         throw new Error('Invalid place details response');
       }
 
@@ -198,27 +230,33 @@ export function PlaceAutocomplete({
         >
           <Command>
             <CommandGroup>
-              {predictions.map((prediction) => (
-                <CommandItem
-                  key={prediction.place_id}
-                  value={prediction.description}
-                  onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
-                  className="cursor-pointer"
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === prediction.description ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  <div className="flex flex-col">
-                    <span>{prediction.structured_formatting.main_text}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {prediction.structured_formatting.secondary_text}
-                    </span>
-                  </div>
-                </CommandItem>
-              ))}
+              {predictions.map((prediction) => {
+                if (!prediction?.place_id || !prediction?.description) {
+                  return null;
+                }
+                
+                return (
+                  <CommandItem
+                    key={prediction.place_id}
+                    value={prediction.description}
+                    onSelect={() => handlePlaceSelect(prediction.place_id, prediction.description)}
+                    className="cursor-pointer"
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === prediction.description ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <div className="flex flex-col">
+                      <span>{prediction.structured_formatting.main_text}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {prediction.structured_formatting.secondary_text}
+                      </span>
+                    </div>
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </Command>
         </PopoverContent>
