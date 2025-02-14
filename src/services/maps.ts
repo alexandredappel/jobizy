@@ -11,14 +11,14 @@ interface MapServiceConfig {
   bounds: BaliRegion;
 }
 
-// Configuration pour Bali
-const BALI_CONFIG: MapServiceConfig = {
+// Configuration pour l'Indonésie
+const INDONESIA_CONFIG: MapServiceConfig = {
   apiKey: 'AIzaSyBlcii5tyxXu4ELNjkJxXczmVSI27y3LdA',
   bounds: {
-    north: -8.0434,
-    south: -8.8501,
-    east: 115.7119,
-    west: 114.4206
+    north: 6.0730,    // Point le plus au nord de l'Indonésie
+    south: -11.1082,  // Point le plus au sud de l'Indonésie
+    east: 141.0195,   // Point le plus à l'est de l'Indonésie
+    west: 95.0090     // Point le plus à l'ouest de l'Indonésie
   }
 };
 
