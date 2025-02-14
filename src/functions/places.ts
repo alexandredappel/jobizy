@@ -25,26 +25,66 @@ interface PlaceDetailsResponse {
 
 let autocompleteService: google.maps.places.AutocompleteService | null = null;
 let placesService: google.maps.places.PlacesService | null = null;
+let isInitializing = false;
 let hasInitializationError = false;
 
-const initializeServices = () => {
+const waitForGoogleMaps = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (window.google && window.google.maps) {
+      resolve();
+      return;
+    }
+
+    const checkCounter = 0;
+    const checkInterval = setInterval(() => {
+      if (window.google && window.google.maps) {
+        clearInterval(checkInterval);
+        resolve();
+      } else if (checkCounter > 20) { // 10 secondes maximum
+        clearInterval(checkInterval);
+        reject(new Error('Google Maps failed to load'));
+      }
+    }, 500);
+  });
+};
+
+const initializeServices = async () => {
   if (hasInitializationError) {
+    console.log('Previous initialization failed, not retrying');
     return false;
   }
 
+  if (autocompleteService && placesService) {
+    console.log('Services already initialized');
+    return true;
+  }
+
+  if (isInitializing) {
+    console.log('Services are being initialized');
+    return false;
+  }
+
+  isInitializing = true;
+
   try {
-    if (!autocompleteService) {
-      autocompleteService = new google.maps.places.AutocompleteService();
-    }
-    if (!placesService) {
-      const tempDiv = document.createElement('div');
-      placesService = new google.maps.places.PlacesService(tempDiv);
-    }
+    console.log('Waiting for Google Maps to load...');
+    await waitForGoogleMaps();
+    
+    console.log('Initializing autocomplete service...');
+    autocompleteService = new window.google.maps.places.AutocompleteService();
+    
+    console.log('Initializing places service...');
+    const tempDiv = document.createElement('div');
+    placesService = new window.google.maps.places.PlacesService(tempDiv);
+    
+    console.log('Services initialized successfully');
     return true;
   } catch (error) {
     console.error('Failed to initialize Google Places API:', error);
     hasInitializationError = true;
     return false;
+  } finally {
+    isInitializing = false;
   }
 };
 
@@ -52,22 +92,27 @@ export const getPlacePredictions = async (params: {
   input: string;
   types?: string[];
 }): Promise<PredictionResponse> => {
-  if (!initializeServices()) {
-    // Si l'initialisation échoue, on retourne une liste vide
-    // pour permettre quand même la saisie manuelle
-    return { predictions: [] };
-  }
+  console.log('Fetching predictions for input:', params.input);
   
   if (!params.input || params.input.length < 2) {
+    console.log('Input too short, returning empty predictions');
+    return { predictions: [] };
+  }
+
+  const servicesReady = await initializeServices();
+  if (!servicesReady) {
+    console.log('Services not available, returning empty predictions');
     return { predictions: [] };
   }
 
   return new Promise((resolve) => {
     const timeoutId = setTimeout(() => {
+      console.log('Request timed out');
       resolve({ predictions: [] });
-    }, 5000); // 5 second timeout
+    }, 5000);
 
     try {
+      console.log('Calling Google Places AutocompleteService...');
       autocompleteService!.getPlacePredictions(
         {
           input: params.input,
@@ -75,6 +120,7 @@ export const getPlacePredictions = async (params: {
         },
         (predictions, status) => {
           clearTimeout(timeoutId);
+          console.log('Received response from Google Places:', { status, predictionsCount: predictions?.length });
           
           if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
             resolve({
@@ -88,8 +134,7 @@ export const getPlacePredictions = async (params: {
               }))
             });
           } else {
-            // En cas d'erreur, on retourne une liste vide
-            // pour permettre quand même la saisie manuelle
+            console.log('No predictions found or error status:', status);
             resolve({ predictions: [] });
           }
         }
@@ -105,16 +150,21 @@ export const getPlacePredictions = async (params: {
 export const getPlaceDetails = async (params: {
   placeId: string;
 }): Promise<PlaceDetailsResponse> => {
-  if (!initializeServices()) {
+  console.log('Fetching details for place:', params.placeId);
+  
+  const servicesReady = await initializeServices();
+  if (!servicesReady) {
     throw new Error('Places API not available');
   }
 
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
+      console.log('Place details request timed out');
       reject(new Error('Request timed out'));
-    }, 5000); // 5 second timeout
+    }, 5000);
 
     try {
+      console.log('Calling Google Places DetailsService...');
       placesService!.getDetails(
         {
           placeId: params.placeId,
@@ -122,6 +172,7 @@ export const getPlaceDetails = async (params: {
         },
         (result, status) => {
           clearTimeout(timeoutId);
+          console.log('Received place details response:', { status, hasResult: !!result });
 
           if (status === google.maps.places.PlacesServiceStatus.OK && result) {
             resolve({
@@ -137,6 +188,7 @@ export const getPlaceDetails = async (params: {
               }
             });
           } else {
+            console.error('Failed to fetch place details, status:', status);
             reject(new Error(`Failed to fetch place details: ${status}`));
           }
         }
