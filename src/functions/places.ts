@@ -1,10 +1,6 @@
 
-import { getFunctions, httpsCallable } from 'firebase/functions';
+const GOOGLE_MAPS_API_KEY = 'YOUR_API_KEY'; // À remplacer avec votre clé API
 
-// Initialize Firebase Functions
-const functions = getFunctions();
-
-// Type definitions for our function responses
 interface PredictionResponse {
   predictions: Array<{
     place_id: string;
@@ -29,13 +25,52 @@ interface PlaceDetailsResponse {
   };
 }
 
-// Functions to call our Firebase Functions
-export const getPlacePredictions = httpsCallable<
-  { input: string; types?: string[] },
-  PredictionResponse
->(functions, 'getPlacePredictions');
+export const getPlacePredictions = async (
+  input: string,
+  types?: string[]
+): Promise<PredictionResponse> => {
+  const response = await fetch(
+    `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
+      input
+    )}&types=${types?.join('|')}&key=${GOOGLE_MAPS_API_KEY}`
+  );
 
-export const getPlaceDetails = httpsCallable<
-  { placeId: string },
-  PlaceDetailsResponse
->(functions, 'getPlaceDetails');
+  if (!response.ok) {
+    throw new Error('Failed to fetch predictions');
+  }
+
+  const data = await response.json();
+  return {
+    predictions: data.predictions.map((prediction: any) => ({
+      place_id: prediction.place_id,
+      description: prediction.description,
+      structured_formatting: {
+        main_text: prediction.structured_formatting.main_text,
+        secondary_text: prediction.structured_formatting.secondary_text,
+      },
+    })),
+  };
+};
+
+export const getPlaceDetails = async (
+  placeId: string
+): Promise<PlaceDetailsResponse> => {
+  const response = await fetch(
+    `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_address,geometry,types&key=${GOOGLE_MAPS_API_KEY}`
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch place details');
+  }
+
+  const data = await response.json();
+  return {
+    place_details: {
+      place_id: data.result.place_id,
+      name: data.result.name,
+      formatted_address: data.result.formatted_address,
+      types: data.result.types,
+      location: data.result.geometry?.location,
+    },
+  };
+};
