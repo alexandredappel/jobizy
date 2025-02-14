@@ -116,15 +116,24 @@ const WorkExperienceListModal = ({
   };
 
   const handlePlaceSelect = (index: number, placeDetails: PlaceDetails) => {
-    console.log('Selected place details:', placeDetails);
-    setLocalExperiences(prev => prev.map((exp, i) => 
-      i === index ? {
-        ...exp,
-        companyName: placeDetails.name,
-        types: placeDetails.types,
-        primaryType: placeDetails.primaryType
-      } : exp
-    ));
+    console.log('=== DEBUG: Place Selection ===');
+    console.log('Raw place details:', placeDetails);
+    console.log('Types from place:', placeDetails.types);
+    console.log('Primary type from place:', placeDetails.primaryType);
+    
+    setLocalExperiences(prev => prev.map((exp, i) => {
+      if (i === index) {
+        const updatedExp = {
+          ...exp,
+          companyName: placeDetails.name,
+          types: placeDetails.types,
+          primaryType: placeDetails.primaryType
+        };
+        console.log('Updated experience object:', updatedExp);
+        return updatedExp;
+      }
+      return exp;
+    }));
     setHasUnsavedChanges(true);
   };
 
@@ -180,6 +189,8 @@ const WorkExperienceListModal = ({
           types: exp.types || [],
           primaryType: exp.primaryType || null
         };
+        
+        console.log('Experience data being saved:', experienceData);
 
         const newDocRef = doc(experiencesRef);
         batch.set(newDocRef, experienceData);
