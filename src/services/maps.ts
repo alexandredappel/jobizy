@@ -63,51 +63,42 @@ class MapsService {
     }
 
     this.loadPromise = new Promise((resolve, reject) => {
-      if (window.google?.maps?.places) {
-        this.isLoaded = true;
-        resolve();
-        return;
-      }
+      try {
+        // Vérifier si le script existe déjà
+        if (window.google?.maps) {
+          console.log('Google Maps API already loaded');
+          this.isLoaded = true;
+          resolve();
+          return;
+        }
 
-      const scriptId = 'google-maps-script';
-      const existingScript = document.getElementById(scriptId);
+        // Créer et ajouter le script
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${this.config.apiKey}&libraries=places`;
+        script.async = true;
+        script.defer = true;
 
-      if (existingScript) {
-        this.waitForGoogleMaps().then(resolve).catch(reject);
-        return;
-      }
+        script.onload = () => {
+          console.log('Google Maps API loaded successfully');
+          this.isLoaded = true;
+          resolve();
+        };
 
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${this.config.apiKey}&libraries=places`;
-      script.async = true;
+        script.onerror = (error) => {
+          console.error('Error loading Google Maps API:', error);
+          this.loadPromise = null;
+          reject(new Error('Failed to load Google Maps script'));
+        };
 
-      script.onload = () => {
-        this.waitForGoogleMaps().then(resolve).catch(reject);
-      };
-
-      script.onerror = (error) => {
+        document.head.appendChild(script);
+      } catch (error) {
+        console.error('Error in loadGoogleMapsScript:', error);
         this.loadPromise = null;
-        reject(new Error('Failed to load Google Maps script'));
-      };
-
-      document.head.appendChild(script);
+        reject(error);
+      }
     });
 
     return this.loadPromise;
-  }
-
-  private async waitForGoogleMaps(timeout: number = 5000): Promise<void> {
-    const startTime = Date.now();
-    
-    while (!window.google?.maps?.places) {
-      if (Date.now() - startTime > timeout) {
-        throw new Error('Timeout waiting for Google Maps');
-      }
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    this.isLoaded = true;
   }
 
   public createAutocomplete(input: HTMLInputElement) {
@@ -116,14 +107,21 @@ class MapsService {
     }
 
     const bounds = this.getBoundsAsLatLngBounds();
+    
+    try {
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        bounds: bounds,
+        strictBounds: true,
+        types: ['establishment'],
+        componentRestrictions: { country: 'id' }
+      });
 
-    return new google.maps.places.Autocomplete(input, {
-      componentRestrictions: { country: "id" }, // Indonesia
-      fields: ["name", "formatted_address", "geometry", "place_id"],
-      types: ["establishment"],
-      bounds: bounds,
-      strictBounds: true
-    });
+      console.log('Autocomplete instance created successfully');
+      return autocomplete;
+    } catch (error) {
+      console.error('Error creating autocomplete:', error);
+      throw error;
+    }
   }
 
   public async getPlaceDetails(placeId: string): Promise<google.maps.places.PlaceResult> {
@@ -132,36 +130,34 @@ class MapsService {
     }
 
     return new Promise((resolve, reject) => {
-      const tempDiv = document.createElement('div');
-      const service = new google.maps.places.PlacesService(tempDiv);
+      try {
+        const tempDiv = document.createElement('div');
+        const service = new google.maps.places.PlacesService(tempDiv);
 
-      service.getDetails(
-        {
-          placeId: placeId,
-          fields: [
-            'name',
-            'formatted_address',
-            'geometry',
-            'place_id',
-            'types',
-            'business_status'
-          ]
-        },
-        (result, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK && result) {
-            console.log('Place details result:', result); // Debug log
-            const primaryType = result.types?.[0];
-            console.log('Primary type:', primaryType); // Debug log
-            const enhancedResult = {
-              ...result,
-              primaryType
-            };
-            resolve(enhancedResult);
-          } else {
-            reject(new Error(`Failed to fetch place details: ${status}`));
+        service.getDetails(
+          {
+            placeId: placeId,
+            fields: ['name', 'formatted_address', 'geometry', 'place_id', 'types', 'business_status']
+          },
+          (result, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && result) {
+              console.log('Place details fetched successfully:', result);
+              const primaryType = result.types?.[0];
+              const enhancedResult = {
+                ...result,
+                primaryType
+              };
+              resolve(enhancedResult);
+            } else {
+              console.error('Error fetching place details:', status);
+              reject(new Error(`Failed to fetch place details: ${status}`));
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        console.error('Error in getPlaceDetails:', error);
+        reject(error);
+      }
     });
   }
 
@@ -171,24 +167,32 @@ class MapsService {
     }
 
     return new Promise((resolve, reject) => {
-      const service = new google.maps.places.AutocompleteService();
-      const bounds = this.getBoundsAsLatLngBounds();
-      
-      service.getPlacePredictions(
-        {
-          input,
-          componentRestrictions: { country: 'id' },
-          types: ['establishment'],
-          bounds: bounds
-        },
-        (predictions, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-            resolve(predictions);
-          } else {
-            resolve([]);
+      try {
+        const service = new google.maps.places.AutocompleteService();
+        const bounds = this.getBoundsAsLatLngBounds();
+        
+        service.getPlacePredictions(
+          {
+            input,
+            bounds: bounds,
+            strictBounds: true,
+            types: ['establishment'],
+            componentRestrictions: { country: 'id' }
+          },
+          (predictions, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+              console.log('Predictions fetched successfully:', predictions);
+              resolve(predictions);
+            } else {
+              console.log('No predictions found or error:', status);
+              resolve([]);
+            }
           }
-        }
-      );
+        );
+      } catch (error) {
+        console.error('Error in getPredictions:', error);
+        reject(error);
+      }
     });
   }
 }
