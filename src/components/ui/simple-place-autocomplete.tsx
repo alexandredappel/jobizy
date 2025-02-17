@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Input } from './input';
 import { mapsService } from '@/services/maps';
@@ -53,6 +54,10 @@ const GOOGLE_PLACES_STYLES = `
     font-weight: 600;
     color: hsl(var(--primary));
   }
+
+  .pac-logo {
+    display: none !important;
+  }
 `;
 
 export function SimplePlaceAutocomplete({
@@ -89,10 +94,7 @@ export function SimplePlaceAutocomplete({
         setIsLoading(false);
 
         if (inputRef.current) {
-          const autocomplete = mapsService.createAutocomplete(inputRef.current, {
-            types: ['establishment'],
-            fields: ['place_id', 'name', 'formatted_address', 'geometry', 'types']
-          });
+          const autocomplete = mapsService.createAutocomplete(inputRef.current);
           
           // Observer pour réappliquer le z-index si nécessaire
           const observer = new MutationObserver((mutations) => {
