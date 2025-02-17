@@ -53,6 +53,7 @@ interface ExperienceForm {
   isCurrentPosition: boolean;
   types?: string[];
   primaryType?: string;
+  place_details?: PlaceDetails;
 }
 
 const JOB_TYPES: JobType[] = [
