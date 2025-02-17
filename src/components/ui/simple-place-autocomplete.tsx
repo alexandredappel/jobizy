@@ -91,7 +91,14 @@ export function SimplePlaceAutocomplete({
         if (inputRef.current) {
           const autocomplete = mapsService.createAutocomplete(inputRef.current, {
             types: ['establishment'],
-            fields: ['place_id', 'name', 'formatted_address', 'geometry', 'types']
+            fields: [
+              'name',
+              'formatted_address',
+              'geometry',
+              'types',
+              'primary_type',
+              'formatted_phone_number'
+            ]
           });
           
           // Observer pour réappliquer le z-index si nécessaire
@@ -116,12 +123,19 @@ export function SimplePlaceAutocomplete({
             if (place.place_id) {
               try {
                 const placeDetails = await mapsService.getPlaceDetails(place.place_id);
+                
+                // Ajout des logs de débogage
+                console.log('=== DEBUG: Place Autocomplete Selection ===');
+                console.log('Raw place details:', placeDetails);
+                console.log('Types received:', placeDetails.types);
+                console.log('Primary type:', placeDetails.primary_type);
+                
                 const formattedPlace: PlaceDetails = {
-                  place_id: placeDetails.place_id,
                   name: placeDetails.name,
                   formatted_address: placeDetails.formatted_address,
-                  types: placeDetails.types,
-                  primaryType: placeDetails.types?.[0],
+                  types: placeDetails.types || [],
+                  primaryType: placeDetails.primary_type || placeDetails.types?.[0],
+                  formatted_phone_number: placeDetails.formatted_phone_number,
                   geometry: placeDetails.geometry ? {
                     location: {
                       lat: placeDetails.geometry.location.lat(),
@@ -129,6 +143,9 @@ export function SimplePlaceAutocomplete({
                     }
                   } : undefined
                 };
+                
+                console.log('Formatted place object:', formattedPlace);
+                
                 onPlaceSelect(formattedPlace);
                 setValue(formattedPlace.name || '');
               } catch (error) {
