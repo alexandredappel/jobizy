@@ -16,7 +16,7 @@ interface MapServiceConfig {
 
 // Configuration pour l'Indonésie
 const INDONESIA_CONFIG: MapServiceConfig = {
-  apiKey: 'AIzaSyC91tXtCxSZ_O7VtZXheEUgQ6Zjs2Y0p5M',
+  apiKey: 'AIzaSyBlcii5tyxXu4ELNjkJxXczmVSI27y3LdA',
   bounds: {
     north: 6.0730,    // Point le plus au nord de l'Indonésie
     south: -11.1082,  // Point le plus au sud de l'Indonésie

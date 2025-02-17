@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -16,11 +16,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import AuthLayout from '@/layouts/auth';
+import { AuthLayout } from '@/layouts/auth';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'react-router-dom';
-import { doc, setDoc } from 'firebase/firestore';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -32,7 +31,7 @@ type FormData = z.infer<typeof formSchema>;
 const SignIn = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { setUser } = useAuth();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -51,7 +50,12 @@ const SignIn = () => {
       );
       
       if (userCredential.user) {
-        // Instead of using setUser, we'll let the AuthContext handle the user state
+        const userData = {
+          id: userCredential.user.uid,
+          email: userCredential.user.email || undefined,
+          role: 'worker' as const, // Explicitly type as 'worker'
+        };
+        setUser(userData);
         navigate('/worker/onboarding');
       }
     } catch (error) {
@@ -65,8 +69,9 @@ const SignIn = () => {
   };
 
   return (
-    <AuthLayout title="Welcome back">
+    <AuthLayout>
       <div className="flex flex-col space-y-2 text-center mb-8">
+        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
         <p className="text-sm text-muted-foreground">
           Enter your credentials to sign in
         </p>
