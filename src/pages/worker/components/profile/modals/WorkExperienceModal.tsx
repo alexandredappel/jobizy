@@ -28,6 +28,14 @@ import { doc, deleteDoc, collection, writeBatch, Timestamp } from 'firebase/fire
 import { db } from '@/lib/firebase';
 import { useTranslation } from 'react-i18next';
 import { PlaceDetails } from '@/types/places.types';
+import { WorkExperience, JobType } from "@/types/firebase.types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface WorkExperienceListModalProps {
   open: boolean;
@@ -254,11 +262,21 @@ const WorkExperienceListModal = ({
 
                   <div className="space-y-2">
                     <Label>{t('worker.profile.modals.workExperience.position.label')}</Label>
-                    <Input
+                    <Select
                       value={exp.position}
-                      onChange={(e) => handleUpdateField(index, 'position', e.target.value)}
-                      placeholder={t('worker.profile.modals.workExperience.position.placeholder')}
-                    />
+                      onValueChange={(value) => handleUpdateField(index, 'position', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('worker.profile.modals.workExperience.position.placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.values(JobType) as string[]).map((jobType) => (
+                          <SelectItem key={jobType} value={jobType}>
+                            {jobType}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="flex items-center space-x-2">
