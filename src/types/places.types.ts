@@ -1,11 +1,10 @@
-
 export interface PlaceDetails {
-  place_id?: string;
-  name?: string;
-  formatted_address?: string;
-  types?: string[];
-  primaryType?: string;
-  geometry?: {
+  name: string;                      // Obligatoire maintenant
+  formatted_address: string;         // Obligatoire maintenant
+  formatted_phone_number?: string;   // Nouveau champ optionnel
+  types: string[];                   // Obligatoire et non optionnel maintenant
+  primaryType: string;               // Obligatoire maintenant
+  geometry: {                        // Obligatoire maintenant
     location: {
       lat: number;
       lng: number;
