@@ -1,10 +1,9 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { AuthLayout } from '@/layouts/auth';
+import AuthLayout from '@/layouts/auth';
 import { useTranslation } from 'react-i18next';
 import { AuthService } from '@/services/authService';
 
@@ -20,7 +19,6 @@ const SignIn = () => {
   const { t } = useTranslation();
   const authService = new AuthService();
 
-  // Compte à rebours pour le délai entre les tentatives
   useEffect(() => {
     if (retryTimeout > 0) {
       const timer = setTimeout(() => {
@@ -41,7 +39,7 @@ const SignIn = () => {
       const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
 
-      const result = await authService.signInWithPhone(phoneForFirebase);
+      const result = await authService.signInWithPhone(phoneForFirebase, '');
       
       setConfirmationResult(result.confirmationResult);
       setStep('otp');
