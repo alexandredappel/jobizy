@@ -206,8 +206,14 @@ const WorkExperienceListModal = ({
           end_date: exp.isCurrentPosition ? null : exp.endDate ? Timestamp.fromDate(exp.endDate) : null,
           updated_at: Timestamp.now(),
           created_at: Timestamp.now(),
-          types: exp.types || [],
-          primaryType: exp.primaryType || null
+          place_details: {
+            name: exp.companyName,
+            formatted_address: exp.place_details?.formatted_address,
+            formatted_phone_number: exp.place_details?.formatted_phone_number,
+            types: exp.types || [],
+            primaryType: exp.primaryType,
+            geometry: exp.place_details?.geometry
+          }
         };
         
         console.log('Experience data being saved:', experienceData);
