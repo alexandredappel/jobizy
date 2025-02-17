@@ -124,17 +124,19 @@ export function SimplePlaceAutocomplete({
               try {
                 const placeDetails = await mapsService.getPlaceDetails(place.place_id);
                 
-                // Ajout des logs de débogage
+                // Logs détaillés
                 console.log('=== DEBUG: Place Autocomplete Selection ===');
                 console.log('Raw place details:', placeDetails);
                 console.log('Types received:', placeDetails.types);
                 console.log('Primary type:', placeDetails.primary_type);
+                console.log('Primary type display name:', placeDetails.primaryTypeDisplayName);
                 
                 const formattedPlace: PlaceDetails = {
                   name: placeDetails.name,
                   formatted_address: placeDetails.formatted_address,
                   types: placeDetails.types || [],
                   primaryType: placeDetails.primary_type || placeDetails.types?.[0],
+                  primaryTypeDisplayName: placeDetails.primaryTypeDisplayName,
                   formatted_phone_number: placeDetails.formatted_phone_number,
                   geometry: placeDetails.geometry ? {
                     location: {
