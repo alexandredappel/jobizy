@@ -7,9 +7,16 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { WorkExperience } from "@/types/firebase.types";
+import { WorkExperience, JobType } from "@/types/firebase.types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
@@ -39,7 +46,7 @@ interface WorkExperienceListModalProps {
 interface ExperienceForm {
   id?: string;
   companyName: string;
-  position: string;
+  position: JobType;
   startDate: Date;
   endDate?: Date;
   isCurrentPosition: boolean;
@@ -58,7 +65,7 @@ const WorkExperienceListModal = ({
     experiences.map(exp => ({
       id: exp.id,
       companyName: exp.company,
-      position: exp.position,
+      position: exp.position as JobType,
       startDate: exp.start_date.toDate(),
       endDate: exp.end_date?.toDate(),
       isCurrentPosition: !exp.end_date,
@@ -206,7 +213,7 @@ const WorkExperienceListModal = ({
       });
       setHasUnsavedChanges(false);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving experiences:', error);
       toast({
         title: t('common.toast.error'),
@@ -254,11 +261,21 @@ const WorkExperienceListModal = ({
 
                   <div className="space-y-2">
                     <Label>{t('worker.profile.modals.workExperience.position.label')}</Label>
-                    <Input
+                    <Select
                       value={exp.position}
-                      onChange={(e) => handleUpdateField(index, 'position', e.target.value)}
-                      placeholder={t('worker.profile.modals.workExperience.position.placeholder')}
-                    />
+                      onValueChange={(value: JobType) => handleUpdateField(index, 'position', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('worker.profile.modals.workExperience.position.placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(['Waiter', 'Cook', 'Cashier', 'Manager', 'Housekeeper', 'Gardener', 'Pool technician', 'Bartender', 'Seller'] as JobType[]).map((jobType) => (
+                          <SelectItem key={jobType} value={jobType}>
+                            {jobType}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="flex items-center space-x-2">
