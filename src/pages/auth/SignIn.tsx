@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,10 @@ import AuthLayout from '@/layouts/auth';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '@/components/ui/language-selector';
 import { AuthService } from '@/services/authService';
+
+interface UserData {
+  role?: 'worker' | 'business';
+}
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -59,7 +62,7 @@ const SignIn = () => {
     
     try {
       console.log('Verifying OTP...');
-      const userData = await authService.verifySignInOTP(confirmationResult, verificationCode);
+      const userData = await authService.verifySignInOTP(confirmationResult, verificationCode) as UserData;
       console.log('OTP verification successful:', userData);
       
       if (!userData) {

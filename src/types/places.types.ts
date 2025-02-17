@@ -1,13 +1,15 @@
 
 export interface PlaceDetails {
-  place_id: string;
-  name: string;
-  formatted_address: string;
-  types: string[];
+  place_id?: string; // Rendu optionnel pour correspondre au type Google Maps
+  name?: string;
+  formatted_address?: string;
+  types?: string[];
   primaryType?: string;
-  location?: {
-    lat: number;
-    lng: number;
+  geometry?: {
+    location: {
+      lat: number;
+      lng: number;
+    };
   };
 }
 

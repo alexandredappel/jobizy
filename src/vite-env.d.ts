@@ -32,6 +32,8 @@ declare namespace google.maps {
 
   interface AutocompletionRequest {
     input: string;
+    bounds?: LatLngBounds;
+    strictBounds?: boolean;
     types?: string[];
     componentRestrictions?: {
       country: string;
@@ -61,5 +63,19 @@ declare namespace google.maps {
       };
     };
     types?: string[];
+  }
+
+  class LatLngBounds {
+    constructor(sw: LatLng | LatLngLiteral, ne: LatLng | LatLngLiteral);
+  }
+
+  interface LatLng {
+    lat(): number;
+    lng(): number;
+  }
+
+  interface LatLngLiteral {
+    lat: number;
+    lng: number;
   }
 }
