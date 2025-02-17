@@ -33,7 +33,7 @@ declare namespace google.maps {
   interface AutocompletionRequest {
     input: string;
     bounds?: LatLngBounds;
-    strictBounds?: boolean;
+    strictBounds?: boolean; // Ajout de la propriété manquante
     types?: string[];
     componentRestrictions?: {
       country: string;
