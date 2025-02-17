@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,17 +29,31 @@ const SignIn = () => {
     }
   }, [retryTimeout]);
 
+  useEffect(() => {
+    // Nettoyage du reCAPTCHA lors du démontage du composant
+    return () => {
+      authService.clearRecaptcha();
+    };
+  }, []);
+
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setIsLoading(true);
       
+      // Nettoyage du reCAPTCHA avant une nouvelle tentative
+      authService.clearRecaptcha();
       authService.initRecaptcha('recaptcha-container');
       
       // Format du numéro de téléphone
       const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
-      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
+      // Si le numéro commence déjà par +62, ne pas l'ajouter
+      const phoneForFirebase = cleanPhoneNumber.startsWith('62') 
+        ? `+${cleanPhoneNumber}`
+        : `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
 
+      console.log('Sending verification to:', phoneForFirebase); // Debug log
+      
       const result = await authService.signInWithPhone(phoneForFirebase, '');
       
       setConfirmationResult(result.confirmationResult);
@@ -51,7 +66,7 @@ const SignIn = () => {
       console.error('Phone signin error:', error);
       
       if (error.code === 'auth/too-many-requests') {
-        setRetryTimeout(60); // 60 secondes de délai
+        setRetryTimeout(60);
       }
       
       const errorMessage = 
@@ -70,7 +85,6 @@ const SignIn = () => {
       });
     } finally {
       setIsLoading(false);
-      authService.clearRecaptcha();
     }
   };
 
@@ -103,7 +117,6 @@ const SignIn = () => {
       });
     } finally {
       setIsLoading(false);
-      authService.clearRecaptcha();
     }
   };
 
@@ -123,7 +136,7 @@ const SignIn = () => {
         </span>
         <Input
           type="tel"
-          placeholder="082266255603"
+          placeholder="822662555603"
           value={phoneNumber}
           onChange={handlePhoneNumberChange}
           className="pl-12"
