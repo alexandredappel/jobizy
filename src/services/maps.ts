@@ -128,25 +128,40 @@ class MapsService {
     if (!this.isLoaded) {
       throw new Error('Google Maps API not loaded');
     }
-
+  
     return new Promise((resolve, reject) => {
       try {
         const tempDiv = document.createElement('div');
         const service = new google.maps.places.PlacesService(tempDiv);
-
+  
         service.getDetails(
           {
             placeId: placeId,
-            fields: ['name', 'formatted_address', 'geometry', 'place_id', 'types', 'business_status']
+            fields: [
+              'name',
+              'formatted_address',
+              'geometry',
+              'types',
+              'primary_type',
+              'primaryTypeDisplayName',
+              'formatted_phone_number'
+            ]
           },
           (result, status) => {
             if (status === google.maps.places.PlacesServiceStatus.OK && result) {
-              console.log('Place details fetched successfully:', result);
-              const primaryType = result.types?.[0];
+              console.log('=== DEBUG: Place Details ===');
+              console.log('Raw result:', result);
+              console.log('Types:', result.types);
+              console.log('Primary type from API:', result.primary_type);
+              console.log('Primary type display name:', result.primaryTypeDisplayName);
+  
               const enhancedResult = {
                 ...result,
-                primaryType
+                primaryType: result.primary_type || result.types?.[0],
+                primaryTypeDisplayName: result.primaryTypeDisplayName
               };
+  
+              console.log('Enhanced result:', enhancedResult);
               resolve(enhancedResult);
             } else {
               console.error('Error fetching place details:', status);
