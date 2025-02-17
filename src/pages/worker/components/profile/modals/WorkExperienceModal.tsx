@@ -198,6 +198,12 @@ const WorkExperienceListModal = ({
       // Add all current experiences as new documents
       console.log('Adding new/updated experiences');
       for (const exp of localExperiences) {
+        console.log('=== DEBUG: Work Experience Save ===');
+        console.log('Raw experience data:', exp);
+        console.log('Place details:', exp.place_details);
+        console.log('Types:', exp.types);
+        console.log('Primary type:', exp.primaryType);
+      
         const experienceData = {
           user_id: userId,
           company: exp.companyName,
@@ -215,9 +221,9 @@ const WorkExperienceListModal = ({
             geometry: exp.place_details?.geometry
           }
         };
-        
-        console.log('Experience data being saved:', experienceData);
-
+      
+        console.log('Final formatted data:', experienceData);
+      
         const newDocRef = doc(experiencesRef);
         batch.set(newDocRef, experienceData);
       }
