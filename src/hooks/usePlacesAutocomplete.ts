@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, RefObject } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { mapsService } from '@/services/maps';
@@ -114,9 +115,11 @@ export function usePlacesAutocomplete({
         formatted_address: placeResult.formatted_address || description,
         types: placeResult.types || [],
         primaryType: placeResult.types?.[0],
-        location: placeResult.geometry?.location ? {
-          lat: placeResult.geometry.location.lat(),
-          lng: placeResult.geometry.location.lng()
+        geometry: placeResult.geometry ? {
+          location: {
+            lat: placeResult.geometry.location.lat(),
+            lng: placeResult.geometry.location.lng()
+          }
         } : undefined
       };
 

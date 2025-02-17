@@ -1,6 +1,6 @@
 
 export interface PlaceDetails {
-  place_id?: string; // Rendu optionnel pour correspondre au type Google Maps
+  place_id?: string;
   name?: string;
   formatted_address?: string;
   types?: string[];

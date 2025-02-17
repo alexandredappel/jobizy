@@ -33,8 +33,21 @@ export function SimplePlaceAutocomplete({
             if (place.place_id) {
               try {
                 const placeDetails = await mapsService.getPlaceDetails(place.place_id);
-                onPlaceSelect(placeDetails);
-                setValue(placeDetails.name || '');
+                const formattedPlace: PlaceDetails = {
+                  place_id: placeDetails.place_id,
+                  name: placeDetails.name,
+                  formatted_address: placeDetails.formatted_address,
+                  types: placeDetails.types,
+                  primaryType: placeDetails.types?.[0],
+                  geometry: placeDetails.geometry ? {
+                    location: {
+                      lat: placeDetails.geometry.location.lat(),
+                      lng: placeDetails.geometry.location.lng()
+                    }
+                  } : undefined
+                };
+                onPlaceSelect(formattedPlace);
+                setValue(formattedPlace.name || '');
               } catch (error) {
                 console.error('Error fetching place details:', error);
               }
