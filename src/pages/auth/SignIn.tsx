@@ -1,139 +1,190 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/useAuth';
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { useToast } from '@/hooks/use-toast';
 import { AuthLayout } from '@/layouts/auth';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Link } from 'react-router-dom';
-
-const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-type FormData = z.infer<typeof formSchema>;
+import { useTranslation } from 'react-i18next';
+import { AuthService } from '@/services/authService';
 
 const SignIn = () => {
-  const { toast } = useToast();
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [step, setStep] = useState<'phone' | 'otp'>('phone');
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [retryTimeout, setRetryTimeout] = useState<number>(0);
   const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const { toast } = useToast();
+  const { t } = useTranslation();
+  const authService = new AuthService();
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
+  // Compte à rebours pour le délai entre les tentatives
+  useEffect(() => {
+    if (retryTimeout > 0) {
+      const timer = setTimeout(() => {
+        setRetryTimeout(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [retryTimeout]);
 
-  const onSubmit = async (values: FormData) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
+      setIsLoading(true);
       
-      if (userCredential.user) {
-        const userData = {
-          id: userCredential.user.uid,
-          email: userCredential.user.email || undefined,
-          role: 'worker' as const, // Explicitly type as 'worker'
-        };
-        setUser(userData);
-        navigate('/worker/onboarding');
-      }
-    } catch (error) {
-      console.error('Error signing in:', error);
+      authService.initRecaptcha('recaptcha-container');
+      
+      // Format du numéro de téléphone
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
+
+      const result = await authService.signInWithPhone(phoneForFirebase);
+      
+      setConfirmationResult(result.confirmationResult);
+      setStep('otp');
       toast({
-        title: 'Error',
-        description: 'Invalid email or password',
-        variant: 'destructive',
+        title: t('auth.signIn.otpSent.title'),
+        description: t('auth.signIn.otpSent.description'),
       });
+    } catch (error: any) {
+      console.error('Phone signin error:', error);
+      
+      if (error.code === 'auth/too-many-requests') {
+        setRetryTimeout(60); // 60 secondes de délai
+      }
+      
+      const errorMessage = 
+        error.code === 'auth/too-many-requests'
+          ? t('auth.signIn.error.tooManyRequests')
+        : error.code === 'auth/invalid-phone-number'
+          ? t('auth.signIn.error.invalidPhone')
+        : error.code === 'RECAPTCHA_NOT_INITIALIZED'
+          ? t('auth.recaptchaError')
+        : error.message;
+
+      toast({
+        title: t('auth.signIn.error.title'),
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+      authService.clearRecaptcha();
     }
   };
 
+  const handleOTPVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      if (!confirmationResult) {
+        throw new Error('No confirmation result found');
+      }
+
+      const user = await authService.verifySignInOTP(confirmationResult, verificationCode);
+      
+      // Redirection basée sur le rôle de l'utilisateur
+      const redirectPath = `/${user.role}/dashboard`;
+      navigate(redirectPath);
+      
+      toast({
+        title: t('auth.signIn.success.title'),
+        description: t('auth.signIn.success.description'),
+      });
+    } catch (error: any) {
+      console.error('OTP verification error:', error);
+      toast({
+        title: t('auth.signIn.error.title'),
+        description: error.message === 'INVALID_VERIFICATION_CODE'
+          ? t('auth.signIn.error.invalidOTP')
+          : error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+      authService.clearRecaptcha();
+    }
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, '');
+    if (!value.startsWith('0')) {
+      value = '0' + value;
+    }
+    setPhoneNumber(value);
+  };
+
+  const renderPhoneForm = () => (
+    <form className="space-y-4" onSubmit={handlePhoneSubmit}>
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+          +62
+        </span>
+        <Input
+          type="tel"
+          placeholder="082266255603"
+          value={phoneNumber}
+          onChange={handlePhoneNumberChange}
+          className="pl-12"
+          disabled={isLoading || retryTimeout > 0}
+          required
+        />
+      </div>
+      <Button 
+        type="submit" 
+        className="w-full"
+        disabled={isLoading || retryTimeout > 0}
+      >
+        {retryTimeout > 0 
+          ? t('auth.signIn.retryIn', { seconds: retryTimeout })
+          : isLoading 
+            ? t('auth.signIn.loading')
+            : t('auth.signIn.submitButton')}
+      </Button>
+      <div id="recaptcha-container"></div>
+    </form>
+  );
+
+  const renderOTPForm = () => (
+    <form className="space-y-4" onSubmit={handleOTPVerification}>
+      <Input
+        type="text"
+        placeholder={t('auth.signIn.otpPlaceholder')}
+        value={verificationCode}
+        onChange={(e) => setVerificationCode(e.target.value)}
+        disabled={isLoading}
+        required
+      />
+      <Button 
+        type="submit" 
+        className="w-full"
+        disabled={isLoading}
+      >
+        {isLoading ? t('auth.signIn.verifying') : t('auth.signIn.verifyButton')}
+      </Button>
+    </form>
+  );
+
   return (
-    <AuthLayout>
+    <AuthLayout title={t('auth.signIn.title')}>
       <div className="flex flex-col space-y-2 text-center mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t('auth.signIn.welcome')}
+        </h1>
         <p className="text-sm text-muted-foreground">
-          Enter your credentials to sign in
+          {t('auth.signIn.enterCredentials')}
         </p>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      {step === 'phone' ? renderPhoneForm() : renderOTPForm()}
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter your password"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex justify-end">
-            <Link
-              to="/forgot-password"
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-
-          <Button type="submit" className="w-full">
-            Sign in
-          </Button>
-        </form>
-      </Form>
-
-      <div className="mt-4 text-center text-sm">
-        Don't have an account?{' '}
-        <Link to="/signup" className="text-primary hover:underline">
-          Sign up
+      <div className="text-center text-sm text-secondary mt-4">
+        {t('auth.signIn.noAccount')}{' '}
+        <Link to="/signup" className="text-primary hover:text-primary/80">
+          {t('auth.signUp')}
         </Link>
       </div>
     </AuthLayout>
