@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -7,13 +8,20 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { WorkExperience } from "@/types/firebase.types";
+import { WorkExperience, JobType } from "@/types/firebase.types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { SimplePlaceAutocomplete } from "@/components/ui/simple-place-autocomplete";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +54,18 @@ interface ExperienceForm {
   types?: string[];
   primaryType?: string;
 }
+
+const JOB_TYPES: JobType[] = [
+  'Waiter',
+  'Cook',
+  'Cashier',
+  'Manager',
+  'Housekeeper',
+  'Gardener',
+  'Pool technician',
+  'Bartender',
+  'Seller'
+];
 
 const WorkExperienceListModal = ({
   open,
@@ -254,11 +274,21 @@ const WorkExperienceListModal = ({
 
                   <div className="space-y-2">
                     <Label>{t('worker.profile.modals.workExperience.position.label')}</Label>
-                    <Input
+                    <Select
                       value={exp.position}
-                      onChange={(e) => handleUpdateField(index, 'position', e.target.value)}
-                      placeholder={t('worker.profile.modals.workExperience.position.placeholder')}
-                    />
+                      onValueChange={(value) => handleUpdateField(index, 'position', value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('worker.profile.modals.workExperience.position.placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {JOB_TYPES.map((job) => (
+                          <SelectItem key={job} value={job}>
+                            {job}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -362,7 +392,7 @@ const WorkExperienceListModal = ({
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+      </Dialog>
     </>
   );
 };
