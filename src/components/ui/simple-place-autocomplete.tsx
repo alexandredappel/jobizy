@@ -9,10 +9,9 @@ interface SimplePlaceAutocompleteProps {
   defaultValue?: string;
 }
 
-// Styles mis à jour
+// Styles pour les suggestions Google Places
 const GOOGLE_PLACES_STYLES = `
   .pac-container {
-    position: fixed !important;
     z-index: 9999 !important;
     border: 1px solid hsl(var(--border));
     background-color: hsl(var(--background));
@@ -23,13 +22,7 @@ const GOOGLE_PLACES_STYLES = `
     font-family: var(--font-sans);
   }
 
-  .pac-container:after {
-    display: none !important;
-  }
-
   .pac-item {
-    display: flex;
-    align-items: center;
     padding: 0.5rem;
     cursor: pointer;
     border: none;
@@ -71,6 +64,7 @@ export function SimplePlaceAutocomplete({
   const [value, setValue] = useState(defaultValue);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Injecter les styles personnalisés
   useEffect(() => {
     const styleId = 'google-places-styles';
     if (!document.getElementById(styleId)) {
@@ -89,39 +83,24 @@ export function SimplePlaceAutocomplete({
   }, []);
 
   useEffect(() => {
-    let autocomplete: google.maps.places.Autocomplete | null = null;
-
     const initializeAutocomplete = async () => {
       try {
         await mapsService.loadGoogleMapsScript();
         setIsLoading(false);
 
         if (inputRef.current) {
-          autocomplete = mapsService.createAutocomplete(inputRef.current, {
+          const autocomplete = mapsService.createAutocomplete(inputRef.current, {
             types: ['establishment'],
             fields: ['place_id', 'name', 'formatted_address', 'geometry', 'types']
           });
-
-          // Force le repositionnement des suggestions
-          const updatePosition = () => {
-            if (inputRef.current) {
-              const rect = inputRef.current.getBoundingClientRect();
-              const pacContainer = document.querySelector('.pac-container') as HTMLElement;
-              if (pacContainer) {
-                pacContainer.style.top = `${rect.bottom + window.scrollY}px`;
-                pacContainer.style.left = `${rect.left + window.scrollX}px`;
-                pacContainer.style.width = `${rect.width}px`;
-              }
-            }
-          };
-
-          // Observer pour les changements de DOM
+          
+          // Observer pour réappliquer le z-index si nécessaire
           const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
               if (mutation.addedNodes.length) {
                 const pacContainer = document.querySelector('.pac-container');
                 if (pacContainer) {
-                  updatePosition();
+                  (pacContainer as HTMLElement).style.zIndex = '9999';
                 }
               }
             });
@@ -131,14 +110,10 @@ export function SimplePlaceAutocomplete({
             childList: true,
             subtree: true
           });
-
-          // Mise à jour de la position lors du scroll ou du redimensionnement
-          window.addEventListener('scroll', updatePosition, true);
-          window.addEventListener('resize', updatePosition);
           
           autocomplete.addListener('place_changed', async () => {
-            const place = autocomplete?.getPlace();
-            if (place?.place_id) {
+            const place = autocomplete.getPlace();
+            if (place.place_id) {
               try {
                 const placeDetails = await mapsService.getPlaceDetails(place.place_id);
                 const formattedPlace: PlaceDetails = {
@@ -164,8 +139,6 @@ export function SimplePlaceAutocomplete({
 
           return () => {
             observer.disconnect();
-            window.removeEventListener('scroll', updatePosition, true);
-            window.removeEventListener('resize', updatePosition);
           };
         }
       } catch (error) {
@@ -175,12 +148,6 @@ export function SimplePlaceAutocomplete({
     };
 
     initializeAutocomplete();
-
-    return () => {
-      if (autocomplete) {
-        google.maps.event.clearInstanceListeners(autocomplete);
-      }
-    };
   }, [onPlaceSelect]);
 
   return (
