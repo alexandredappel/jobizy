@@ -47,33 +47,14 @@ const SignUp = () => {
     try {
       setIsLoading(true);
       
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-      if (!passwordRegex.test(password)) {
-        toast({
-          title: t('auth.signUp.error.title'),
-          description: t('auth.signUp.error.passwordRequirements'),
-          variant: "destructive"
-        });
-        return;
-      }
-
       console.log('Initializing phone signup with role:', role);
       
       authService.initRecaptcha('recaptcha-container');
       
       const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
-      const phoneForStorage = cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber : `0${cleanPhoneNumber}`;
-
-      const result = await authService.signUpWithPhone(
-        phoneForFirebase,
-        password,
-        role,
-        {
-          phone_number: phoneForStorage,
-          preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
-        }
-      );
+      
+      const result = await authService.verifyPhoneNumber(phoneForFirebase);
       
       setConfirmationResult(result.confirmationResult);
       setStep('otp');
@@ -85,7 +66,7 @@ const SignUp = () => {
       console.error('Phone signup error:', error);
       
       if (error.code === 'auth/too-many-requests') {
-        setRetryTimeout(60); // 60 secondes de délai
+        setRetryTimeout(60);
       }
       
       const errorMessage = 
@@ -118,7 +99,7 @@ const SignUp = () => {
         throw new Error('No confirmation result found');
       }
 
-      const user = await authService.verifyOTP(confirmationResult, verificationCode);
+      const user = await authService.verifyOTP(confirmationResult, verificationCode, true);
       console.log('User created successfully, navigating to onboarding');
       navigate(`/${user.role}/onboarding`);
     } catch (error: any) {

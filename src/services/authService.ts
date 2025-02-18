@@ -1,21 +1,12 @@
+
 import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
   signOut as firebaseSignOut,
-  sendPasswordResetEmail, 
-  updateProfile, 
   RecaptchaVerifier, 
   PhoneAuthProvider 
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { 
-  User,
-  WorkerUser,
-  BusinessUser,
-  BusinessType,
-  WorkArea
-} from '@/types/firebase.types';
+import { User } from '@/types/firebase.types';
 
 export class AuthService {
   private recaptchaVerifier: RecaptchaVerifier | null = null;
@@ -55,13 +46,8 @@ export class AuthService {
     }
   }
 
-  async signUpWithPhone(
-    phoneNumber: string,
-    password: string,
-    role: 'worker' | 'business',
-    additionalData: Partial<User>
-  ) {
-    console.log('Starting phone signup process...');
+  async verifyPhoneNumber(phoneNumber: string) {
+    console.log('Starting phone verification process...');
     
     if (!this.recaptchaVerifier) {
       console.error('reCAPTCHA not initialized');
@@ -78,13 +64,13 @@ export class AuthService {
 
       return { confirmationResult };
     } catch (error: any) {
-      console.error('Phone signup error:', error);
+      console.error('Phone verification error:', error);
       throw error;
     }
   }
 
-  async verifyOTP(confirmationResult: any, verificationCode: string) {
-    console.log('Starting OTP verification...');
+  async verifyOTP(confirmationResult: any, verificationCode: string, isSignUp: boolean = false) {
+    console.log(`Starting OTP verification for ${isSignUp ? 'sign up' : 'sign in'}...`);
     
     try {
       const userCredential = await confirmationResult.confirm(verificationCode);
@@ -99,118 +85,27 @@ export class AuthService {
         return userDoc.data() as User;
       }
 
-      console.error('User document not found after OTP verification');
-      throw new Error('User document not found');
+      if (!isSignUp) {
+        console.error('User document not found during sign in');
+        throw new Error('USER_NOT_FOUND');
+      }
+
+      // Pour l'inscription, on va créer un nouveau document utilisateur
+      console.log('Creating new user document for sign up');
+      const newUserData: Partial<User> = {
+        id: user.uid,
+        phone_number: user.phoneNumber,
+        created_at: new Date(),
+        updated_at: new Date(),
+        languages: []
+      };
+
+      await setDoc(userDocRef, newUserData);
+      return newUserData as User;
+
     } catch (error: any) {
       console.error('OTP verification error:', error);
       throw error;
-    }
-  }
-
-  async signInWithPhone(phoneNumber: string, password: string) {
-    console.log('Starting phone sign in process...');
-    
-    if (!this.recaptchaVerifier) {
-      console.error('reCAPTCHA not initialized');
-      throw new Error('RECAPTCHA_NOT_INITIALIZED');
-    }
-
-    try {
-      console.log('Verifying phone number for sign in:', phoneNumber);
-      const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
-        phoneNumber,
-        this.recaptchaVerifier
-      );
-      console.log('Phone verification successful for sign in');
-
-      return { confirmationResult };
-    } catch (error: any) {
-      console.error('Phone sign in error:', error);
-      throw error;
-    }
-  }
-
-  async verifySignInOTP(confirmationResult: any, verificationCode: string) {
-    console.log('Starting sign in OTP verification...');
-    
-    try {
-      const userCredential = await confirmationResult.confirm(verificationCode);
-      const user = userCredential.user;
-      console.log('Sign in OTP verified successfully for user:', user.uid);
-
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        console.log('Found user document for sign in');
-        return userDoc.data() as User;
-      }
-
-      console.error('User document not found after sign in OTP verification');
-      throw new Error('User document not found');
-    } catch (error: any) {
-      console.error('Sign in OTP verification error:', error);
-      throw error;
-    }
-  }
-
-  async registerBusiness(
-    email: string,
-    password: string,
-    companyName: string,
-    businessType: BusinessType,
-    location: WorkArea[],
-    phoneNumber: string,
-    role: 'business'
-  ): Promise<User> {
-    try {
-      console.log('Starting business registration process...');
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      const businessData: BusinessUser = {
-        id: user.uid,
-        role: 'business',
-        email: email,
-        company_name: companyName,
-        business_type: businessType,
-        location: location,
-        phoneNumber: phoneNumber,
-        created_at: new Date(),
-        updated_at: new Date(),
-        languages: [], // Ajout du champ languages requis
-      };
-
-      console.log('Creating business document in Firestore...');
-      await setDoc(doc(db, "users", user.uid), businessData);
-      console.log('Business registration completed successfully');
-      
-      return businessData;
-    } catch (error: any) {
-      console.error('Business registration error:', error);
-      throw error;
-    }
-  }
-
-  async login(email: string, password: string): Promise<User> {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      if (user) {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          return userDoc.data() as User;
-        } else {
-          throw new Error('User data not found in Firestore');
-        }
-      } else {
-        throw new Error('Could not retrieve current user');
-      }
-    } catch (error: any) {
-      console.error('Login error:', error.message);
-      throw new Error(error.message);
     }
   }
 
@@ -220,32 +115,6 @@ export class AuthService {
     } catch (error: any) {
       console.error('Sign out error:', error);
       throw error;
-    }
-  }
-
-  async resetPassword(email: string): Promise<void> {
-    try {
-      await sendPasswordResetEmail(auth, email);
-    } catch (error: any) {
-      console.error('Reset password error:', error.message);
-      throw new Error(error.message);
-    }
-  }
-
-  async updateProfile(userId: string, data: { displayName: string; photoURL: string }): Promise<void> {
-    try {
-      await updateProfile(auth.currentUser as any, data);
-      
-      // Update the user document in Firestore
-      const userRef = doc(db, 'users', userId);
-      await setDoc(userRef, {
-        displayName: data.displayName,
-        photoURL: data.photoURL
-      }, { merge: true });
-
-    } catch (error: any) {
-      console.error('Update profile error:', error.message);
-      throw new Error(error.message);
     }
   }
 }

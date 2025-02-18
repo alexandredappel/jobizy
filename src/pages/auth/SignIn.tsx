@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -41,15 +40,14 @@ const SignIn = () => {
     
     try {
       console.log('Raw phone number input:', phoneNumber);
-      console.log('Attempting phone sign in...');
       
       const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
       
       console.log('Formatted phone number:', phoneForFirebase);
       
-      const result = await authService.signInWithPhone(phoneForFirebase, password);
-      console.log('Phone sign in successful, got confirmation result');
+      const result = await authService.verifyPhoneNumber(phoneForFirebase);
+      console.log('Phone verification successful, got confirmation result');
       
       setConfirmationResult(result.confirmationResult);
       setStep('otp');
@@ -59,7 +57,7 @@ const SignIn = () => {
         description: t('auth.enterOTP'),
       });
     } catch (error: any) {
-      console.error('Phone sign in error:', error);
+      console.error('Phone verification error:', error);
       toast({
         title: t('auth.error'),
         description: error.code === 'auth/invalid-phone-number'
@@ -84,7 +82,7 @@ const SignIn = () => {
     
     try {
       console.log('Verifying OTP...');
-      const userData = await authService.verifySignInOTP(confirmationResult, verificationCode) as UserData;
+      const userData = await authService.verifyOTP(confirmationResult, verificationCode) as UserData;
       console.log('OTP verification successful:', userData);
       
       if (!userData) {
