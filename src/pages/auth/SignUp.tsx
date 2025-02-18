@@ -51,10 +51,7 @@ const SignUp = () => {
       
       authService.initRecaptcha('recaptcha-container');
       
-      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
-      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
-      
-      const result = await authService.verifyPhoneNumber(phoneForFirebase);
+      const result = await authService.signUpWithPhone(phoneNumber, role, {});
       
       setConfirmationResult(result.confirmationResult);
       setStep('otp');

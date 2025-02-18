@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
+import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/firebase.types';
 
 export class AuthService {
   private recaptchaVerifier: ApplicationVerifier | null = null;

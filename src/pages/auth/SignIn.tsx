@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -66,12 +65,7 @@ const SignIn = () => {
     setIsLoading(true);
     
     try {
-      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
-      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
-      
-      console.log('Verifying phone number:', phoneForFirebase);
-      
-      const result = await authService.verifyPhoneNumber(phoneForFirebase);
+      const result = await authService.signInWithPhone(phoneNumber);
       setConfirmationResult(result.confirmationResult);
       setStep('otp');
       
