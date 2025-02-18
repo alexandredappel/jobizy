@@ -35,6 +35,7 @@ import { doc, deleteDoc, collection, writeBatch, Timestamp } from 'firebase/fire
 import { db } from '@/lib/firebase';
 import { useTranslation } from 'react-i18next';
 import { PlaceDetails } from '@/types/places.types';
+import { convertPlaceResultToDetails } from "@/types/places.types";
 
 interface WorkExperienceListModalProps {
   open: boolean;
@@ -272,8 +273,11 @@ const WorkExperienceListModal = ({
                   <div className="space-y-2">
                     <Label>{t('worker.profile.modals.workExperience.companyName.label')}</Label>
                     <SimplePlaceAutocomplete
-                      onPlaceSelect={(place) => handlePlaceSelect(index, place)}
-                      placeholder={t('worker.profile.modals.workExperience.companyName.placeholder')}
+                      onPlaceSelect={(place) => {
+                        const placeDetails = convertPlaceResultToDetails(place);
+                        handlePlaceSelect(index, placeDetails);
+                      }}
+                      placeholder="Enter workplace location"
                     />
                   </div>
 

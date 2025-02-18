@@ -1,20 +1,19 @@
+
 import SimplePlaceAutocomplete from "@/components/ui/simple-place-autocomplete";
-import { PlaceDetails } from "@/types/places.types";
+import { PlaceDetails, convertPlaceResultToDetails } from "@/types/places.types";
 
 export default function Index() {
-  const handlePlaceSelect = (place: PlaceDetails) => {
-    console.log('Selected place:', place);
+  const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
+    const placeDetails = convertPlaceResultToDetails(place);
+    console.log('Selected place:', placeDetails);
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Test Autocomplete</h1>
-      <div className="max-w-md">
-        <SimplePlaceAutocomplete
-          onPlaceSelect={handlePlaceSelect}
-          placeholder="Enter an establishment name..."
-        />
-      </div>
+    <div>
+      <SimplePlaceAutocomplete
+        onPlaceSelect={handlePlaceSelect}
+        placeholder="Search for a place..."
+      />
     </div>
   );
 }

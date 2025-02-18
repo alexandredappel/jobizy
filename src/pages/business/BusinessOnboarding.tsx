@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { BusinessType, JobType, Language } from "@/types/firebase.types";
-import { PlaceDetails } from "@/types/places.types";
+import { PlaceDetails, convertPlaceResultToDetails } from "@/types/places.types";
 import { CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SimplePlaceAutocomplete from "@/components/ui/simple-place-autocomplete";
@@ -137,7 +137,10 @@ const BusinessOnboarding = () => {
                 <h2 className="text-2xl font-bold">What is the name of your business?</h2>
                 <SimplePlaceAutocomplete
                   placeholder="Enter the name of your business"
-                  onPlaceSelect={(place) => setData({ ...data, place_details: place })}
+                  onPlaceSelect={(place) => setData({ 
+                    ...data, 
+                    place_details: convertPlaceResultToDetails(place)
+                  })}
                 />
               </div>
             )}
