@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,41 +15,59 @@ interface UserData {
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecaptchaReady, setIsRecaptchaReady] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
   const authService = new AuthService();
 
   useEffect(() => {
-    console.log('Initializing recaptcha...');
-    authService.initRecaptcha('recaptcha-container');
+    const initializeRecaptcha = async () => {
+      try {
+        await authService.initRecaptcha('recaptcha-container');
+        setIsRecaptchaReady(true);
+      } catch (error) {
+        console.error('Failed to initialize reCAPTCHA:', error);
+        setIsRecaptchaReady(false);
+        toast({
+          title: t('auth.error'),
+          description: t('auth.recaptchaError'),
+          variant: "destructive"
+        });
+      }
+    };
+
+    initializeRecaptcha();
     
     return () => {
-      console.log('Cleaning up recaptcha...');
       authService.clearRecaptcha();
     };
   }, []);
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isRecaptchaReady) {
+      toast({
+        title: t('auth.error'),
+        description: t('auth.recaptchaNotReady'),
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      console.log('Raw phone number input:', phoneNumber);
-      
       const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
       
-      console.log('Formatted phone number:', phoneForFirebase);
+      console.log('Verifying phone number:', phoneForFirebase);
       
       const result = await authService.verifyPhoneNumber(phoneForFirebase);
-      console.log('Phone verification successful, got confirmation result');
-      
       setConfirmationResult(result.confirmationResult);
       setStep('otp');
       
@@ -57,18 +76,16 @@ const SignIn = () => {
         description: t('auth.enterOTP'),
       });
     } catch (error: any) {
-      console.error('Phone verification error:', error);
+      const errorMessage = 
+        error.message === 'USER_NOT_FOUND' ? t('auth.userNotFound') :
+        error.message === 'TOO_MANY_REQUESTS' ? t('auth.tooManyRequests') :
+        error.message === 'INVALID_PHONE_NUMBER' ? t('auth.invalidPhone') :
+        error.message === 'RECAPTCHA_NOT_INITIALIZED' ? t('auth.recaptchaError') :
+        t('auth.error');
+
       toast({
         title: t('auth.error'),
-        description: error.code === 'auth/invalid-phone-number'
-          ? t('auth.invalidPhone')
-          : error.code === 'auth/too-many-requests'
-          ? t('auth.tooManyRequests')
-          : error.code === 'auth/user-disabled'
-          ? t('auth.userDisabled')
-          : error.code === 'auth/operation-not-allowed'
-          ? t('auth.operationNotAllowed')
-          : t('auth.error'),
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -81,9 +98,7 @@ const SignIn = () => {
     setIsLoading(true);
     
     try {
-      console.log('Verifying OTP...');
       const userData = await authService.verifyOTP(confirmationResult, verificationCode) as UserData;
-      console.log('OTP verification successful:', userData);
       
       if (!userData) {
         throw new Error('No user data returned');
@@ -94,22 +109,18 @@ const SignIn = () => {
       } else if (userData.role === 'business') {
         navigate('/business/dashboard');
       } else {
-        console.error('Invalid user role:', userData.role);
-        toast({
-          title: t('auth.error'),
-          description: t('auth.invalidRole'),
-          variant: "destructive"
-        });
+        throw new Error('INVALID_ROLE');
       }
     } catch (error: any) {
-      console.error('OTP verification error:', error);
+      const errorMessage = 
+        error.message === 'INVALID_OTP' ? t('auth.invalidOTP') :
+        error.message === 'OTP_EXPIRED' ? t('auth.otpExpired') :
+        error.message === 'INVALID_ROLE' ? t('auth.invalidRole') :
+        t('auth.error');
+
       toast({
         title: t('auth.error'),
-        description: error.code === 'auth/invalid-verification-code'
-          ? t('auth.invalidOTP')
-          : error.code === 'auth/code-expired'
-          ? t('auth.otpExpired')
-          : t('auth.error'),
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -137,19 +148,15 @@ const SignIn = () => {
           value={phoneNumber}
           onChange={handlePhoneNumberChange}
           className="pl-12"
-          disabled={isLoading}
+          disabled={isLoading || !isRecaptchaReady}
           required
         />
       </div>
-      <Input
-        type="password"
-        placeholder={t('auth.password')}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        disabled={isLoading}
-        required
-      />
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button 
+        type="submit" 
+        className="w-full" 
+        disabled={isLoading || !isRecaptchaReady}
+      >
         {isLoading ? t('auth.signIn.loading') : t('auth.signIn')}
       </Button>
       <div id="recaptcha-container"></div>
@@ -179,12 +186,6 @@ const SignIn = () => {
       </div>
       {step === 'phone' ? renderPhoneForm() : renderOTPForm()}
       <div className="flex flex-col gap-2 text-center text-sm mt-4">
-        <Link 
-          to="/forgot-password"
-          className="text-primary hover:text-primary/80"
-        >
-          {t('auth.forgotPassword.link')}
-        </Link>
         <span className="text-secondary">
           {t('auth.noAccount')}{' '}
           <Link to="/signup" className="text-primary hover:text-primary/80">

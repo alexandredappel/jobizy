@@ -11,24 +11,38 @@ import { User } from '@/types/firebase.types';
 export class AuthService {
   private recaptchaVerifier: RecaptchaVerifier | null = null;
   private phoneAuthProvider: PhoneAuthProvider;
+  private isRecaptchaInitialized: boolean = false;
 
   constructor() {
     this.phoneAuthProvider = new PhoneAuthProvider(auth);
   }
 
-  initRecaptcha(containerId: string) {
+  async initRecaptcha(containerId: string): Promise<void> {
+    if (this.isRecaptchaInitialized) {
+      console.log('reCAPTCHA already initialized');
+      return;
+    }
+
     try {
       console.log('Initializing reCAPTCHA with container:', containerId);
-      if (!this.recaptchaVerifier) {
-        this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-          size: 'invisible'
-        });
-        console.log('reCAPTCHA initialized successfully');
-      } else {
-        console.log('reCAPTCHA already initialized');
-      }
+      this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+        size: 'invisible',
+        callback: () => {
+          console.log('reCAPTCHA verified');
+        },
+        'expired-callback': () => {
+          console.log('reCAPTCHA expired');
+          this.clearRecaptcha();
+        }
+      });
+      
+      // Forcer le rendu pour vérifier que tout est ok
+      await this.recaptchaVerifier.render();
+      this.isRecaptchaInitialized = true;
+      console.log('reCAPTCHA initialized and rendered successfully');
     } catch (error) {
       console.error('Error initializing reCAPTCHA:', error);
+      this.clearRecaptcha();
       throw new Error('Failed to initialize reCAPTCHA');
     }
   }
@@ -39,6 +53,7 @@ export class AuthService {
       if (this.recaptchaVerifier) {
         this.recaptchaVerifier.clear();
         this.recaptchaVerifier = null;
+        this.isRecaptchaInitialized = false;
         console.log('reCAPTCHA cleared successfully');
       }
     } catch (error) {
@@ -46,15 +61,29 @@ export class AuthService {
     }
   }
 
-  async verifyPhoneNumber(phoneNumber: string) {
+  async verifyPhoneNumber(phoneNumber: string, isSignUp: boolean = false) {
     console.log('Starting phone verification process...');
     
-    if (!this.recaptchaVerifier) {
+    if (!this.isRecaptchaInitialized || !this.recaptchaVerifier) {
       console.error('reCAPTCHA not initialized');
       throw new Error('RECAPTCHA_NOT_INITIALIZED');
     }
 
     try {
+      // Pour l'inscription, vérifier si le numéro existe déjà
+      if (isSignUp) {
+        const userQuery = await this.findUserByPhoneNumber(phoneNumber);
+        if (userQuery) {
+          throw new Error('PHONE_ALREADY_EXISTS');
+        }
+      } else {
+        // Pour la connexion, vérifier si le numéro existe
+        const userQuery = await this.findUserByPhoneNumber(phoneNumber);
+        if (!userQuery) {
+          throw new Error('USER_NOT_FOUND');
+        }
+      }
+
       console.log('Verifying phone number:', phoneNumber);
       const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
         phoneNumber,
@@ -65,7 +94,27 @@ export class AuthService {
       return { confirmationResult };
     } catch (error: any) {
       console.error('Phone verification error:', error);
+      
+      // Gérer les erreurs spécifiques
+      if (error.code === 'auth/too-many-requests') {
+        throw new Error('TOO_MANY_REQUESTS');
+      }
+      if (error.code === 'auth/invalid-phone-number') {
+        throw new Error('INVALID_PHONE_NUMBER');
+      }
+      
       throw error;
+    }
+  }
+
+  private async findUserByPhoneNumber(phoneNumber: string): Promise<User | null> {
+    try {
+      // Ici, vous devriez implémenter la logique pour trouver un utilisateur par numéro de téléphone
+      // Pour l'instant, on retourne null car cette fonctionnalité n'est pas encore implémentée
+      return null;
+    } catch (error) {
+      console.error('Error finding user by phone number:', error);
+      return null;
     }
   }
 
@@ -105,6 +154,12 @@ export class AuthService {
 
     } catch (error: any) {
       console.error('OTP verification error:', error);
+      if (error.code === 'auth/invalid-verification-code') {
+        throw new Error('INVALID_OTP');
+      }
+      if (error.code === 'auth/code-expired') {
+        throw new Error('OTP_EXPIRED');
+      }
       throw error;
     }
   }
