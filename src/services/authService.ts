@@ -1,153 +1,230 @@
+
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-  ApplicationVerifier
+  ApplicationVerifier,
+  signInWithCredential,
+  PhoneAuthProvider,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { User } from '@/types/firebase.types';
+import { User, UserRole, WorkerProfile, BusinessProfile } from '@/types/database.types';
 
 export class AuthService {
   private recaptchaVerifier: ApplicationVerifier | null = null;
-  private isRecaptchaInitialized: boolean = false;
 
-  async initRecaptcha(elementId: string): Promise<void> {
-    try {
-      console.log('Initializing reCAPTCHA...');
-      if (!this.recaptchaVerifier) {
-        this.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
-          size: 'invisible',
-          callback: () => {
-            console.log('reCAPTCHA solved successfully');
-            this.isRecaptchaInitialized = true;
-          }
-        });
-        console.log('reCAPTCHA initialized successfully');
-      }
-    } catch (error) {
-      console.error('Error initializing reCAPTCHA:', error);
-      this.clearRecaptcha();
-      throw error;
-    }
-  }
-
-  async clearRecaptcha() {
-    try {
-      console.log('Clearing reCAPTCHA...');
-      if (this.recaptchaVerifier) {
-        (this.recaptchaVerifier as any).clear?.();
-        this.recaptchaVerifier = null;
-        this.isRecaptchaInitialized = false;
-        console.log('reCAPTCHA cleared successfully');
-      }
-    } catch (error) {
-      console.error('Error clearing reCAPTCHA:', error);
-      this.recaptchaVerifier = null;
-      this.isRecaptchaInitialized = false;
-    }
-  }
-
-  async verifyRecaptchaStatus(): Promise<boolean> {
-    return !!this.recaptchaVerifier && this.isRecaptchaInitialized;
-  }
-
-  async verifyPhoneNumber(phoneNumber: string, isSignUp: boolean = false) {
-    console.log('Starting phone verification process...');
-    
+  initRecaptcha(elementId: string) {
     if (!this.recaptchaVerifier) {
-      console.error('reCAPTCHA not initialized');
-      throw new Error('RECAPTCHA_NOT_INITIALIZED');
+      this.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
+        size: 'invisible',
+        callback: () => {
+          console.log('reCAPTCHA solved');
+        }
+      });
     }
+    return this.recaptchaVerifier;
+  }
 
+  clearRecaptcha() {
+    if (this.recaptchaVerifier) {
+      (this.recaptchaVerifier as any).clear?.();
+      this.recaptchaVerifier = null;
+    }
+  }
+
+  private convertTimestamp(timestamp: any): Date {
+    if (timestamp instanceof Timestamp) {
+      return timestamp.toDate();
+    }
+    return new Date(timestamp);
+  }
+
+  private formatPhoneNumber(phoneNumber: string): string {
+    console.log('Formatting phone number:', phoneNumber);
+    
+    let cleanNumber = phoneNumber.replace(/\D/g, '');
+    console.log('Cleaned number:', cleanNumber);
+    
+    if (cleanNumber.startsWith('0')) {
+      cleanNumber = cleanNumber.slice(1);
+      console.log('Removed leading 0:', cleanNumber);
+    }
+    
+    if (!cleanNumber.startsWith('62')) {
+      cleanNumber = '62' + cleanNumber;
+      console.log('Added country code:', cleanNumber);
+    }
+    
+    const formattedNumber = '+' + cleanNumber;
+    console.log('Final formatted number:', formattedNumber);
+    
+    return formattedNumber;
+  }
+
+  async signUpWithPhone(
+    phoneNumber: string,
+    password: string,
+    role: UserRole,
+    profileData: Partial<WorkerProfile | BusinessProfile>
+  ): Promise<{ confirmationResult: any }> {
     try {
-      const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
-      console.log('Verifying phone number:', formattedPhone);
+      console.log('=== DEBUG SIGNUP START ===');
+      console.log('Phone number:', phoneNumber);
+      console.log('Role:', role);
+      console.log('Profile data:', profileData);
 
-      if (isSignUp) {
-        const userDoc = await this.findUserByPhoneNumber(formattedPhone);
-        if (userDoc) {
-          throw new Error('PHONE_ALREADY_EXISTS');
-        }
-      } else {
-        const userDoc = await this.findUserByPhoneNumber(formattedPhone);
-        if (!userDoc) {
-          throw new Error('USER_NOT_FOUND');
-        }
+      if (!this.recaptchaVerifier) {
+        throw new Error('RECAPTCHA_NOT_INITIALIZED');
       }
 
-      console.log('Sending verification code...');
+      const formattedPhone = this.formatPhoneNumber(phoneNumber);
+      console.log('Formatted phone:', formattedPhone);
+
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        console.log('Phone number already exists');
+        throw new Error('PHONE_ALREADY_EXISTS');
+      }
+      
+      console.log('Sending OTP...');
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         formattedPhone,
         this.recaptchaVerifier
       );
-      console.log('Verification code sent successfully');
+      console.log('OTP sent successfully');
 
+      const tempData = {
+        role,
+        profileData: {
+          ...profileData,
+          phoneNumber: formattedPhone
+        }
+      };
+      console.log('Storing temp data:', tempData);
+      sessionStorage.setItem('tempSignupData', JSON.stringify(tempData));
+
+      console.log('=== DEBUG SIGNUP END ===');
       return { confirmationResult };
     } catch (error: any) {
-      console.error('Phone verification error:', error);
-      
-      if (error.code === 'auth/too-many-requests') {
-        throw new Error('TOO_MANY_REQUESTS');
-      }
-      if (error.code === 'auth/invalid-phone-number') {
-        throw new Error('INVALID_PHONE_NUMBER');
-      }
-      
+      console.error('Signup error:', error);
+      this.clearRecaptcha();
       throw error;
     }
   }
 
-  private async findUserByPhoneNumber(phoneNumber: string): Promise<User | null> {
+  async verifyOTP(confirmationResult: any, code: string): Promise<User> {
     try {
-      return null;
-    } catch (error) {
-      console.error('Error finding user by phone number:', error);
-      return null;
+      console.log('=== DEBUG VERIFY OTP START ===');
+      console.log('Verification code:', code);
+
+      const result = await confirmationResult.confirm(code);
+      console.log('OTP confirmed successfully');
+
+      const tempDataStr = sessionStorage.getItem('tempSignupData');
+      console.log('Retrieved temp data:', tempDataStr);
+      
+      if (!tempDataStr) {
+        console.error('No temp data found');
+        throw new Error('TEMP_DATA_NOT_FOUND');
+      }
+
+      const { role, profileData } = JSON.parse(tempDataStr);
+      console.log('Parsed temp data - Role:', role);
+      console.log('Parsed temp data - Profile:', profileData);
+      
+      const userData = {
+        id: result.user.uid,
+        phoneNumber: profileData.phoneNumber,
+        role,
+        ...profileData,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+        isVerified: true
+      };
+      console.log('Created user data:', userData);
+
+      await setDoc(doc(db, 'users', result.user.uid), userData);
+      console.log('User data saved to Firestore');
+      
+      sessionStorage.removeItem('tempSignupData');
+      console.log('Temp data cleared');
+
+      console.log('=== DEBUG VERIFY OTP END ===');
+      return {
+        ...userData,
+        createdAt: this.convertTimestamp(userData.createdAt),
+        updatedAt: this.convertTimestamp(userData.updatedAt)
+      } as User;
+    } catch (error: any) {
+      console.error('Verify OTP error:', error);
+      throw error;
     }
   }
 
-  async verifyOTP(confirmationResult: any, verificationCode: string, isSignUp: boolean = false) {
-    console.log('Starting OTP verification...');
-    
+  async signInWithPhone(phoneNumber: string, password: string): Promise<{ confirmationResult: any }> {
     try {
-      const userCredential = await confirmationResult.confirm(verificationCode);
+      console.log('=== DEBUG SIGNIN START ===');
+      console.log('Phone number:', phoneNumber);
+      console.log('Password:', password);
+      console.log('Password length:', password.length);
+      console.log('Password type:', typeof password);
+
+      const formattedPhone = this.formatPhoneNumber(phoneNumber);
+      console.log('Formatted phone:', formattedPhone);
+
+      const appVerifier = this.initRecaptcha('recaptcha-container');
+      console.log('reCAPTCHA initialized');
+      
+      console.log('Sending verification code...');
+      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+      console.log('Verification code sent successfully');
+      
+      console.log('=== DEBUG SIGNIN END ===');
+      return { confirmationResult };
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      this.clearRecaptcha();
+      throw error;
+    }
+  }
+
+  async verifySignInOTP(confirmationResult: any, code: string): Promise<User> {
+    try {
+      console.log('=== DEBUG VERIFY SIGNIN OTP START ===');
+      console.log('Verification code:', code);
+
+      const userCredential = await confirmationResult.confirm(code);
+      console.log('OTP confirmed successfully');
+
       const user = userCredential.user;
-      console.log('OTP verified successfully for user:', user.uid);
+      console.log('Firebase user:', user);
 
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDocSnap = await getDoc(userDocRef);
 
-      if (userDoc.exists()) {
-        console.log('Found existing user document');
-        return userDoc.data() as User;
-      }
-
-      if (!isSignUp) {
-        console.error('User document not found during sign in');
+      if (!userDocSnap.exists()) {
+        console.error('User document not found in Firestore');
         throw new Error('USER_NOT_FOUND');
       }
 
-      console.log('Creating new user document for sign up');
-      const newUserData: Partial<User> = {
-        id: user.uid,
-        phone_number: user.phoneNumber,
-        created_at: new Date(),
-        updated_at: new Date(),
-        languages: []
+      const userData = userDocSnap.data() as User;
+      console.log('User data retrieved:', userData);
+
+      console.log('=== DEBUG VERIFY SIGNIN OTP END ===');
+      return {
+        ...userData,
+        createdAt: this.convertTimestamp(userData.createdAt),
+        updatedAt: this.convertTimestamp(userData.updatedAt)
       };
-
-      await setDoc(userDocRef, newUserData);
-      return newUserData as User;
-
     } catch (error: any) {
-      console.error('OTP verification error:', error);
+      console.error('Verify signin OTP error:', error);
       if (error.code === 'auth/invalid-verification-code') {
-        throw new Error('INVALID_OTP');
-      }
-      if (error.code === 'auth/code-expired') {
-        throw new Error('OTP_EXPIRED');
+        throw new Error('INVALID_VERIFICATION_CODE');
       }
       throw error;
     }
@@ -157,8 +234,11 @@ export class AuthService {
     try {
       await firebaseSignOut(auth);
     } catch (error: any) {
-      console.error('Sign out error:', error);
       throw error;
     }
+  }
+
+  getCurrentUser() {
+    return auth.currentUser;
   }
 }
