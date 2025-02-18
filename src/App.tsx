@@ -33,7 +33,14 @@ import Search from "@/pages/business/Search";
 // i18n configuration
 import './i18n';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: string[] }) => {
@@ -41,7 +48,11 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
   const location = useLocation();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -67,102 +78,126 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// AppContent component to handle route-specific logic
+const AppContent = () => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Navigation />
+      <MainContent>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          
+          {/* Worker Routes */}
+          <Route 
+            path="/worker/onboarding" 
+            element={
+              <ProtectedRoute allowedRoles={['worker']}>
+                <WorkerOnboarding />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/worker/dashboard" 
+            element={
+              <ProtectedRoute allowedRoles={['worker']}>
+                <WorkerDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/worker/profile/edit" 
+            element={
+              <ProtectedRoute allowedRoles={['worker']}>
+                <WorkerProfileEdit />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Business Routes */}
+          <Route 
+            path="/business/onboarding" 
+            element={
+              <ProtectedRoute allowedRoles={['business']}>
+                <BusinessOnboarding />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/business/dashboard" 
+            element={
+              <ProtectedRoute allowedRoles={['business']}>
+                <BusinessDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/business/profile/edit" 
+            element={
+              <ProtectedRoute allowedRoles={['business']}>
+                <BusinessProfileEdit />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/business/search" 
+            element={
+              <ProtectedRoute allowedRoles={['business']}>
+                <Search />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Worker Profile (accessible by business users) */}
+          <Route 
+            path="/worker/:id" 
+            element={
+              <ProtectedRoute allowedRoles={['business']}>
+                <WorkerProfile />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Catch-all redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </MainContent>
+    </>
+  );
+};
+
 const App = () => (
-  <Suspense fallback={<div>Loading...</div>}>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
+  <Suspense fallback={
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+  }>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <BrowserRouter>
             <Toaster />
             <Sonner />
-            <Navigation />
-            <MainContent>
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Home />} />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                
-                {/* Worker Routes */}
-                <Route 
-                  path="/worker/onboarding" 
-                  element={
-                    <ProtectedRoute allowedRoles={['worker']}>
-                      <WorkerOnboarding />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/worker/dashboard" 
-                  element={
-                    <ProtectedRoute allowedRoles={['worker']}>
-                      <WorkerDashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/worker/profile/edit" 
-                  element={
-                    <ProtectedRoute allowedRoles={['worker']}>
-                      <WorkerProfileEdit />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Business Routes */}
-                <Route 
-                  path="/business/onboarding" 
-                  element={
-                    <ProtectedRoute allowedRoles={['business']}>
-                      <BusinessOnboarding />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/business/dashboard" 
-                  element={
-                    <ProtectedRoute allowedRoles={['business']}>
-                      <BusinessDashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/business/profile/edit" 
-                  element={
-                    <ProtectedRoute allowedRoles={['business']}>
-                      <BusinessProfileEdit />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/business/search" 
-                  element={
-                    <ProtectedRoute allowedRoles={['business']}>
-                      <Search />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Worker Profile (accessible by business users) */}
-                <Route 
-                  path="/worker/:id" 
-                  element={
-                    <ProtectedRoute allowedRoles={['business']}>
-                      <WorkerProfile />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                {/* Catch-all redirect */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </MainContent>
-          </TooltipProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   </Suspense>
 );
 
