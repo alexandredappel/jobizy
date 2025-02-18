@@ -4,8 +4,6 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   ApplicationVerifier,
-  signInWithCredential,
-  PhoneAuthProvider,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp, query, where, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -64,7 +62,6 @@ export class AuthService {
 
   async signUpWithPhone(
     phoneNumber: string,
-    password: string,
     role: UserRole,
     profileData: Partial<WorkerProfile | BusinessProfile>
   ): Promise<{ confirmationResult: any }> {
@@ -81,6 +78,7 @@ export class AuthService {
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
       console.log('Formatted phone:', formattedPhone);
 
+      // Check if phone number already exists
       const usersRef = collection(db, 'users');
       const q = query(usersRef, where('phoneNumber', '==', formattedPhone));
       const querySnapshot = await getDocs(q);
@@ -98,6 +96,7 @@ export class AuthService {
       );
       console.log('OTP sent successfully');
 
+      // Store signup data temporarily
       const tempData = {
         role,
         profileData: {
@@ -117,71 +116,24 @@ export class AuthService {
     }
   }
 
-  async verifyOTP(confirmationResult: any, code: string): Promise<User> {
-    try {
-      console.log('=== DEBUG VERIFY OTP START ===');
-      console.log('Verification code:', code);
-
-      const result = await confirmationResult.confirm(code);
-      console.log('OTP confirmed successfully');
-
-      const tempDataStr = sessionStorage.getItem('tempSignupData');
-      console.log('Retrieved temp data:', tempDataStr);
-      
-      if (!tempDataStr) {
-        console.error('No temp data found');
-        throw new Error('TEMP_DATA_NOT_FOUND');
-      }
-
-      const { role, profileData } = JSON.parse(tempDataStr);
-      console.log('Parsed temp data - Role:', role);
-      console.log('Parsed temp data - Profile:', profileData);
-      
-      const userData = {
-        id: result.user.uid,
-        phoneNumber: profileData.phoneNumber,
-        role,
-        ...profileData,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-        isVerified: true
-      };
-      console.log('Created user data:', userData);
-
-      await setDoc(doc(db, 'users', result.user.uid), userData);
-      console.log('User data saved to Firestore');
-      
-      sessionStorage.removeItem('tempSignupData');
-      console.log('Temp data cleared');
-
-      console.log('=== DEBUG VERIFY OTP END ===');
-      return {
-        ...userData,
-        createdAt: this.convertTimestamp(userData.createdAt),
-        updatedAt: this.convertTimestamp(userData.updatedAt)
-      } as User;
-    } catch (error: any) {
-      console.error('Verify OTP error:', error);
-      throw error;
-    }
-  }
-
-  async signInWithPhone(phoneNumber: string, password: string): Promise<{ confirmationResult: any }> {
+  async signInWithPhone(phoneNumber: string): Promise<{ confirmationResult: any }> {
     try {
       console.log('=== DEBUG SIGNIN START ===');
       console.log('Phone number:', phoneNumber);
-      console.log('Password:', password);
-      console.log('Password length:', password.length);
-      console.log('Password type:', typeof password);
 
       const formattedPhone = this.formatPhoneNumber(phoneNumber);
       console.log('Formatted phone:', formattedPhone);
 
-      const appVerifier = this.initRecaptcha('recaptcha-container');
-      console.log('reCAPTCHA initialized');
+      if (!this.recaptchaVerifier) {
+        throw new Error('RECAPTCHA_NOT_INITIALIZED');
+      }
       
       console.log('Sending verification code...');
-      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        formattedPhone,
+        this.recaptchaVerifier
+      );
       console.log('Verification code sent successfully');
       
       console.log('=== DEBUG SIGNIN END ===');
@@ -193,36 +145,69 @@ export class AuthService {
     }
   }
 
-  async verifySignInOTP(confirmationResult: any, code: string): Promise<User> {
+  async verifyOTP(confirmationResult: any, code: string, isSignUp: boolean = false): Promise<User> {
     try {
-      console.log('=== DEBUG VERIFY SIGNIN OTP START ===');
+      console.log(`=== DEBUG VERIFY OTP START (${isSignUp ? 'SIGNUP' : 'SIGNIN'}) ===`);
       console.log('Verification code:', code);
 
       const userCredential = await confirmationResult.confirm(code);
       console.log('OTP confirmed successfully');
 
-      const user = userCredential.user;
-      console.log('Firebase user:', user);
+      if (isSignUp) {
+        const tempDataStr = sessionStorage.getItem('tempSignupData');
+        console.log('Retrieved temp data:', tempDataStr);
+        
+        if (!tempDataStr) {
+          console.error('No temp data found');
+          throw new Error('TEMP_DATA_NOT_FOUND');
+        }
 
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDocSnap = await getDoc(userDocRef);
+        const { role, profileData } = JSON.parse(tempDataStr);
+        console.log('Parsed temp data - Role:', role);
+        console.log('Parsed temp data - Profile:', profileData);
+        
+        const userData = {
+          id: userCredential.user.uid,
+          phoneNumber: profileData.phoneNumber,
+          role,
+          ...profileData,
+          createdAt: Timestamp.now(),
+          updatedAt: Timestamp.now(),
+          isVerified: true
+        };
+        console.log('Created user data:', userData);
 
-      if (!userDocSnap.exists()) {
-        console.error('User document not found in Firestore');
-        throw new Error('USER_NOT_FOUND');
+        await setDoc(doc(db, 'users', userCredential.user.uid), userData);
+        console.log('User data saved to Firestore');
+        
+        sessionStorage.removeItem('tempSignupData');
+        console.log('Temp data cleared');
+
+        return {
+          ...userData,
+          createdAt: this.convertTimestamp(userData.createdAt),
+          updatedAt: this.convertTimestamp(userData.updatedAt)
+        } as User;
+      } else {
+        const userDocRef = doc(db, 'users', userCredential.user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (!userDocSnap.exists()) {
+          console.error('User document not found in Firestore');
+          throw new Error('USER_NOT_FOUND');
+        }
+
+        const userData = userDocSnap.data() as User;
+        console.log('User data retrieved:', userData);
+
+        return {
+          ...userData,
+          createdAt: this.convertTimestamp(userData.createdAt),
+          updatedAt: this.convertTimestamp(userData.updatedAt)
+        };
       }
-
-      const userData = userDocSnap.data() as User;
-      console.log('User data retrieved:', userData);
-
-      console.log('=== DEBUG VERIFY SIGNIN OTP END ===');
-      return {
-        ...userData,
-        createdAt: this.convertTimestamp(userData.createdAt),
-        updatedAt: this.convertTimestamp(userData.updatedAt)
-      };
     } catch (error: any) {
-      console.error('Verify signin OTP error:', error);
+      console.error('Verify OTP error:', error);
       if (error.code === 'auth/invalid-verification-code') {
         throw new Error('INVALID_VERIFICATION_CODE');
       }
