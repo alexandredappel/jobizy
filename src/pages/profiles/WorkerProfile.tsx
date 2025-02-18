@@ -79,6 +79,13 @@ const WorkerProfile = () => {
     }
   };
 
+  const formatDate = (date: Date | { toDate(): Date }) => {
+    if (date instanceof Date) {
+      return format(date, 'MMM yyyy');
+    }
+    return format(date.toDate(), 'MMM yyyy');
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto p-8">
@@ -136,8 +143,8 @@ const WorkerProfile = () => {
                 <div className="mb-1">
                   <h3 className="text-lg font-medium">{exp.company}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {format(exp.start_date.toDate(), 'MMM yyyy')} - 
-                    {exp.end_date ? format(exp.end_date.toDate(), 'MMM yyyy') : 'Present'}
+                    {formatDate(exp.start_date)} - 
+                    {exp.end_date ? formatDate(exp.end_date) : 'Present'}
                   </p>
                 </div>
                 <p className="text-muted-foreground">{exp.position}</p>
@@ -157,8 +164,8 @@ const WorkerProfile = () => {
                 <div className="mb-1">
                   <h3 className="text-lg font-medium">{edu.institution}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {format(edu.start_date.toDate(), 'MMM yyyy')} - 
-                    {edu.end_date ? format(edu.end_date.toDate(), 'MMM yyyy') : 'Present'}
+                    {formatDate(edu.start_date)} - 
+                    {edu.end_date ? formatDate(edu.end_date) : 'Present'}
                   </p>
                 </div>
                 <p className="text-muted-foreground">{edu.degree}</p>

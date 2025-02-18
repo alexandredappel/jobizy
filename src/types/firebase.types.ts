@@ -1,4 +1,3 @@
-
 // Types de base
 export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool technician' | 'Bartender' | 'Seller';
 
@@ -85,4 +84,13 @@ export interface Education {
   is_current_study: boolean;
   created_at: Date | { toDate(): Date };
   updated_at: Date | { toDate(): Date };
+}
+
+export interface SearchCriteria {
+  job?: JobType;
+  workArea?: WorkArea;
+  languages?: Language[];
+  gender?: 'male' | 'female';
+  contractType?: ContractType;
+  availability?: boolean;
 }

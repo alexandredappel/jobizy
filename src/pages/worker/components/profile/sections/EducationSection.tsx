@@ -16,6 +16,13 @@ interface EducationSectionProps {
 export function EducationSection({ education, isLoading, onEdit }: EducationSectionProps) {
   const { t } = useTranslation();
 
+  const formatDate = (date: Date | { toDate(): Date }) => {
+    if (date instanceof Date) {
+      return format(date, 'MMM yyyy');
+    }
+    return format(date.toDate(), 'MMM yyyy');
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -49,8 +56,8 @@ export function EducationSection({ education, isLoading, onEdit }: EducationSect
                 <div className="mb-1">
                   <h3 className="text-lg font-medium text-primary">{edu.institution}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {format(edu.start_date.toDate(), 'MMM yyyy')} - 
-                    {edu.end_date ? format(edu.end_date.toDate(), 'MMM yyyy') : t('worker.profile.sections.education.present')}
+                    {formatDate(edu.start_date)} - 
+                    {edu.end_date ? formatDate(edu.end_date) : t('worker.profile.sections.education.present')}
                   </p>
                 </div>
                 <p className="text-secondary">{edu.degree}</p>

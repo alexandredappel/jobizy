@@ -16,6 +16,13 @@ interface WorkExperienceSectionProps {
 export function WorkExperienceSection({ experiences, isLoading, onEdit }: WorkExperienceSectionProps) {
   const { t } = useTranslation();
 
+  const formatDate = (date: Date | { toDate(): Date }) => {
+    if (date instanceof Date) {
+      return format(date, 'MMM yyyy');
+    }
+    return format(date.toDate(), 'MMM yyyy');
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -49,8 +56,8 @@ export function WorkExperienceSection({ experiences, isLoading, onEdit }: WorkEx
                 <div className="mb-1">
                   <h3 className="text-lg font-medium text-primary">{exp.company}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {format(exp.start_date.toDate(), 'MMM yyyy')} - 
-                    {exp.end_date ? format(exp.end_date.toDate(), 'MMM yyyy') : t('worker.profile.sections.workExperience.present')}
+                    {formatDate(exp.start_date)} - 
+                    {exp.end_date ? formatDate(exp.end_date) : t('worker.profile.sections.workExperience.present')}
                   </p>
                 </div>
                 <p className="text-secondary">{exp.position}</p>

@@ -1,164 +1,80 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Input } from './input';
-import { mapsService } from '@/services/maps';
-import { PlaceDetails } from '@/types/places.types';
+import React, { useState, useEffect } from 'react';
 
-interface SimplePlaceAutocompleteProps {
-  onPlaceSelect: (place: PlaceDetails) => void;
-  placeholder?: string;
-  defaultValue?: string;
+interface Props {
+  onPlaceSelected: (place: google.maps.places.PlaceResult) => void;
 }
 
-// Styles pour les suggestions Google Places
-const GOOGLE_PLACES_STYLES = `
-  .pac-container {
-    z-index: 9999 !important;
-    border: 1px solid hsl(var(--border));
-    background-color: hsl(var(--background));
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    margin-top: 4px;
-    padding: 0.5rem;
-    font-family: var(--font-sans);
-  }
+const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelected }) => {
+  const [searchText, setSearchText] = useState('');
+  const [autocompleteResults, setAutocompleteResults] = useState<google.maps.places.AutocompletePrediction[]>([]);
 
-  .pac-item {
-    padding: 0.5rem;
-    cursor: pointer;
-    border: none;
-    color: hsl(var(--foreground));
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
-  .pac-item:hover {
-    background-color: hsl(var(--accent));
-  }
-
-  .pac-item-selected {
-    background-color: hsl(var(--accent));
-  }
-
-  .pac-icon {
-    display: none;
-  }
-
-  .pac-item-query {
-    font-size: 0.875rem;
-    color: hsl(var(--foreground));
-    padding-right: 0.5rem;
-  }
-
-  .pac-matched {
-    font-weight: 600;
-    color: hsl(var(--primary));
-  }
-`;
-
-export function SimplePlaceAutocomplete({
-  onPlaceSelect,
-  placeholder,
-  defaultValue = ''
-}: SimplePlaceAutocompleteProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState(defaultValue);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Injecter les styles personnalisés
   useEffect(() => {
-    const styleId = 'google-places-styles';
-    if (!document.getElementById(styleId)) {
-      const styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      styleElement.innerHTML = GOOGLE_PLACES_STYLES;
-      document.head.appendChild(styleElement);
+    if (!searchText) {
+      setAutocompleteResults([]);
+      return;
     }
 
-    return () => {
-      const existingStyle = document.getElementById(styleId);
-      if (existingStyle && document.querySelectorAll('[data-google-places-input]').length <= 1) {
-        existingStyle.remove();
-      }
-    };
-  }, []);
+    if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+      console.error('Google Maps Places API is not loaded.');
+      return;
+    }
 
-  useEffect(() => {
-    const initializeAutocomplete = async () => {
-      try {
-        await mapsService.loadGoogleMapsScript();
-        setIsLoading(false);
-
-        if (inputRef.current) {
-          const autocomplete = mapsService.createAutocomplete(inputRef.current, {
-            types: ['establishment'],
-            fields: ['place_id', 'name', 'formatted_address', 'geometry', 'types']
-          });
-          
-          // Observer pour réappliquer le z-index si nécessaire
-          const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-              if (mutation.addedNodes.length) {
-                const pacContainer = document.querySelector('.pac-container');
-                if (pacContainer) {
-                  (pacContainer as HTMLElement).style.zIndex = '9999';
-                }
-              }
-            });
-          });
-
-          observer.observe(document.body, {
-            childList: true,
-            subtree: true
-          });
-          
-          autocomplete.addListener('place_changed', async () => {
-            const place = autocomplete.getPlace();
-            if (place.place_id) {
-              try {
-                const placeDetails = await mapsService.getPlaceDetails(place.place_id);
-                const formattedPlace: PlaceDetails = {
-                  place_id: placeDetails.place_id,
-                  name: placeDetails.name,
-                  formatted_address: placeDetails.formatted_address,
-                  types: placeDetails.types,
-                  primaryType: placeDetails.types?.[0],
-                  geometry: placeDetails.geometry ? {
-                    location: {
-                      lat: placeDetails.geometry.location.lat(),
-                      lng: placeDetails.geometry.location.lng()
-                    }
-                  } : undefined
-                };
-                onPlaceSelect(formattedPlace);
-                setValue(formattedPlace.name || '');
-              } catch (error) {
-                console.error('Error fetching place details:', error);
-              }
-            }
-          });
-
-          return () => {
-            observer.disconnect();
-          };
-        }
-      } catch (error) {
-        console.error('Error initializing autocomplete:', error);
-        setIsLoading(false);
-      }
+    const autocompleteService = new google.maps.places.AutocompleteService();
+    const request: google.maps.places.AutocompletionRequest = {
+      input: searchText,
+      componentRestrictions: { country: 'id' },
     };
 
-    initializeAutocomplete();
-  }, [onPlaceSelect]);
+    autocompleteService.getPlacePredictions(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        setAutocompleteResults(results);
+      } else {
+        console.error('Autocomplete error:', status);
+        setAutocompleteResults([]);
+      }
+    });
+  }, [searchText]);
+
+  const handleSelectPlace = (placeId: string) => {
+    if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+      console.error('Google Maps Places API is not loaded.');
+      return;
+    }
+
+    const placesService = new google.maps.places.PlacesService(document.createElement('div'));
+    const request: google.maps.places.PlaceDetailsRequest = {
+      placeId: placeId,
+      fields: ['address_components', 'geometry', 'icon', 'name', 'place_id', 'type', 'vicinity', 'formatted_address'],
+    };
+
+    placesService.getDetails(request, (place, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+        onPlaceSelected(place);
+        setSearchText(place.formatted_address || '');
+        setAutocompleteResults([]);
+      } else {
+        console.error('Place details error:', status);
+      }
+    });
+  };
 
   return (
-    <Input
-      ref={inputRef}
-      type="text"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      placeholder={placeholder}
-      disabled={isLoading}
-      data-google-places-input
-    />
+    <div>
+      <input
+        type="text"
+        placeholder="Enter a location"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+      />
+      <ul>
+        {autocompleteResults.map((result) => (
+          <li key={result.place_id} onClick={() => handleSelectPlace(result.place_id)}>
+            {result.description}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
-}
+};
+
+export default SimplePlaceAutocomplete;

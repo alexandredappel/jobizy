@@ -1,10 +1,11 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { User as FirebaseUser } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import type { User } from '@/types/database.types';
-import { doc, getDoc, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import i18next from 'i18next';
 
 interface AuthContextType {

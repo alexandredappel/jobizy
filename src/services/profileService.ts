@@ -1,161 +1,40 @@
-import { 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  addDoc, 
-  updateDoc,
-  deleteDoc,
-  doc,
-  Timestamp 
-} from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { WorkExperience, Education, User, WorkerProfile, BusinessProfile } from '@/types/database.types';
+import { 
+  User,
+  WorkerUser,
+  BusinessUser
+} from '@/types/firebase.types';
 
 export class ProfileService {
-  private workExperienceCollection = collection(db, 'work_experiences');
-  private educationCollection = collection(db, 'education');
-
-  // Work Experience Methods
-  async addWorkExperience(data: Omit<WorkExperience, 'id' | 'createdAt' | 'updatedAt'>): Promise<WorkExperience> {
+  async getProfile(userId: string): Promise<User | null> {
     try {
-      const timestamp = Timestamp.now();
-      const docRef = await addDoc(this.workExperienceCollection, {
-        ...data,
-        createdAt: timestamp,
-        updatedAt: timestamp
-      });
+      const profileRef = doc(db, 'users', userId);
+      const docSnap = await getDoc(profileRef);
 
-      return {
-        id: docRef.id,
-        ...data,
-        createdAt: timestamp.toDate(),
-        updatedAt: timestamp.toDate()
-      };
-    } catch (error: any) {
-      console.error('Add work experience error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async updateWorkExperience(id: string, data: Partial<WorkExperience>): Promise<void> {
-    try {
-      const docRef = doc(this.workExperienceCollection, id);
-      await updateDoc(docRef, {
-        ...data,
-        updatedAt: Timestamp.now()
-      });
-    } catch (error: any) {
-      console.error('Update work experience error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async deleteWorkExperience(id: string): Promise<void> {
-    try {
-      await deleteDoc(doc(this.workExperienceCollection, id));
-    } catch (error: any) {
-      console.error('Delete work experience error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async getUserWorkExperience(userId: string): Promise<WorkExperience[]> {
-    try {
-      const q = query(this.workExperienceCollection, where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt.toDate(),
-        updatedAt: doc.data().updatedAt.toDate()
-      })) as WorkExperience[];
-    } catch (error: any) {
-      console.error('Get user work experience error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  // Education Methods
-  async addEducation(data: Omit<Education, 'id' | 'createdAt' | 'updatedAt'>): Promise<Education> {
-    try {
-      const timestamp = Timestamp.now();
-      const docRef = await addDoc(this.educationCollection, {
-        ...data,
-        createdAt: timestamp,
-        updatedAt: timestamp
-      });
-
-      return {
-        id: docRef.id,
-        ...data,
-        createdAt: timestamp.toDate(),
-        updatedAt: timestamp.toDate()
-      };
-    } catch (error: any) {
-      console.error('Add education error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async updateEducation(id: string, data: Partial<Education>): Promise<void> {
-    try {
-      const docRef = doc(this.educationCollection, id);
-      await updateDoc(docRef, {
-        ...data,
-        updatedAt: Timestamp.now()
-      });
-    } catch (error: any) {
-      console.error('Update education error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async deleteEducation(id: string): Promise<void> {
-    try {
-      await deleteDoc(doc(this.educationCollection, id));
-    } catch (error: any) {
-      console.error('Delete education error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  async getUserEducation(userId: string): Promise<Education[]> {
-    try {
-      const q = query(this.educationCollection, where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-      
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt.toDate(),
-        updatedAt: doc.data().updatedAt.toDate()
-      })) as Education[];
-    } catch (error: any) {
-      console.error('Get user education error:', error);
-      throw new Error(error.message);
-    }
-  }
-
-  calculateProfileCompleteness(user: User): number {
-    const requiredFields = ['displayName', 'email'];
-    const workerFields = ['firstName', 'lastName', 'phoneNumber', 'gender', 'job', 'languages', 'workAreas'];
-    const businessFields = ['company_name', 'business_type', 'location'];
-    
-    const fieldsToCheck = [
-      ...requiredFields,
-      ...(user.role === 'worker' ? workerFields : businessFields)
-    ];
-    
-    const completedFields = fieldsToCheck.filter(field => {
-      const value = (user as any)[field];
-      if (Array.isArray(value)) {
-        return value.length > 0;
+      if (docSnap.exists()) {
+        return docSnap.data() as User;
+      } else {
+        console.log("No such document!");
+        return null;
       }
-      return value !== undefined && value !== null && value !== '';
-    });
-    
-    return Math.round((completedFields.length / fieldsToCheck.length) * 100);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      throw error;
+    }
+  }
+
+  async updateProfile(userId: string, data: Partial<WorkerUser | BusinessUser>): Promise<void> {
+    try {
+      const profileRef = doc(db, 'users', userId);
+      await updateDoc(profileRef, {
+        ...data,
+        updated_at: Timestamp.now()
+      });
+      console.log("Profile successfully updated!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      throw error;
+    }
   }
 }

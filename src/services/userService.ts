@@ -12,12 +12,12 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
 import { 
   User, 
-  WorkerProfile, 
-  BusinessProfile, 
+  WorkerUser, 
+  BusinessUser, 
   JobType, 
   Language, 
   WorkArea 
-} from '@/types/database.types';
+} from '@/types/firebase.types';
 
 export class UserService {
   private collection = collection(db, 'users');
@@ -73,7 +73,7 @@ export class UserService {
     languages?: Language[];
     workAreas?: WorkArea[];
     availability_status?: boolean;
-  }): Promise<WorkerProfile[]> {
+  }): Promise<WorkerUser[]> {
     try {
       let q = query(
         this.collection,
@@ -90,7 +90,7 @@ export class UserService {
 
       const querySnapshot = await getDocs(q);
       const workers = querySnapshot.docs
-        .map(doc => doc.data() as WorkerProfile)
+        .map(doc => doc.data() as WorkerUser)
         .filter(worker => {
           if (filters.job) {
             return worker.job === filters.job;
@@ -111,7 +111,7 @@ export class UserService {
     }
   }
 
-  async getBusinessProfile(id: string): Promise<BusinessProfile | null> {
+  async getBusinessProfile(id: string): Promise<BusinessUser | null> {
     try {
       const docRef = doc(this.collection, id);
       const docSnap = await getDoc(docRef);
@@ -120,7 +120,7 @@ export class UserService {
         return null;
       }
 
-      return docSnap.data() as BusinessProfile;
+      return docSnap.data() as BusinessUser;
     } catch (error: any) {
       console.error('Get business profile error:', error);
       throw new Error(error.message);
