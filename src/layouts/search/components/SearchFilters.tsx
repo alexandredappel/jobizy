@@ -1,10 +1,10 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MultiSelect } from "@/components/ui/multi-select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { JobType, Language, WorkArea, ContractType } from "@/types/firebase.types";
+import { CheckboxDropdown } from "@/components/ui/checkbox-dropdown";
 
 interface SearchFiltersProps {
   onFilterChange?: (filterType: string, value: any) => void;
@@ -12,6 +12,18 @@ interface SearchFiltersProps {
 }
 
 export function SearchFilters({ onFilterChange, onSearch }: SearchFiltersProps) {
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+
+  const handleLanguagesChange = (values: string[]) => {
+    setSelectedLanguages(values);
+    onFilterChange?.('languages', values);
+  };
+
+  const languageOptions = [
+    { label: "English", value: "English" },
+    { label: "Bahasa", value: "Bahasa" }
+  ];
+
   return (
     <div className="space-y-6">
       {/* Job Type */}
@@ -71,13 +83,10 @@ export function SearchFilters({ onFilterChange, onSearch }: SearchFiltersProps) 
       {/* Languages */}
       <div className="space-y-2">
         <Label>Languages</Label>
-        <MultiSelect
-          options={[
-            "English",
-            "Bahasa"
-          ]}
-          selected={[]}
-          onChange={(value) => onFilterChange?.('languages', value)}
+        <CheckboxDropdown
+          options={languageOptions}
+          selected={selectedLanguages}
+          onChange={handleLanguagesChange}
           placeholder="Select languages"
         />
       </div>

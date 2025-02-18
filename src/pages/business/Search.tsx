@@ -100,13 +100,13 @@ const Search = () => {
         }
       }
 
-      // Check languages (using AND logic)
+      // Check languages (using OR logic)
       if (filters.languages.length > 0 && Array.isArray(worker.languages)) {
         const workerLanguages = worker.languages.map(lang => lang.toLowerCase());
-        const hasAllLanguages = filters.languages.every(lang => 
+        const hasAnyLanguage = filters.languages.some(lang => 
           workerLanguages.includes(lang.toLowerCase())
         );
-        if (!hasAllLanguages) {
+        if (!hasAnyLanguage) {
           return false;
         }
       }
