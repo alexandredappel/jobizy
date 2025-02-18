@@ -1,10 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 
 interface Props {
-  onPlaceSelected: (place: google.maps.places.PlaceResult) => void;
+  onPlaceSelect: (place: google.maps.places.PlaceResult) => void;
+  placeholder?: string;
 }
 
-const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelected }) => {
+const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelect, placeholder = "Enter a location" }) => {
   const [searchText, setSearchText] = useState('');
   const [autocompleteResults, setAutocompleteResults] = useState<google.maps.places.AutocompletePrediction[]>([]);
 
@@ -49,7 +51,7 @@ const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelected }) => {
 
     placesService.getDetails(request, (place, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && place) {
-        onPlaceSelected(place);
+        onPlaceSelect(place);
         setSearchText(place.formatted_address || '');
         setAutocompleteResults([]);
       } else {
@@ -59,20 +61,27 @@ const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelected }) => {
   };
 
   return (
-    <div>
+    <div className="relative w-full">
       <input
         type="text"
-        placeholder="Enter a location"
+        placeholder={placeholder}
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
+        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
       />
-      <ul>
-        {autocompleteResults.map((result) => (
-          <li key={result.place_id} onClick={() => handleSelectPlace(result.place_id)}>
-            {result.description}
-          </li>
-        ))}
-      </ul>
+      {autocompleteResults.length > 0 && (
+        <ul className="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-auto">
+          {autocompleteResults.map((result) => (
+            <li
+              key={result.place_id}
+              onClick={() => handleSelectPlace(result.place_id)}
+              className="px-4 py-2 hover:bg-accent cursor-pointer"
+            >
+              {result.description}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

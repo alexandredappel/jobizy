@@ -1,5 +1,4 @@
-
-import { SimplePlaceAutocomplete } from "@/components/ui/simple-place-autocomplete";
+import SimplePlaceAutocomplete from "@/components/ui/simple-place-autocomplete";
 import { PlaceDetails } from "@/types/places.types";
 
 export default function Index() {

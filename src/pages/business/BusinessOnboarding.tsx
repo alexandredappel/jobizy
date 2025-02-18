@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +14,7 @@ import { BusinessType, JobType, Language } from "@/types/firebase.types";
 import { PlaceDetails } from "@/types/places.types";
 import { CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { SimplePlaceAutocomplete } from "@/components/ui/simple-place-autocomplete";
+import SimplePlaceAutocomplete from "@/components/ui/simple-place-autocomplete";
 
 const BUSINESS_TYPES: BusinessType[] = ['Restaurant', 'Hotel', 'Property Management', 'Guest House', 'Club'];
 const JOB_TYPES: JobType[] = [
