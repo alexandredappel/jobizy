@@ -63,26 +63,6 @@ const SignIn = () => {
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Vérifier l'état du reCAPTCHA avant de continuer
-    const recaptchaStatus = await authService.verifyRecaptchaStatus();
-    if (!recaptchaStatus) {
-      console.log('reCAPTCHA not ready, attempting reinitialization...');
-      setIsRecaptchaReady(false);
-      await authService.clearRecaptcha();
-      try {
-        await authService.initRecaptcha('recaptcha-container');
-        setIsRecaptchaReady(true);
-      } catch (error) {
-        toast({
-          title: t('auth.error'),
-          description: t('auth.recaptchaError'),
-          variant: "destructive"
-        });
-        return;
-      }
-    }
-
     setIsLoading(true);
     
     try {
@@ -172,15 +152,11 @@ const SignIn = () => {
           value={phoneNumber}
           onChange={handlePhoneNumberChange}
           className="pl-12"
-          disabled={isLoading || !isRecaptchaReady}
+          disabled={isLoading}
           required
         />
       </div>
-      <Button 
-        type="submit" 
-        className="w-full" 
-        disabled={isLoading || !isRecaptchaReady}
-      >
+      <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? t('auth.signIn.loading') : t('auth.signIn')}
       </Button>
       <div id="recaptcha-container"></div>
