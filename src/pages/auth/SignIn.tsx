@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -65,6 +66,7 @@ const SignIn = () => {
     setIsLoading(true);
     
     try {
+      authService.initRecaptcha('recaptcha-container'); // Ajout de cette ligne uniquement
       const result = await authService.signInWithPhone(phoneNumber);
       setConfirmationResult(result.confirmationResult);
       setStep('otp');
