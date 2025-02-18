@@ -1,8 +1,8 @@
 
 // Types de base
-export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
+export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool technician' | 'Bartender' | 'Seller';
 
-export type BusinessType = 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
+export type BusinessType = 'Restaurant' | 'Hotel' | 'Property Management' | 'Guest House' | 'Club';
 
 export type WorkArea = 'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua';
 
@@ -20,8 +20,8 @@ export interface BaseUser {
   email?: string;
   preferred_language?: string;
   is_verified?: boolean;
-  created_at: Date;
-  updated_at: Date;
+  created_at: Date | { toDate(): Date };
+  updated_at: Date | { toDate(): Date };
 }
 
 // Interface Worker complète
@@ -34,9 +34,11 @@ export interface WorkerUser extends BaseUser {
   location?: WorkArea[];
   languages?: Language[];
   contract_type?: ContractType;
+  type_contract?: string; // Pour la rétrocompatibilité
   gender?: 'male' | 'female';
   about_me?: string;
   availability_status: boolean;
+  description?: string; // Pour la rétrocompatibilité
 }
 
 // Interface Business
@@ -46,7 +48,9 @@ export interface BusinessUser extends BaseUser {
   business_type: BusinessType;
   location: WorkArea;
   about_business?: string;
+  description?: string; // Pour la rétrocompatibilité
   logo_picture_url?: string;
+  profile_picture_url?: string; // Pour la rétrocompatibilité
   website?: string;
 }
 
@@ -57,15 +61,17 @@ export interface WorkExperience {
   id: string;
   user_id: string;
   company_name: string;
+  company?: string; // Pour la rétrocompatibilité
   position: string;
   description: string;
-  start_date: Date;
-  end_date?: Date;
+  start_date: Date | { toDate(): Date };
+  end_date?: Date | { toDate(): Date };
   is_current_job: boolean;
-  created_at: Date;
-  updated_at: Date;
+  created_at: Date | { toDate(): Date };
+  updated_at: Date | { toDate(): Date };
   types?: string[];
   primary_type?: string;
+  primaryType?: string; // Pour la rétrocompatibilité
 }
 
 export interface Education {
@@ -74,9 +80,9 @@ export interface Education {
   institution: string;
   degree: string;
   field: string;
-  start_date: Date;
-  end_date?: Date;
+  start_date: Date | { toDate(): Date };
+  end_date?: Date | { toDate(): Date };
   is_current_study: boolean;
-  created_at: Date;
-  updated_at: Date;
+  created_at: Date | { toDate(): Date };
+  updated_at: Date | { toDate(): Date };
 }
