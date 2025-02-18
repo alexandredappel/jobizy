@@ -1,3 +1,5 @@
+
+// Types de base
 export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
 
 export type BusinessType = 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
@@ -8,67 +10,73 @@ export type Language = 'English' | 'Bahasa';
 
 export type UserRole = 'worker' | 'business';
 
-interface BaseUser {
-  id: string;
-  phoneNumber: string;
-  role: UserRole;
-  displayName: string;
-  preferred_language?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  isVerified: boolean;
-  password?: string;
-}
-
 export type ContractType = 'part_time' | 'full_time';
 
-export interface WorkerUser {
+// Interface de base pour tous les utilisateurs
+export interface BaseUser {
   id: string;
-  profile_picture_url?: string;
+  role: UserRole;
+  phone_number: string;
+  email?: string;
+  preferred_language?: string;
+  is_verified?: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+// Interface Worker complète
+export interface WorkerUser extends BaseUser {
+  role: 'worker';
   full_name: string;
+  profile_picture_url?: string;
   job?: JobType;
   experience?: string;
   location?: WorkArea[];
   languages?: Language[];
-  availability_status: boolean;
-  gender?: 'male' | 'female';
   contract_type?: ContractType;
+  gender?: 'male' | 'female';
+  about_me?: string;
+  availability_status: boolean;
 }
 
-export interface BusinessProfile extends BaseUser {
+// Interface Business
+export interface BusinessUser extends BaseUser {
   role: 'business';
   company_name: string;
   business_type: BusinessType;
   location: WorkArea;
-  aboutBusiness?: string;
+  about_business?: string;
   logo_picture_url?: string;
   website?: string;
 }
 
-export type User = WorkerProfile | BusinessProfile;
+export type User = WorkerUser | BusinessUser;
 
+// Interfaces pour les expériences et l'éducation
 export interface WorkExperience {
   id: string;
-  userId: string;
-  companyName: string;
+  user_id: string;
+  company_name: string;
   position: string;
-  startDate: Date;
-  endDate?: Date;
-  isCurrentJob: boolean;
   description: string;
-  createdAt: Date;
-  updatedAt: Date;
+  start_date: Date;
+  end_date?: Date;
+  is_current_job: boolean;
+  created_at: Date;
+  updated_at: Date;
+  types?: string[];
+  primary_type?: string;
 }
 
 export interface Education {
   id: string;
-  userId: string;
+  user_id: string;
   institution: string;
   degree: string;
   field: string;
-  startDate: Date;
-  endDate?: Date;
-  isCurrentStudy: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  start_date: Date;
+  end_date?: Date;
+  is_current_study: boolean;
+  created_at: Date;
+  updated_at: Date;
 }
