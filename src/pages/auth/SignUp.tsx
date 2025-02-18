@@ -33,7 +33,6 @@ const SignUp = () => {
     };
   }, []);
 
-  // Compte à rebours pour le délai entre les tentatives
   useEffect(() => {
     if (retryTimeout > 0) {
       const timer = setTimeout(() => {
@@ -48,7 +47,6 @@ const SignUp = () => {
     try {
       setIsLoading(true);
       
-      // Validation du mot de passe
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
       if (!passwordRegex.test(password)) {
         toast({
@@ -63,7 +61,6 @@ const SignUp = () => {
       
       authService.initRecaptcha('recaptcha-container');
       
-      // Format du numéro de téléphone
       const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
       const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
       const phoneForStorage = cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber : `0${cleanPhoneNumber}`;
@@ -73,7 +70,7 @@ const SignUp = () => {
         password,
         role,
         {
-          phoneNumber: phoneForStorage,
+          phone_number: phoneForStorage,
           preferred_language: i18n.language || navigator.language.split('-')[0] || 'en',
         }
       );

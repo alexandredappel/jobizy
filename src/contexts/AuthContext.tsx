@@ -1,90 +1,50 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
-import { User as FirebaseUser } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import type { User } from '@/types/database.types';
-import { Timestamp } from 'firebase/firestore';
-import i18next from 'i18next';
+import { User } from '@/types/firebase.types';
 
-interface AuthContextType {
+interface AuthContextProps {
   user: User | null;
-  firebaseUser: FirebaseUser | null;
   loading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType>({
+const initialContext: AuthContextProps = {
   user: null,
-  firebaseUser: null,
-  loading: true
-});
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  loading: true,
 };
 
+export const AuthContext = createContext(initialContext);
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [firebaseUser, firebaseLoading] = useAuthState(auth);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          console.log('Fetching user data for:', firebaseUser.uid);
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-          
           if (userDoc.exists()) {
-            const userData = userDoc.data();
-            console.log('User data retrieved:', userData);
-            
-            if (userData.preferred_language) {
-              console.log('Setting language to:', userData.preferred_language);
-              i18next.changeLanguage(userData.preferred_language);
-            }
-
-            setUser({
-              ...userData,
-              id: userDoc.id,
-              createdAt: userData.createdAt instanceof Timestamp 
-                ? userData.createdAt.toDate() 
-                : new Date(userData.createdAt),
-              updatedAt: userData.updatedAt instanceof Timestamp 
-                ? userData.updatedAt.toDate() 
-                : new Date(userData.updatedAt)
-            } as User);
+            setUser(userDoc.data() as User);
           } else {
-            console.log('No user document found');
             setUser(null);
           }
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error("Failed to fetch user data:", error);
           setUser(null);
         }
       } else {
-        console.log('No Firebase user');
         setUser(null);
       }
       setLoading(false);
-    };
+    });
 
-    if (!firebaseLoading) {
-      fetchUserData();
-    }
-  }, [firebaseUser, firebaseLoading]);
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      firebaseUser,
-      loading: loading || firebaseLoading 
-    }}>
+    <AuthContext.Provider value={{ user, loading }}>
       {children}
     </AuthContext.Provider>
   );

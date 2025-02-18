@@ -31,7 +31,7 @@ const Search = () => {
   const [filters, setFilters] = useState<ExtendedSearchCriteria>({
     job: '',
     workArea: '',
-    languages: [],
+    languageList: [],
     gender: '',
     contractType: ''
   });
@@ -86,7 +86,7 @@ const Search = () => {
         const searchFilters: SearchCriteria = {
           ...(filters.job && { job: filters.job }),
           ...(filters.workArea && { workArea: filters.workArea }),
-          ...(filters.languages.length > 0 && { languages: filters.languages }),
+          ...(filters.languageList.length > 0 && { languages: filters.languageList }),
           ...(filters.gender && { gender: filters.gender }),
           ...(filters.contractType && { contractType: filters.contractType }),
           availability: true
@@ -98,7 +98,7 @@ const Search = () => {
         setFilteredWorkers([]);
       } else {
         const filtered = workers.filter(worker => {
-          if (!filters.job && !filters.workArea && filters.languages.length === 0 && !filters.gender && !filters.contractType) {
+          if (!filters.job && !filters.workArea && filters.languageList.length === 0 && !filters.gender && !filters.contractType) {
             return true;
           }
 
@@ -121,9 +121,9 @@ const Search = () => {
             }
           }
 
-          if (filters.languages.length > 0 && Array.isArray(worker.languages)) {
+          if (filters.languageList.length > 0 && Array.isArray(worker.languages)) {
             const workerLanguages = worker.languages.map(lang => lang.toLowerCase());
-            const hasAnyLanguage = filters.languages.some(lang => 
+            const hasAnyLanguage = filters.languageList.some(lang => 
               workerLanguages.includes(lang.toLowerCase())
             );
             if (!hasAnyLanguage) {
@@ -166,7 +166,7 @@ const Search = () => {
   const hasActiveFilters = Boolean(
     filters.job || 
     filters.workArea || 
-    filters.languages.length > 0 || 
+    filters.languageList.length > 0 || 
     filters.gender ||
     filters.contractType
   );

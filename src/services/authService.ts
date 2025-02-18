@@ -1,5 +1,4 @@
-
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, sendPasswordResetEmail, updateProfile, RecaptchaVerifier } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, sendPasswordResetEmail, updateProfile, RecaptchaVerifier, PhoneAuthProvider } from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { 
@@ -12,6 +11,11 @@ import {
 
 export class AuthService {
   private recaptchaVerifier: RecaptchaVerifier | null = null;
+  private phoneAuthProvider: PhoneAuthProvider;
+
+  constructor() {
+    this.phoneAuthProvider = new PhoneAuthProvider(auth);
+  }
 
   initRecaptcha(containerId: string) {
     if (!this.recaptchaVerifier) {
@@ -38,7 +42,7 @@ export class AuthService {
       throw new Error('RECAPTCHA_NOT_INITIALIZED');
     }
 
-    const confirmationResult = await auth.signInWithPhoneNumber(
+    const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
       phoneNumber,
       this.recaptchaVerifier
     );
@@ -65,7 +69,7 @@ export class AuthService {
       throw new Error('RECAPTCHA_NOT_INITIALIZED');
     }
 
-    const confirmationResult = await auth.signInWithPhoneNumber(
+    const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
       phoneNumber,
       this.recaptchaVerifier
     );
@@ -126,11 +130,12 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<User> {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      const user = auth.currentUser;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
       if (user) {
-        const userDoc = await doc(db, 'users', user.uid).get();
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
           return userDoc.data() as User;
         } else {

@@ -63,7 +63,7 @@ const MainProfileEditModal = ({ open, onClose, profile, onSave }: MainProfileEdi
     resolver: zodResolver(formSchema),
     defaultValues: {
       job: profile?.job || "Waiter",
-      type_contract: profile?.type_contract || "Full time",
+      type_contract: profile?.type_contract === 'full_time' ? 'Full time' : 'Part time',
       languages: profile?.languages || [],
       location: profile?.location || [],
       profile_picture_url: profile?.profile_picture_url || "",
