@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { mapsService } from '@/services/maps';
 
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult) => void;
@@ -9,9 +10,25 @@ interface Props {
 const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelect, placeholder = "Enter a location" }) => {
   const [searchText, setSearchText] = useState('');
   const [autocompleteResults, setAutocompleteResults] = useState<google.maps.places.AutocompletePrediction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!searchText) {
+    const initGoogleMaps = async () => {
+      try {
+        await mapsService.ensureGoogleMapsLoaded();
+        setIsLoading(false);
+      } catch (error) {
+        setError('Failed to load Google Maps');
+        setIsLoading(false);
+      }
+    };
+
+    initGoogleMaps();
+  }, []);
+
+  useEffect(() => {
+    if (!searchText || isLoading || error) {
       setAutocompleteResults([]);
       return;
     }
@@ -35,7 +52,7 @@ const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelect, placeholder =
         setAutocompleteResults([]);
       }
     });
-  }, [searchText]);
+  }, [searchText, isLoading, error]);
 
   const handleSelectPlace = (placeId: string) => {
     if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
@@ -59,6 +76,14 @@ const SimplePlaceAutocomplete: React.FC<Props> = ({ onPlaceSelect, placeholder =
       }
     });
   };
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
+  if (isLoading) {
+    return <div className="animate-pulse bg-gray-200 h-10 rounded-md"></div>;
+  }
 
   return (
     <div className="relative w-full">

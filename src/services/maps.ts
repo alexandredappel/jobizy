@@ -1,68 +1,36 @@
 
 import { Loader } from '@googlemaps/js-api-loader';
 
-const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_API_KEY = 'AIzaSyC91tXtCxSZ_O7VtZXheEUgQ6Zjs2Y0p5M';
 
 class MapsService {
   private loader: Loader;
+  private isLoaded: boolean = false;
 
   constructor() {
     this.loader = new Loader({
-      apiKey: apiKey || '',
+      apiKey: GOOGLE_MAPS_API_KEY,
       version: 'weekly',
       libraries: ['places']
     });
   }
 
-  async initMap(mapDiv: HTMLElement, center: { lat: number; lng: number }, zoom: number) {
+  async loadGoogleMaps(): Promise<void> {
+    if (this.isLoaded) return;
+    
     try {
       await this.loader.load();
-      const google = window.google;
-
-      const map = new google.maps.Map(mapDiv, {
-        center: center,
-        zoom: zoom,
-        mapId: 'DEMO_MAP_ID'
-      });
-
-      return map;
+      this.isLoaded = true;
+      console.log('Google Maps loaded successfully');
     } catch (error) {
       console.error('Failed to load Google Maps:', error);
-      throw error;
+      throw new Error('Failed to load Google Maps');
     }
   }
 
-  async autocomplete(
-    inputValue: string,
-    callback: (predictions: google.maps.places.AutocompletePrediction[] | null) => void
-  ) {
-    if (!inputValue) {
-      callback(null);
-      return;
-    }
-
-    try {
-      await this.loader.load();
-      const google = window.google;
-
-      const autocompleteService = new google.maps.places.AutocompleteService();
-
-      const request: google.maps.places.AutocompletionRequest = {
-        input: inputValue,
-        componentRestrictions: { country: 'id' }
-      };
-
-      autocompleteService.getPlacePredictions(request, (predictions, status) => {
-        if (status != google.maps.places.PlacesServiceStatus.OK) {
-          callback(null);
-          return;
-        }
-
-        callback(predictions || null);
-      });
-    } catch (error) {
-      console.error('Could not load maps', error);
-      callback(null);
+  async ensureGoogleMapsLoaded(): Promise<void> {
+    if (!this.isLoaded) {
+      await this.loadGoogleMaps();
     }
   }
 }
