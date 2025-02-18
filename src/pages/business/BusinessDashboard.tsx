@@ -1,4 +1,5 @@
-import { useAuth } from "@/contexts/AuthContext";
+
+import { useAuth } from "@/hooks/useAuth";
 import { createDashboardLayout } from "@/layouts/dashboard";
 import WelcomeSection from "./components/dashboard/WelcomeSection";
 import FollowUpSection from "./components/dashboard/FollowUpSection";

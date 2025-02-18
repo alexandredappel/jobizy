@@ -1,6 +1,6 @@
 
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,29 +9,29 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigation } from "@/components/Navigation";
 
-// Home page
-import Home from "@/pages/home";
-
-// Auth pages
-import SignIn from "@/pages/auth/SignIn";
-import SignUp from "@/pages/auth/SignUp";
-import ForgotPassword from "@/pages/auth/ForgotPassword";
-import ResetPassword from "@/pages/auth/ResetPassword";
-
-// Worker pages
-import WorkerOnboarding from "@/pages/worker/WorkerOnboarding";
-import WorkerDashboard from "@/pages/worker/WorkerDashboard";
-import WorkerProfileEdit from "@/pages/worker/WorkerProfileEdit";
-import WorkerProfile from "@/pages/profiles/WorkerProfile";
-
-// Business pages
-import BusinessOnboarding from "@/pages/business/BusinessOnboarding";
-import BusinessDashboard from "@/pages/business/BusinessDashboard";
-import BusinessProfileEdit from "@/pages/business/BusinessProfileEdit";
-import Search from "@/pages/business/Search";
+// Lazy loaded components
+const Home = lazy(() => import("@/pages/home"));
+const SignIn = lazy(() => import("@/pages/auth/SignIn"));
+const SignUp = lazy(() => import("@/pages/auth/SignUp"));
+const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/auth/ResetPassword"));
+const WorkerOnboarding = lazy(() => import("@/pages/worker/WorkerOnboarding"));
+const WorkerDashboard = lazy(() => import("@/pages/worker/WorkerDashboard"));
+const WorkerProfileEdit = lazy(() => import("@/pages/worker/WorkerProfileEdit"));
+const WorkerProfile = lazy(() => import("@/pages/profiles/WorkerProfile"));
+const BusinessOnboarding = lazy(() => import("@/pages/business/BusinessOnboarding"));
+const BusinessDashboard = lazy(() => import("@/pages/business/BusinessDashboard"));
+const BusinessProfileEdit = lazy(() => import("@/pages/business/BusinessProfileEdit"));
+const Search = lazy(() => import("@/pages/business/Search"));
 
 // i18n configuration
 import './i18n';
+
+const LoadingSpinner = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,11 +48,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (!user) {
@@ -63,7 +59,7 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
     return <Navigate to={`/${user.role}/dashboard`} replace />;
   }
 
-  return <>{children}</>;
+  return <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>;
 };
 
 // Helper component to manage main content padding
@@ -84,11 +80,7 @@ const AppContent = () => {
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -97,11 +89,31 @@ const AppContent = () => {
       <MainContent>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <Home />
+            </Suspense>
+          } />
+          <Route path="/signin" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <SignIn />
+            </Suspense>
+          } />
+          <Route path="/signup" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <SignUp />
+            </Suspense>
+          } />
+          <Route path="/forgot-password" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <ForgotPassword />
+            </Suspense>
+          } />
+          <Route path="/reset-password" element={
+            <Suspense fallback={<LoadingSpinner />}>
+              <ResetPassword />
+            </Suspense>
+          } />
           
           {/* Worker Routes */}
           <Route 
@@ -182,23 +194,19 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <Suspense fallback={
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-    </div>
-  }>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <BrowserRouter>
+  <QueryClientProvider client={queryClient}>
+    <AuthProvider>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Suspense fallback={<LoadingSpinner />}>
             <Toaster />
             <Sonner />
             <AppContent />
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </Suspense>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
+  </QueryClientProvider>
 );
 
 export default App;
