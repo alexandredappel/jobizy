@@ -1,9 +1,10 @@
+
 import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { JobType, Language, WorkArea } from "@/types/firebase.types";
+import { JobType, Language, WorkArea, ContractType } from "@/types/firebase.types";
 
 interface SearchFiltersProps {
   onFilterChange?: (filterType: string, value: any) => void;
@@ -49,6 +50,20 @@ export function SearchFilters({ onFilterChange, onSearch }: SearchFiltersProps) 
             <SelectItem value="Denpasar">Denpasar</SelectItem>
             <SelectItem value="Sanur">Sanur</SelectItem>
             <SelectItem value="Jimbaran">Jimbaran</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Contract Type */}
+      <div className="space-y-2">
+        <Label>Contract Type</Label>
+        <Select onValueChange={(value) => onFilterChange?.('contractType', value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select contract type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="part_time">Part Time</SelectItem>
+            <SelectItem value="full_time">Full Time</SelectItem>
           </SelectContent>
         </Select>
       </div>

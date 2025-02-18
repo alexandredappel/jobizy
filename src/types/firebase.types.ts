@@ -1,8 +1,6 @@
-import { Timestamp } from 'firebase/firestore';
+export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool guy' | 'Bartender' | 'Seller';
 
-export type JobType = 'Waiter' | 'Cook' | 'Cashier' | 'Manager' | 'Housekeeper' | 'Gardener' | 'Pool technician' | 'Bartender' | 'Seller';
-
-export type BusinessType = 'Restaurant' | 'Hotel' | 'Property Management' | 'Guest House' | 'Club';
+export type BusinessType = 'restaurant' | 'hotel' | 'property_management' | 'guest_house' | 'club';
 
 export type WorkArea = 'Seminyak' | 'Kuta' | 'Kerobokan' | 'Canggu' | 'Umalas' | 'Ubud' | 'Uluwatu' | 'Denpasar' | 'Sanur' | 'Jimbaran' | 'Pererenan' | 'Nusa Dua';
 
@@ -10,69 +8,67 @@ export type Language = 'English' | 'Bahasa';
 
 export type UserRole = 'worker' | 'business';
 
-export interface BusinessUser {
+interface BaseUser {
   id: string;
-  company_name: string;
-  business_type: BusinessType;
-  location: WorkArea;
-  description?: string;
-  profile_picture_url?: string;
-  email: string;
-  phone_number?: string;
-  created_at: Timestamp;
-  updated_at: Timestamp;
+  phoneNumber: string;
   role: UserRole;
+  displayName: string;
+  preferred_language?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isVerified: boolean;
+  password?: string;
 }
+
+export type ContractType = 'part_time' | 'full_time';
 
 export interface WorkerUser {
   id: string;
-  availability_status: boolean;
-  email: string;
-  full_name: string;
-  gender: "male" | "female";
-  job: JobType;
-  type_contract: "Full time" | "Part time";
-  languages: Language[];
-  location: WorkArea[];
-  work_history: WorkExperience[];
-  education: Education[];
   profile_picture_url?: string;
-  experience: string;
-  phone_number?: string;
-  birthday_date?: Timestamp;
-  about_me?: string;
-  created_at: Timestamp;
-  updated_at: Timestamp;
-  role: UserRole;
+  full_name: string;
+  job?: JobType;
+  experience?: string;
+  location?: WorkArea[];
+  languages?: Language[];
+  availability_status: boolean;
+  gender?: 'male' | 'female';
+  contract_type?: ContractType;
+}
+
+export interface BusinessProfile extends BaseUser {
+  role: 'business';
+  company_name: string;
+  business_type: BusinessType;
+  location: WorkArea;
+  aboutBusiness?: string;
+  logo_picture_url?: string;
+  website?: string;
+}
+
+export type User = WorkerProfile | BusinessProfile;
+
+export interface WorkExperience {
+  id: string;
+  userId: string;
+  companyName: string;
+  position: string;
+  startDate: Date;
+  endDate?: Date;
+  isCurrentJob: boolean;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Education {
   id: string;
-  degree: string;
-  start_date: Timestamp;
-  end_date: Timestamp;
+  userId: string;
   institution: string;
-  updated_at: Timestamp;
-  user_id: string;
-  created_at: Timestamp;
-}
-
-export interface WorkExperience {
-  id: string;
-  company: string;
-  start_date: Timestamp;
-  end_date: Timestamp;
-  position: string;
-  updated_at: Timestamp;
-  user_id: string;
-  created_at: Timestamp;
-  types?: string[];
-  primaryType?: string;
-}
-
-export interface UserData {
-  role: UserRole;
-  id: string;
-  phone_number?: string;
-  email?: string;
+  degree: string;
+  field: string;
+  startDate: Date;
+  endDate?: Date;
+  isCurrentStudy: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }

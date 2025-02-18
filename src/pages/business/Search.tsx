@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { WorkerUser, Language, JobType, WorkArea } from '@/types/firebase.types';
+import { WorkerUser, Language, JobType, WorkArea, ContractType } from '@/types/firebase.types';
 import { SearchLayout } from '@/layouts/search';
 import { SearchHeader } from '@/layouts/search/SearchHeader';
 import { SearchFilters } from '@/layouts/search/components/SearchFilters';
@@ -22,7 +23,8 @@ const Search = () => {
     job: '' as JobType | '',
     workArea: '' as WorkArea | '',
     languages: [] as Language[],
-    gender: '' as 'male' | 'female' | ''
+    gender: '' as 'male' | 'female' | '',
+    contractType: '' as ContractType | ''
   });
 
   useEffect(() => {
@@ -72,7 +74,7 @@ const Search = () => {
     
     const filtered = workers.filter(worker => {
       // If no filters are active, return all workers
-      if (!filters.job && !filters.workArea && filters.languages.length === 0 && !filters.gender) {
+      if (!filters.job && !filters.workArea && filters.languages.length === 0 && !filters.gender && !filters.contractType) {
         return true;
       }
 
@@ -91,10 +93,16 @@ const Search = () => {
         }
       }
 
+      // Check contract type
+      if (filters.contractType && worker.contract_type) {
+        if (worker.contract_type !== filters.contractType) {
+          return false;
+        }
+      }
+
       // Check languages (using AND logic)
       if (filters.languages.length > 0 && Array.isArray(worker.languages)) {
         const workerLanguages = worker.languages.map(lang => lang.toLowerCase());
-        // Check if ALL selected languages are present in worker's languages
         const hasAllLanguages = filters.languages.every(lang => 
           workerLanguages.includes(lang.toLowerCase())
         );
@@ -121,7 +129,13 @@ const Search = () => {
     navigate(`/worker/${workerId}`);
   };
 
-  const hasActiveFilters = Boolean(filters.job || filters.workArea || filters.languages.length > 0 || filters.gender);
+  const hasActiveFilters = Boolean(
+    filters.job || 
+    filters.workArea || 
+    filters.languages.length > 0 || 
+    filters.gender ||
+    filters.contractType
+  );
 
   return (
     <SearchLayout>
