@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email: string;
@@ -91,10 +90,7 @@ export type WorkArea =
   | 'Sanur'
   | 'Jimbaran'
   | 'Pererenan'
-  | 'Nusa Dua'
-  | 'Property Management'
-  | 'Guest House'
-  | 'Club';
+  | 'Nusa Dua';
 
 export type ContractType = 'Full time' | 'Part time' | 'full_time';
 

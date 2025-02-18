@@ -3,9 +3,10 @@ import React, { useRef } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePlacesAutocomplete } from '@/hooks/usePlacesAutocomplete';
 import { Loader } from 'lucide-react';
+import { PlaceDetails } from '@/types/places.types';
 
 interface Props {
-  onPlaceSelect: (place: google.maps.places.PlaceResult) => void;
+  onPlaceSelect: (place: PlaceDetails) => void;
   placeholder?: string;
   defaultValue?: string;
   className?: string;

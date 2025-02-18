@@ -7,7 +7,7 @@ import {
   RecaptchaVerifier, 
   PhoneAuthProvider 
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { 
   User,
@@ -178,6 +178,7 @@ export class AuthService {
         phoneNumber: phoneNumber,
         created_at: new Date(),
         updated_at: new Date(),
+        languages: [], // Ajout du champ languages requis
       };
 
       console.log('Creating business document in Firestore...');
@@ -213,12 +214,12 @@ export class AuthService {
     }
   }
 
-  async logout(): Promise<void> {
+  async signOut(): Promise<void> {
     try {
       await firebaseSignOut(auth);
     } catch (error: any) {
-      console.error('Logout error:', error.message);
-      throw new Error(error.message);
+      console.error('Sign out error:', error);
+      throw error;
     }
   }
 
