@@ -1,49 +1,102 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, updateProfile } from 'firebase/auth';
-import { doc, setDoc, Timestamp } from 'firebase/firestore';
+
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, sendPasswordResetEmail, updateProfile, RecaptchaVerifier } from 'firebase/auth';
+import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { 
   User,
   WorkerUser,
-  BusinessUser
+  BusinessUser,
+  BusinessType,
+  WorkArea
 } from '@/types/firebase.types';
 
 export class AuthService {
-  async register(
-    email: string, 
-    password: string, 
-    fullName: string,
-    phone_number: string,
-    role: 'worker'
-  ): Promise<User> {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+  private recaptchaVerifier: RecaptchaVerifier | null = null;
 
-      const workerData: WorkerUser = {
-        id: user.uid,
-        role: 'worker',
-        email: email,
-        phone_number: phone_number,
-        full_name: fullName,
-        created_at: Timestamp.now(),
-        updated_at: Timestamp.now(),
-        availability_status: true,
-      };
-
-      await setDoc(doc(db, "users", user.uid), workerData);
-      return workerData;
-    } catch (error: any) {
-      console.error('Registration error:', error.message);
-      throw new Error(error.message);
+  initRecaptcha(containerId: string) {
+    if (!this.recaptchaVerifier) {
+      this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+        size: 'invisible'
+      });
     }
+  }
+
+  clearRecaptcha() {
+    if (this.recaptchaVerifier) {
+      this.recaptchaVerifier.clear();
+      this.recaptchaVerifier = null;
+    }
+  }
+
+  async signUpWithPhone(
+    phoneNumber: string,
+    password: string,
+    role: 'worker' | 'business',
+    additionalData: Partial<User>
+  ) {
+    if (!this.recaptchaVerifier) {
+      throw new Error('RECAPTCHA_NOT_INITIALIZED');
+    }
+
+    const confirmationResult = await auth.signInWithPhoneNumber(
+      phoneNumber,
+      this.recaptchaVerifier
+    );
+
+    return { confirmationResult };
+  }
+
+  async verifyOTP(confirmationResult: any, verificationCode: string) {
+    const userCredential = await confirmationResult.confirm(verificationCode);
+    const user = userCredential.user;
+
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      return userDoc.data() as User;
+    }
+
+    throw new Error('User document not found');
+  }
+
+  async signInWithPhone(phoneNumber: string, password: string) {
+    if (!this.recaptchaVerifier) {
+      throw new Error('RECAPTCHA_NOT_INITIALIZED');
+    }
+
+    const confirmationResult = await auth.signInWithPhoneNumber(
+      phoneNumber,
+      this.recaptchaVerifier
+    );
+
+    return { confirmationResult };
+  }
+
+  async verifySignInOTP(confirmationResult: any, verificationCode: string) {
+    const userCredential = await confirmationResult.confirm(verificationCode);
+    const user = userCredential.user;
+
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      return userDoc.data() as User;
+    }
+
+    throw new Error('User document not found');
+  }
+
+  async signOut(): Promise<void> {
+    await firebaseSignOut(auth);
   }
 
   async registerBusiness(
     email: string,
     password: string,
     companyName: string,
-    businessType: string,
-    location: string,
+    businessType: BusinessType,
+    location: WorkArea,
     phone_number: string,
     role: 'business'
   ): Promise<User> {

@@ -54,8 +54,8 @@ const EducationModal = ({
       id: edu.id,
       institution: edu.institution,
       degree: edu.degree,
-      startDate: edu.start_date.toDate(),
-      endDate: edu.end_date?.toDate(),
+      startDate: getDateValue(edu.start_date),
+      endDate: getDateValue(edu.end_date),
       isCurrentStudy: !edu.end_date
     }))
   );
@@ -170,6 +170,12 @@ const EducationModal = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getDateValue = (date: Date | { toDate(): Date } | undefined) => {
+    if (!date) return undefined;
+    if (date instanceof Date) return date;
+    return date.toDate();
   };
 
   return (

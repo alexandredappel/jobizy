@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -11,6 +10,13 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { searchService, SearchResult } from '@/services/searchService';
 
+interface ExtendedSearchCriteria extends SearchCriteria {
+  job: JobType | '';
+  workArea: WorkArea | '';
+  contractType: ContractType | '';
+  gender: 'male' | 'female' | '';
+}
+
 const Search = () => {
   const [workers, setWorkers] = useState<WorkerUser[]>([]);
   const [filteredWorkers, setFilteredWorkers] = useState<WorkerUser[]>([]);
@@ -22,12 +28,12 @@ const Search = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const [filters, setFilters] = useState({
-    job: '' as JobType | '',
-    workArea: '' as WorkArea | '',
-    languages: [] as Language[],
-    gender: '' as 'male' | 'female' | '',
-    contractType: '' as ContractType | ''
+  const [filters, setFilters] = useState<ExtendedSearchCriteria>({
+    job: '',
+    workArea: '',
+    languages: [],
+    gender: '',
+    contractType: ''
   });
 
   useEffect(() => {
@@ -77,16 +83,20 @@ const Search = () => {
     
     try {
       if (useNewSearch) {
-        // Nouvelle logique de recherche avec scoring
-        const results = await searchService.searchWorkers({
-          availability: true,
-          ...filters
-        });
+        const searchFilters: SearchCriteria = {
+          ...(filters.job && { job: filters.job }),
+          ...(filters.workArea && { workArea: filters.workArea }),
+          ...(filters.languages.length > 0 && { languages: filters.languages }),
+          ...(filters.gender && { gender: filters.gender }),
+          ...(filters.contractType && { contractType: filters.contractType }),
+          availability: true
+        };
+        
+        const results = await searchService.searchWorkers(searchFilters);
         console.log('Search results with scoring:', results);
         setScoredWorkers(results);
         setFilteredWorkers([]);
       } else {
-        // Logique de recherche existante
         const filtered = workers.filter(worker => {
           if (!filters.job && !filters.workArea && filters.languages.length === 0 && !filters.gender && !filters.contractType) {
             return true;

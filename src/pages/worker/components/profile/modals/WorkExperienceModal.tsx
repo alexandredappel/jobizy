@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -67,6 +66,12 @@ const JOB_TYPES: JobType[] = [
   'Seller'
 ];
 
+const getDateValue = (date: Date | { toDate(): Date } | undefined) => {
+  if (!date) return undefined;
+  if (date instanceof Date) return date;
+  return date.toDate();
+};
+
 const WorkExperienceListModal = ({
   open,
   onClose,
@@ -79,8 +84,8 @@ const WorkExperienceListModal = ({
       id: exp.id,
       companyName: exp.company,
       position: exp.position,
-      startDate: exp.start_date.toDate(),
-      endDate: exp.end_date?.toDate(),
+      startDate: getDateValue(exp.start_date),
+      endDate: getDateValue(exp.end_date),
       isCurrentPosition: !exp.end_date,
       types: exp.types,
       primaryType: exp.primaryType
