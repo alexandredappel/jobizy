@@ -13,26 +13,19 @@ export interface PlaceDetails {
   };
 }
 
-export interface GooglePlaceResult extends google.maps.places.PlaceResult {
-  geometry?: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
-
 export function convertPlaceResultToDetails(place: google.maps.places.PlaceResult): PlaceDetails {
+  if (!place) return {};
+  
   return {
     place_id: place.place_id,
     name: place.name,
     formatted_address: place.formatted_address,
     types: place.types,
-    geometry: {
+    geometry: place.geometry ? {
       location: {
-        lat: place.geometry?.location?.lat() || 0,
-        lng: place.geometry?.location?.lng() || 0,
+        lat: place.geometry.location?.lat() || 0,
+        lng: place.geometry.location?.lng() || 0,
       },
-    },
+    } : undefined,
   };
 }

@@ -31,13 +31,14 @@ export interface WorkerUser extends BaseUser {
   job?: JobType;
   experience?: string;
   location?: WorkArea[];
+  workAreas?: WorkArea[]; // Ajout de workAreas
   languages?: Language[];
   contract_type?: ContractType;
-  type_contract?: string; // Pour la rétrocompatibilité
+  type_contract?: string;
   gender?: 'male' | 'female';
   about_me?: string;
   availability_status: boolean;
-  description?: string; // Pour la rétrocompatibilité
+  description?: string;
 }
 
 // Interface Business
@@ -47,9 +48,9 @@ export interface BusinessUser extends BaseUser {
   business_type: BusinessType;
   location: WorkArea;
   about_business?: string;
-  description?: string; // Pour la rétrocompatibilité
+  description?: string;
   logo_picture_url?: string;
-  profile_picture_url?: string; // Pour la rétrocompatibilité
+  profile_picture_url?: string;
   website?: string;
 }
 
@@ -60,7 +61,7 @@ export interface WorkExperience {
   id: string;
   user_id: string;
   company_name: string;
-  company?: string; // Pour la rétrocompatibilité
+  company?: string;
   position: string;
   description: string;
   start_date: Date | { toDate(): Date };
@@ -70,7 +71,7 @@ export interface WorkExperience {
   updated_at: Date | { toDate(): Date };
   types?: string[];
   primary_type?: string;
-  primaryType?: string; // Pour la rétrocompatibilité
+  primaryType?: string;
 }
 
 export interface Education {
