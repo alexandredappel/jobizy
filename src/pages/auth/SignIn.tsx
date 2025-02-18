@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,16 @@ const SignIn = () => {
   const { t } = useTranslation();
   const authService = new AuthService();
 
+  useEffect(() => {
+    console.log('Initializing recaptcha...');
+    authService.initRecaptcha('recaptcha-container');
+    
+    return () => {
+      console.log('Cleaning up recaptcha...');
+      authService.clearRecaptcha();
+    };
+  }, []);
+
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -32,7 +43,12 @@ const SignIn = () => {
       console.log('Raw phone number input:', phoneNumber);
       console.log('Attempting phone sign in...');
       
-      const result = await authService.signInWithPhone(phoneNumber, password);
+      const cleanPhoneNumber = phoneNumber.replace(/\D/g, '');
+      const phoneForFirebase = `+62${cleanPhoneNumber.startsWith('0') ? cleanPhoneNumber.slice(1) : cleanPhoneNumber}`;
+      
+      console.log('Formatted phone number:', phoneForFirebase);
+      
+      const result = await authService.signInWithPhone(phoneForFirebase, password);
       console.log('Phone sign in successful, got confirmation result');
       
       setConfirmationResult(result.confirmationResult);
@@ -46,8 +62,14 @@ const SignIn = () => {
       console.error('Phone sign in error:', error);
       toast({
         title: t('auth.error'),
-        description: error.message === 'USER_NOT_FOUND'
-          ? t('auth.userNotFound')
+        description: error.code === 'auth/invalid-phone-number'
+          ? t('auth.invalidPhone')
+          : error.code === 'auth/too-many-requests'
+          ? t('auth.tooManyRequests')
+          : error.code === 'auth/user-disabled'
+          ? t('auth.userDisabled')
+          : error.code === 'auth/operation-not-allowed'
+          ? t('auth.operationNotAllowed')
           : t('auth.error'),
         variant: "destructive"
       });
@@ -85,8 +107,10 @@ const SignIn = () => {
       console.error('OTP verification error:', error);
       toast({
         title: t('auth.error'),
-        description: error.message === 'INVALID_VERIFICATION_CODE'
+        description: error.code === 'auth/invalid-verification-code'
           ? t('auth.invalidOTP')
+          : error.code === 'auth/code-expired'
+          ? t('auth.otpExpired')
           : t('auth.error'),
         variant: "destructive"
       });

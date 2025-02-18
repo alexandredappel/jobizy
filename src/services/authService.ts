@@ -1,4 +1,3 @@
-
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
@@ -27,17 +26,32 @@ export class AuthService {
   }
 
   initRecaptcha(containerId: string) {
-    if (!this.recaptchaVerifier) {
-      this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-        size: 'invisible'
-      });
+    try {
+      console.log('Initializing reCAPTCHA with container:', containerId);
+      if (!this.recaptchaVerifier) {
+        this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+          size: 'invisible'
+        });
+        console.log('reCAPTCHA initialized successfully');
+      } else {
+        console.log('reCAPTCHA already initialized');
+      }
+    } catch (error) {
+      console.error('Error initializing reCAPTCHA:', error);
+      throw new Error('Failed to initialize reCAPTCHA');
     }
   }
 
   clearRecaptcha() {
-    if (this.recaptchaVerifier) {
-      this.recaptchaVerifier.clear();
-      this.recaptchaVerifier = null;
+    try {
+      console.log('Clearing reCAPTCHA...');
+      if (this.recaptchaVerifier) {
+        this.recaptchaVerifier.clear();
+        this.recaptchaVerifier = null;
+        console.log('reCAPTCHA cleared successfully');
+      }
+    } catch (error) {
+      console.error('Error clearing reCAPTCHA:', error);
     }
   }
 
@@ -47,61 +61,97 @@ export class AuthService {
     role: 'worker' | 'business',
     additionalData: Partial<User>
   ) {
+    console.log('Starting phone signup process...');
+    
     if (!this.recaptchaVerifier) {
+      console.error('reCAPTCHA not initialized');
       throw new Error('RECAPTCHA_NOT_INITIALIZED');
     }
 
-    const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
-      phoneNumber,
-      this.recaptchaVerifier
-    );
+    try {
+      console.log('Verifying phone number:', phoneNumber);
+      const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
+        phoneNumber,
+        this.recaptchaVerifier
+      );
+      console.log('Phone verification successful');
 
-    return { confirmationResult };
+      return { confirmationResult };
+    } catch (error: any) {
+      console.error('Phone signup error:', error);
+      throw error;
+    }
   }
 
   async verifyOTP(confirmationResult: any, verificationCode: string) {
-    const userCredential = await confirmationResult.confirm(verificationCode);
-    const user = userCredential.user;
+    console.log('Starting OTP verification...');
+    
+    try {
+      const userCredential = await confirmationResult.confirm(verificationCode);
+      const user = userCredential.user;
+      console.log('OTP verified successfully for user:', user.uid);
 
-    const userDocRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userDocRef);
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
 
-    if (userDoc.exists()) {
-      return userDoc.data() as User;
+      if (userDoc.exists()) {
+        console.log('Found existing user document');
+        return userDoc.data() as User;
+      }
+
+      console.error('User document not found after OTP verification');
+      throw new Error('User document not found');
+    } catch (error: any) {
+      console.error('OTP verification error:', error);
+      throw error;
     }
-
-    throw new Error('User document not found');
   }
 
   async signInWithPhone(phoneNumber: string, password: string) {
+    console.log('Starting phone sign in process...');
+    
     if (!this.recaptchaVerifier) {
+      console.error('reCAPTCHA not initialized');
       throw new Error('RECAPTCHA_NOT_INITIALIZED');
     }
 
-    const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
-      phoneNumber,
-      this.recaptchaVerifier
-    );
+    try {
+      console.log('Verifying phone number for sign in:', phoneNumber);
+      const confirmationResult = await this.phoneAuthProvider.verifyPhoneNumber(
+        phoneNumber,
+        this.recaptchaVerifier
+      );
+      console.log('Phone verification successful for sign in');
 
-    return { confirmationResult };
+      return { confirmationResult };
+    } catch (error: any) {
+      console.error('Phone sign in error:', error);
+      throw error;
+    }
   }
 
   async verifySignInOTP(confirmationResult: any, verificationCode: string) {
-    const userCredential = await confirmationResult.confirm(verificationCode);
-    const user = userCredential.user;
+    console.log('Starting sign in OTP verification...');
+    
+    try {
+      const userCredential = await confirmationResult.confirm(verificationCode);
+      const user = userCredential.user;
+      console.log('Sign in OTP verified successfully for user:', user.uid);
 
-    const userDocRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userDocRef);
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
 
-    if (userDoc.exists()) {
-      return userDoc.data() as User;
+      if (userDoc.exists()) {
+        console.log('Found user document for sign in');
+        return userDoc.data() as User;
+      }
+
+      console.error('User document not found after sign in OTP verification');
+      throw new Error('User document not found');
+    } catch (error: any) {
+      console.error('Sign in OTP verification error:', error);
+      throw error;
     }
-
-    throw new Error('User document not found');
-  }
-
-  async signOut(): Promise<void> {
-    await firebaseSignOut(auth);
   }
 
   async registerBusiness(
@@ -109,11 +159,12 @@ export class AuthService {
     password: string,
     companyName: string,
     businessType: BusinessType,
-    location: WorkArea,
-    phone_number: string,
+    location: WorkArea[],
+    phoneNumber: string,
     role: 'business'
   ): Promise<User> {
     try {
+      console.log('Starting business registration process...');
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -124,16 +175,19 @@ export class AuthService {
         company_name: companyName,
         business_type: businessType,
         location: location,
-        phone_number: phone_number,
-        created_at: Timestamp.now(),
-        updated_at: Timestamp.now(),
+        phoneNumber: phoneNumber,
+        created_at: new Date(),
+        updated_at: new Date(),
       };
 
+      console.log('Creating business document in Firestore...');
       await setDoc(doc(db, "users", user.uid), businessData);
+      console.log('Business registration completed successfully');
+      
       return businessData;
     } catch (error: any) {
       console.error('Business registration error:', error);
-      throw new Error(error.message);
+      throw error;
     }
   }
 
