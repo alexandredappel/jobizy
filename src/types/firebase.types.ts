@@ -11,6 +11,7 @@ export interface User {
   preferred_language?: string;
   created_at: Date;
   updated_at: Date;
+  description?: string;
 }
 
 export interface WorkerUser extends User {
@@ -22,6 +23,8 @@ export interface WorkerUser extends User {
   availability_status: boolean;
   experience?: string;
   gender?: 'male' | 'female';
+  workAreas?: WorkArea[];
+  contract_type?: ContractType;
 }
 
 export interface BusinessUser extends User {
@@ -32,6 +35,7 @@ export interface BusinessUser extends User {
   about_me?: string;
   subscription_status?: 'free' | 'premium';
   remaining_contacts?: number;
+  description?: string;
 }
 
 export interface Education {
@@ -87,9 +91,12 @@ export type WorkArea =
   | 'Sanur'
   | 'Jimbaran'
   | 'Pererenan'
-  | 'Nusa Dua';
+  | 'Nusa Dua'
+  | 'Property Management'
+  | 'Guest House'
+  | 'Club';
 
-export type ContractType = 'Full time' | 'Part time';
+export type ContractType = 'Full time' | 'Part time' | 'full_time';
 
 export type BusinessType = 
   | 'Restaurant'
@@ -99,7 +106,10 @@ export type BusinessType =
   | 'Resort'
   | 'Villa'
   | 'Shop'
-  | 'Other';
+  | 'Other'
+  | 'Property Management'
+  | 'Guest House'
+  | 'Club';
 
 export type UserRole = 'worker' | 'business';
 
