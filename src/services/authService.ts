@@ -1,4 +1,3 @@
-
 import { 
   signOut as firebaseSignOut,
   RecaptchaVerifier, 
@@ -12,53 +11,109 @@ export class AuthService {
   private recaptchaVerifier: RecaptchaVerifier | null = null;
   private phoneAuthProvider: PhoneAuthProvider;
   private isRecaptchaInitialized: boolean = false;
+  private initializationAttempts: number = 0;
+  private readonly MAX_INIT_ATTEMPTS = 3;
 
   constructor() {
     this.phoneAuthProvider = new PhoneAuthProvider(auth);
   }
 
+  async waitForContainer(containerId: string, maxAttempts: number = 10): Promise<boolean> {
+    return new Promise((resolve) => {
+      let attempts = 0;
+      const checkContainer = () => {
+        attempts++;
+        const container = document.getElementById(containerId);
+        if (container) {
+          resolve(true);
+        } else if (attempts < maxAttempts) {
+          setTimeout(checkContainer, 500);
+        } else {
+          resolve(false);
+        }
+      };
+      checkContainer();
+    });
+  }
+
   async initRecaptcha(containerId: string): Promise<void> {
-    if (this.isRecaptchaInitialized) {
+    if (this.isRecaptchaInitialized && this.recaptchaVerifier) {
       console.log('reCAPTCHA already initialized');
       return;
     }
 
     try {
+      console.log('Waiting for container:', containerId);
+      const containerExists = await this.waitForContainer(containerId);
+      
+      if (!containerExists) {
+        console.error('reCAPTCHA container not found after waiting');
+        throw new Error('RECAPTCHA_CONTAINER_NOT_FOUND');
+      }
+
       console.log('Initializing reCAPTCHA with container:', containerId);
       this.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
-        size: 'invisible',
+        size: 'normal',
         callback: () => {
-          console.log('reCAPTCHA verified');
+          console.log('reCAPTCHA verified successfully');
+          this.isRecaptchaInitialized = true;
         },
         'expired-callback': () => {
-          console.log('reCAPTCHA expired');
-          this.clearRecaptcha();
+          console.log('reCAPTCHA expired, reinitializing...');
+          this.initializationAttempts = 0;
+          this.reinitializeRecaptcha(containerId);
         }
       });
       
-      // Forcer le rendu pour vérifier que tout est ok
+      console.log('Attempting to render reCAPTCHA...');
       await this.recaptchaVerifier.render();
       this.isRecaptchaInitialized = true;
+      this.initializationAttempts = 0;
       console.log('reCAPTCHA initialized and rendered successfully');
     } catch (error) {
       console.error('Error initializing reCAPTCHA:', error);
-      this.clearRecaptcha();
-      throw new Error('Failed to initialize reCAPTCHA');
+      
+      if (this.initializationAttempts < this.MAX_INIT_ATTEMPTS) {
+        console.log(`Retrying reCAPTCHA initialization (attempt ${this.initializationAttempts + 1}/${this.MAX_INIT_ATTEMPTS})`);
+        this.initializationAttempts++;
+        await this.clearRecaptcha();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return this.initRecaptcha(containerId);
+      }
+      
+      throw new Error('Failed to initialize reCAPTCHA after multiple attempts');
     }
   }
 
-  clearRecaptcha() {
+  private async reinitializeRecaptcha(containerId: string): Promise<void> {
+    console.log('Starting reCAPTCHA reinitialization');
+    await this.clearRecaptcha();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await this.initRecaptcha(containerId);
+  }
+
+  async clearRecaptcha() {
     try {
       console.log('Clearing reCAPTCHA...');
       if (this.recaptchaVerifier) {
-        this.recaptchaVerifier.clear();
+        await this.recaptchaVerifier.clear();
         this.recaptchaVerifier = null;
         this.isRecaptchaInitialized = false;
         console.log('reCAPTCHA cleared successfully');
       }
     } catch (error) {
       console.error('Error clearing reCAPTCHA:', error);
+      this.recaptchaVerifier = null;
+      this.isRecaptchaInitialized = false;
     }
+  }
+
+  async verifyRecaptchaStatus(): Promise<boolean> {
+    if (!this.recaptchaVerifier || !this.isRecaptchaInitialized) {
+      console.log('reCAPTCHA not properly initialized');
+      return false;
+    }
+    return true;
   }
 
   async verifyPhoneNumber(phoneNumber: string, isSignUp: boolean = false) {
@@ -70,14 +125,12 @@ export class AuthService {
     }
 
     try {
-      // Pour l'inscription, vérifier si le numéro existe déjà
       if (isSignUp) {
         const userQuery = await this.findUserByPhoneNumber(phoneNumber);
         if (userQuery) {
           throw new Error('PHONE_ALREADY_EXISTS');
         }
       } else {
-        // Pour la connexion, vérifier si le numéro existe
         const userQuery = await this.findUserByPhoneNumber(phoneNumber);
         if (!userQuery) {
           throw new Error('USER_NOT_FOUND');
@@ -95,7 +148,6 @@ export class AuthService {
     } catch (error: any) {
       console.error('Phone verification error:', error);
       
-      // Gérer les erreurs spécifiques
       if (error.code === 'auth/too-many-requests') {
         throw new Error('TOO_MANY_REQUESTS');
       }
@@ -109,8 +161,6 @@ export class AuthService {
 
   private async findUserByPhoneNumber(phoneNumber: string): Promise<User | null> {
     try {
-      // Ici, vous devriez implémenter la logique pour trouver un utilisateur par numéro de téléphone
-      // Pour l'instant, on retourne null car cette fonctionnalité n'est pas encore implémentée
       return null;
     } catch (error) {
       console.error('Error finding user by phone number:', error);
@@ -139,7 +189,6 @@ export class AuthService {
         throw new Error('USER_NOT_FOUND');
       }
 
-      // Pour l'inscription, on va créer un nouveau document utilisateur
       console.log('Creating new user document for sign up');
       const newUserData: Partial<User> = {
         id: user.uid,

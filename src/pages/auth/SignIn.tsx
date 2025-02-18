@@ -26,37 +26,61 @@ const SignIn = () => {
   const authService = new AuthService();
 
   useEffect(() => {
+    let mounted = true;
     const initializeRecaptcha = async () => {
       try {
+        console.log('Starting reCAPTCHA initialization...');
+        setIsLoading(true);
         await authService.initRecaptcha('recaptcha-container');
-        setIsRecaptchaReady(true);
+        if (mounted) {
+          setIsRecaptchaReady(true);
+          console.log('reCAPTCHA initialization complete');
+        }
       } catch (error) {
         console.error('Failed to initialize reCAPTCHA:', error);
-        setIsRecaptchaReady(false);
-        toast({
-          title: t('auth.error'),
-          description: t('auth.recaptchaError'),
-          variant: "destructive"
-        });
+        if (mounted) {
+          setIsRecaptchaReady(false);
+          toast({
+            title: t('auth.error'),
+            description: t('auth.recaptchaError'),
+            variant: "destructive"
+          });
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     initializeRecaptcha();
     
     return () => {
+      mounted = false;
       authService.clearRecaptcha();
     };
   }, []);
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isRecaptchaReady) {
-      toast({
-        title: t('auth.error'),
-        description: t('auth.recaptchaNotReady'),
-        variant: "destructive"
-      });
-      return;
+    
+    // Vérifier l'état du reCAPTCHA avant de continuer
+    const recaptchaStatus = await authService.verifyRecaptchaStatus();
+    if (!recaptchaStatus) {
+      console.log('reCAPTCHA not ready, attempting reinitialization...');
+      setIsRecaptchaReady(false);
+      await authService.clearRecaptcha();
+      try {
+        await authService.initRecaptcha('recaptcha-container');
+        setIsRecaptchaReady(true);
+      } catch (error) {
+        toast({
+          title: t('auth.error'),
+          description: t('auth.recaptchaError'),
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     setIsLoading(true);
