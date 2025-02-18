@@ -1,4 +1,13 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, sendPasswordResetEmail, updateProfile, RecaptchaVerifier, PhoneAuthProvider } from 'firebase/auth';
+
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut as firebaseSignOut,
+  sendPasswordResetEmail, 
+  updateProfile, 
+  RecaptchaVerifier, 
+  PhoneAuthProvider 
+} from 'firebase/auth';
 import { doc, setDoc, getDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { 
@@ -152,7 +161,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await signOut(auth);
+      await firebaseSignOut(auth);
     } catch (error: any) {
       console.error('Logout error:', error.message);
       throw new Error(error.message);

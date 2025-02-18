@@ -92,14 +92,16 @@ export class UserService {
       const workers = querySnapshot.docs
         .map(doc => doc.data() as WorkerUser)
         .filter(worker => {
-          if (filters.job) {
-            return worker.job === filters.job;
+          if (filters.job && worker.job !== filters.job) {
+            return false;
           }
-          if (filters.languages?.length) {
-            return filters.languages.some(lang => worker.languages.includes(lang));
+          if (filters.languages?.length && !worker.languages?.some(lang => 
+            filters.languages?.includes(lang)
+          )) {
+            return false;
           }
           if (filters.workAreas && filters.workAreas.length > 1) {
-            return filters.workAreas.some(area => worker.workAreas.includes(area));
+            return filters.workAreas.some(area => worker.workAreas?.includes(area));
           }
           return true;
         });
